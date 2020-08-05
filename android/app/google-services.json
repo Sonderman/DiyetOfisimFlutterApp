@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "657550802981",
+    "firebase_url": "https://diyet-ofisim.firebaseio.com",
+    "project_id": "diyet-ofisim",
+    "storage_bucket": "diyet-ofisim.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657550802981:android:596a27d8462bb6c53e7fcc",
+        "android_client_info": {
+          "package_name": "com.sondermium.diyet_ofisim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657550802981-8o90ht0l59v9mrfp05t55a6floq3ja0k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZrBoJjE9HmA8g00TClzzCROdAC_InOSc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657550802981-8o90ht0l59v9mrfp05t55a6floq3ja0k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
