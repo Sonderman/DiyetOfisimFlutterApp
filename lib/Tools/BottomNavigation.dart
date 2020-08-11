@@ -1,5 +1,6 @@
 import 'package:diyet_ofisim/Pages/DieticianListPage.dart';
 import 'package:diyet_ofisim/Pages/LoginPage.dart';
+import 'package:diyet_ofisim/Pages/SearchDatePage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
@@ -15,30 +16,9 @@ Widget getNavigatedPage(BuildContext context) {
     return NavigationManager(context).getLastPage();
   } else {
     UserService userService = locator<UserService>();
-    Widget testPage = Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(userService.userModel.name),
-            MaterialButton(
-                color: Colors.red,
-                child: Text("Çıkış"),
-                onPressed: () {
-                  var auth = locator<AuthService>();
-                  auth.signOut();
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => LoginPage()));
-                })
-          ],
-        ),
-      ),
-    );
     List<Widget> pages = [
+      SearchDatePage(),
       DieticianListPage(),
-      testPage,
     ];
     return pages[NavigationManager(context).getBottomNavIndex()];
   }
@@ -59,7 +39,7 @@ Widget bottomNavigationBar(BuildContext context) {
     tabs: [
       TabData(
           iconData: Icons.search,
-          title: "Randevu Al",
+          title: "Randevu Ara",
           onclick: currentPageSetter),
       TabData(
           iconData: Icons.list,

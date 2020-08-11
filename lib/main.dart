@@ -1,6 +1,5 @@
 import 'package:diyet_ofisim/Components/SplashScreen.dart';
 import 'package:diyet_ofisim/Services/NavigationProvider.dart';
-import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

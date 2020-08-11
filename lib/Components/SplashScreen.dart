@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:diyet_ofisim/Pages/HomePage.dart';
 import 'package:diyet_ofisim/Pages/LoginPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
@@ -7,12 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SplashScreen extends StatefulWidget {
+  
   SplashScreen({Key key}) : super(key: key);
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
   authChecking(BuildContext context) {
     Future.delayed(Duration(seconds: 2), () {
       locator<AuthService>().getUserUid().then((userID) {
@@ -20,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
           print("UserID:" + userID);
           locator<UserService>().userInitializer(userID).then((value) {
             if (value)
+            
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -60,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 */
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -112,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text("Diyet Ofisim",
+          Text("Diyet Ofisim" ,
               style: TextStyle(
                 decoration: TextDecoration.none,
                 fontFamily: 'IndieFlower',
