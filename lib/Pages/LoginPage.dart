@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   bool visiblePassword = true;
   bool showLogin = false;
   String sendPasswordMailText = "Giriş Yap";
-  UserService userService;
+  UserService userService = locator<UserService>();
   PageController _pageController;
 
   @override
