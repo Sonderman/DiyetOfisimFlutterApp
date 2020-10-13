@@ -1,14 +1,11 @@
 import 'package:diyet_ofisim/Pages/DieticianListPage.dart';
-import 'package:diyet_ofisim/Pages/LoginPage.dart';
 import 'package:diyet_ofisim/Pages/SearchDatePage.dart';
-import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 Widget getNavigatedPage(BuildContext context) {
   //ANCHOR stack de widget varsa o sayfayı döndürür yoksa default veya mevcut indexe göre sayfayı açar

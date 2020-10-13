@@ -1,16 +1,10 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  Stream<String> get onAuthStateChanged {
-    return _firebaseAuth.onAuthStateChanged
-        .map((FirebaseUser user) => user?.uid);
-  }
+  User user;
 
   Future<String> signIn(String email, String password) async {
-    FirebaseUser user;
     try {
       user = (await _firebaseAuth.signInWithEmailAndPassword(
               email: email, password: password))
@@ -22,15 +16,10 @@ class AuthService {
   }
 
   Future<String> signUp(String email, String password) async {
-    FirebaseUser user = (await _firebaseAuth.createUserWithEmailAndPassword(
+    user = (await _firebaseAuth.createUserWithEmailAndPassword(
             email: email, password: password))
         .user;
     return user.uid;
-  }
-
-  Future<FirebaseUser> getCurrentUser() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    return user;
   }
 
   void signOut() async {
@@ -38,26 +27,19 @@ class AuthService {
   }
 
   Future<void> sendEmailVerification() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
     user.sendEmailVerification();
   }
 
   Future<bool> isEmailVerified() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    return user.isEmailVerified;
+    return user.emailVerified;
   }
 
   Future<String> getUserEmail() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
     return user.email;
   }
 
   Future<String> getUserUid() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    if (user != null)
-      return user.uid;
-    else
-      return null;
+    return user?.uid;
   }
 
   Future<bool> checkPassword(String email, String password) async {

@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -38,10 +37,10 @@ class DatabaseWorks {
     initializeDatabase();
   }
   initializeDatabase() async {
-    await FirebaseApp.configure(
+    await Firebase.initializeApp(
       name: 'DiyetOfisim',
-      options: const FirebaseOptions(
-        googleAppID: '1:657550802981:android:596a27d8462bb6c53e7fcc',
+      options: FirebaseOptions(
+        appId: '1:657550802981:android:596a27d8462bb6c53e7fcc',
         apiKey: 'AIzaSyDZrBoJjE9HmA8g00TClzzCROdAC_InOSc',
         databaseURL: 'https://diyet-ofisim.firebaseio.com',
       ),
