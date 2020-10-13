@@ -17,7 +17,7 @@ dependencies:
   firebase_database: ^4.1.1
   fluttertoast: ^7.1.1
   flutter_spinkit: ^4.1.2+1
-  extended_image: ^1.2.0
+  extended_image: ^1.1.0
   image_editor: ^0.7.3
   image_picker: ^0.6.7+11
   fancy_bottom_navigation: ^0.3.2

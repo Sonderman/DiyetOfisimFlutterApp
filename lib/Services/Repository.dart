@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Models/Customer.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Firebase.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 
 class LoginRegisterService {
   Future<String> registerUser(String eposta, String password,
@@ -16,11 +13,11 @@ class LoginRegisterService {
       "Name": datalist[0],
       "Surname": datalist[1],
       "Email": datalist[2],
-      "PhoneNumber": int.parse(datalist[3]),
-      "Gender": datalist[4],
-      "isDietisian": datalist[5],
-      "BirthDay": datalist[6],
-      "NickName": datalist[7],
+      //"PhoneNumber": int.parse(datalist[3]),
+      "Gender": datalist[3],
+      "isDietisian": datalist[4],
+      "BirthDay": datalist[5],
+      "NickName": datalist[6],
       "ProfilePhotoUrl": "",
       "RegisteredAt": ServerValue.timestamp
     };

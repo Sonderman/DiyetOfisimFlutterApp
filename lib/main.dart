@@ -1,13 +1,25 @@
 import 'package:diyet_ofisim/Components/SplashScreen.dart';
 import 'package:diyet_ofisim/Services/NavigationProvider.dart';
 import 'package:diyet_ofisim/locator.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLocator();
+  final FirebaseApp app = await Firebase.initializeApp(
+    name: 'DiyetOfisim',
+    options: FirebaseOptions(
+      appId: '1:657550802981:android:596a27d8462bb6c53e7fcc',
+      apiKey: 'AIzaSyDZrBoJjE9HmA8g00TClzzCROdAC_InOSc',
+      projectId: "diyet-ofisim",
+      messagingSenderId: "657550802981",
+      databaseURL: 'https://diyet-ofisim.firebaseio.com',
+    ),
+  );
+
+  setupLocator(app: app);
   //ANCHOR burada ekranın dönmesi engellenir, dikey mod
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   //ANCHOR status barı transparent yapıyor

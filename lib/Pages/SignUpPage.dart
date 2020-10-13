@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart' as imgsrc;
-import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   final PageController pageController;
@@ -101,10 +100,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         SizedBox(
                           height: heightSize(1),
                         ),
-                        telephoneNumber(),
-                        SizedBox(
-                          height: heightSize(2),
-                        ),
                         constraints.maxWidth < 400
                             ? selectGenderLittle()
                             : selectGender(),
@@ -190,7 +185,6 @@ class _SignUpPageState extends State<SignUpPage> {
       _name,
       _surname,
       mailController.text,
-      _phoneNumber,
       _gender ? "Man" : "Woman",
       _isDietisian ? "Y" : "N",
       _birthday,

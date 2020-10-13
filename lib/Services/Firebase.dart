@@ -32,24 +32,13 @@ class AutoIdGenerator {
 class DatabaseWorks {
   AppSettings settings = locator<AppSettings>();
   DatabaseReference ref;
-  DatabaseWorks() {
+
+  DatabaseWorks(FirebaseApp app) {
     print("DatabaseWorks locator is running");
-    initializeDatabase();
-  }
-  initializeDatabase() async {
-    await Firebase.initializeApp(
-      name: 'DiyetOfisim',
-      options: FirebaseOptions(
-        appId: '1:657550802981:android:596a27d8462bb6c53e7fcc',
-        apiKey: 'AIzaSyDZrBoJjE9HmA8g00TClzzCROdAC_InOSc',
-        databaseURL: 'https://diyet-ofisim.firebaseio.com',
-      ),
-    ).then((app) {
-      FirebaseDatabase database = FirebaseDatabase(app: app);
-      database.setPersistenceEnabled(true);
-      database.setPersistenceCacheSizeBytes(10000000);
-      ref = database.reference();
-    });
+    FirebaseDatabase database = FirebaseDatabase(app: app);
+    database.setPersistenceEnabled(true);
+    database.setPersistenceCacheSizeBytes(10000000);
+    ref = database.reference();
   }
 
   Future<bool> newUser(Map<String, dynamic> data) async {
