@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -33,9 +32,9 @@ class DatabaseWorks {
   AppSettings settings = locator<AppSettings>();
   DatabaseReference ref;
 
-  DatabaseWorks(FirebaseApp app) {
+  DatabaseWorks() {
     print("DatabaseWorks locator is running");
-    FirebaseDatabase database = FirebaseDatabase(app: app);
+    FirebaseDatabase database = FirebaseDatabase();
     database.setPersistenceEnabled(true);
     database.setPersistenceCacheSizeBytes(10000000);
     ref = database.reference();

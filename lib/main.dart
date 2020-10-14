@@ -8,18 +8,10 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final FirebaseApp app = await Firebase.initializeApp(
-    name: 'DiyetOfisim',
-    options: FirebaseOptions(
-      appId: '1:657550802981:android:596a27d8462bb6c53e7fcc',
-      apiKey: 'AIzaSyDZrBoJjE9HmA8g00TClzzCROdAC_InOSc',
-      projectId: "diyet-ofisim",
-      messagingSenderId: "657550802981",
-      databaseURL: 'https://diyet-ofisim.firebaseio.com',
-    ),
-  );
 
-  setupLocator(app: app);
+  await Firebase.initializeApp();
+
+  setupLocator();
   //ANCHOR burada ekranın dönmesi engellenir, dikey mod
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   //ANCHOR status barı transparent yapıyor

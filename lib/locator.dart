@@ -2,15 +2,14 @@ import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Firebase.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 
 GetIt locator = GetIt.instance;
 
-void setupLocator({FirebaseApp app}) {
+void setupLocator() {
   locator.registerSingleton<AppSettings>(AppSettings());
   locator.registerSingleton<AuthService>(AuthService());
-  locator.registerSingleton<DatabaseWorks>(DatabaseWorks(app));
+  locator.registerSingleton<DatabaseWorks>(DatabaseWorks());
   locator.registerSingleton<StorageWorks>(StorageWorks());
   locator.registerSingleton<UserService>(UserService());
 
