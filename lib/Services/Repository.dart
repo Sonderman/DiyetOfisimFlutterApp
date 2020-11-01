@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:diyet_ofisim/Models/Customer.dart';
+import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Firebase.dart';
@@ -58,10 +58,13 @@ class UserService {
   Future<bool> userModelSync(String userID) async {
     try {
       return await findUserByID(userID).then((map) {
-        if (map['isDietisian'] == "Y")
+        if (map['isDietisian'] == "Y") {
+          print("User: Diyetisyen");
           userModel = Dietician(id: userID);
-        else
-          userModel = Customer(id: userID);
+        } else {
+          print("User: Hasta");
+          userModel = Patient(id: userID);
+        }
         userModel.parseMap(map);
         return true;
       });

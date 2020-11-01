@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:diyet_ofisim/Pages/HomePage.dart';
 import 'package:diyet_ofisim/Pages/LoginPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';

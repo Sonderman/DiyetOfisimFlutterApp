@@ -1,4 +1,8 @@
-import 'package:diyet_ofisim/Pages/DieticianListPage.dart';
+import 'package:diyet_ofisim/Models/Dietician.dart';
+import 'package:diyet_ofisim/Pages/ChatPage.dart';
+import 'package:diyet_ofisim/Pages/Dietician/MyCalendarPage.dart';
+import 'package:diyet_ofisim/Pages/Dietician/ProfilePage.dart';
+import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
 import 'package:diyet_ofisim/Pages/SearchDatePage.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
@@ -13,11 +17,18 @@ Widget getNavigatedPage(BuildContext context) {
     return NavigationManager(context).getLastPage();
   } else {
     UserService userService = locator<UserService>();
-    List<Widget> pages = [
+    //ANCHOR hasta sayfaları burada
+    List<Widget> patientPages = [
       SearchDatePage(),
       DieticianListPage(),
     ];
-    return pages[NavigationManager(context).getBottomNavIndex()];
+    //ANCHOR diyetisyen sayfaları burada
+    List<Widget> dieticianPages = [ChatPage(), MyCalendarPage(), ProfilePage()];
+
+    if (userService.userModel.runtimeType == Dietician)
+      return dieticianPages[NavigationManager(context).getBottomNavIndex()];
+    else
+      return patientPages[NavigationManager(context).getBottomNavIndex()];
   }
 }
 
@@ -29,29 +40,56 @@ Widget bottomNavigationBar(BuildContext context) {
     navigation.setBottomNavIndex(currentPosition);
   }
 
-  return FancyBottomNavigation(
-    initialSelection: currentPosition,
-    inactiveIconColor: MyColors().purpleContainer,
-    circleColor: MyColors().purpleContainer,
-    tabs: [
-      TabData(
-          iconData: Icons.search,
-          title: "Randevu Ara",
-          onclick: currentPageSetter),
-      TabData(
-          iconData: Icons.list,
-          title: "Randevularım",
-          onclick: currentPageSetter),
-      /*TabData(
-          iconData: Icons.search, title: "Keşfet", onclick: currentPageSetter),
-      TabData(
-          iconData: Icons.assignment_ind,
-          title: "Profil",
-          onclick: currentPageSetter),*/
-    ],
-    onTabChangedListener: (position) {
-      currentPosition = position;
-      navigation.setBottomNavIndex(position);
-    },
-  );
+  if (locator<UserService>().userModel.runtimeType == Dietician)
+    return FancyBottomNavigation(
+      initialSelection: currentPosition,
+      inactiveIconColor: MyColors().purpleContainer,
+      circleColor: MyColors().purpleContainer,
+      tabs: [
+        TabData(
+            iconData: Icons.chat,
+            title: "Görüşmeler",
+            onclick: currentPageSetter),
+        TabData(
+            iconData: Icons.calendar_today,
+            title: "Takvim",
+            onclick: currentPageSetter),
+        TabData(
+            iconData: Icons.assignment_ind,
+            title: "Profil",
+            onclick: currentPageSetter),
+      ],
+      onTabChangedListener: (position) {
+        currentPosition = position;
+        navigation.setBottomNavIndex(position);
+      },
+    );
+  else
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Anasayfa',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.calendar_today),
+          label: 'Takvimim',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          label: 'Mesajlar',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.assignment_ind),
+          label: 'Profilim',
+        ),
+      ],
+      currentIndex: currentPosition,
+      selectedItemColor: Colors.amber[800],
+      onTap: (position) {
+        currentPosition = position;
+        navigation.setBottomNavIndex(position);
+      },
+    );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Customer {
+class Patient {
   final String id;
   String name;
   String surname;
@@ -12,7 +12,7 @@ class Customer {
   String gender;
   String profilePhotoUrl;
 
-  Customer({@required this.id});
+  Patient({@required this.id});
 
   Map<String, dynamic> toMap() {
     return {
