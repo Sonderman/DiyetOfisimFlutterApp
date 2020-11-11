@@ -6,11 +6,11 @@ import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
-  _HomePageState createState() => _HomePageState();
+class RootPage extends StatefulWidget {
+  _RootPageState createState() => _RootPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     var responsive = PageComponents(context);
@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
             body: Consumer<NavigationProvider>(
               builder: (con, nav, w) => getNavigatedPage(context),
             ),
-            bottomNavigationBar: bottomNavigationBar(context)));
+            bottomNavigationBar: bottomNavigationBar(context, this)));
   }
 
   //ANCHOR burada stack de widget varmı kontrol eder, eğer widget varsa pop eder

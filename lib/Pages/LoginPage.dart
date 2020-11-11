@@ -1,4 +1,4 @@
-import 'package:diyet_ofisim/Pages/HomePage.dart';
+import 'package:diyet_ofisim/Pages/RootPage.dart';
 import 'package:diyet_ofisim/Pages/SignUpPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
@@ -388,7 +388,7 @@ class _LoginPageState extends State<LoginPage> {
         //     .updateSingleInfo("LastLoggedIn", "timeStamp")
         //    .whenComplete(() {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (BuildContext context) => HomePage()));
+            MaterialPageRoute(builder: (BuildContext context) => RootPage()));
         // });
       });
       /*

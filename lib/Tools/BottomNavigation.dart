@@ -3,6 +3,7 @@ import 'package:diyet_ofisim/Pages/ChatPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/MyCalendarPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/ProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
+import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
 import 'package:diyet_ofisim/Pages/SearchDatePage.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
@@ -19,7 +20,9 @@ Widget getNavigatedPage(BuildContext context) {
     UserService userService = locator<UserService>();
     //ANCHOR hasta sayfaları burada
     List<Widget> patientPages = [
+      HomePage(),
       SearchDatePage(),
+      ChatPage(),
       DieticianListPage(),
     ];
     //ANCHOR diyetisyen sayfaları burada
@@ -32,12 +35,15 @@ Widget getNavigatedPage(BuildContext context) {
   }
 }
 
-Widget bottomNavigationBar(BuildContext context) {
+Widget bottomNavigationBar(BuildContext context, _rootPageState) {
   NavigationManager navigation = NavigationManager(context);
   int currentPosition = navigation.getBottomNavIndex();
 
   currentPageSetter() {
-    navigation.setBottomNavIndex(currentPosition);
+    //ANCHOR - Burada hem RootPage Hemde içerideki page rebuild olur
+    _rootPageState.setState(() {
+      navigation.setBottomNavIndex(currentPosition);
+    });
   }
 
   if (locator<UserService>().userModel.runtimeType == Dietician)
@@ -47,21 +53,18 @@ Widget bottomNavigationBar(BuildContext context) {
       circleColor: MyColors().purpleContainer,
       tabs: [
         TabData(
-            iconData: Icons.chat,
-            title: "Görüşmeler",
-            onclick: currentPageSetter),
+          iconData: Icons.chat,
+          title: "Görüşmeler",
+        ),
         TabData(
-            iconData: Icons.calendar_today,
-            title: "Takvim",
-            onclick: currentPageSetter),
-        TabData(
-            iconData: Icons.assignment_ind,
-            title: "Profil",
-            onclick: currentPageSetter),
+          iconData: Icons.calendar_today,
+          title: "Takvim",
+        ),
+        TabData(iconData: Icons.assignment_ind, title: "Profil"),
       ],
       onTabChangedListener: (position) {
         currentPosition = position;
-        navigation.setBottomNavIndex(position);
+        currentPageSetter();
       },
     );
   else
@@ -74,7 +77,7 @@ Widget bottomNavigationBar(BuildContext context) {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today),
-          label: 'Takvimim',
+          label: 'Randevularım',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat),
@@ -89,7 +92,7 @@ Widget bottomNavigationBar(BuildContext context) {
       selectedItemColor: Colors.amber[800],
       onTap: (position) {
         currentPosition = position;
-        navigation.setBottomNavIndex(position);
+        currentPageSetter();
       },
     );
 }
