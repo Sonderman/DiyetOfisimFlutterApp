@@ -74,7 +74,7 @@ class DatabaseWorks {
 }
 
 class StorageWorks {
-  final StorageReference ref = FirebaseStorage().ref();
+  final Reference ref = FirebaseStorage().ref();
   AppSettings settings = locator<AppSettings>();
   StorageWorks() {
     print("StorageWorks locator running");
@@ -84,7 +84,7 @@ class StorageWorks {
     if (image == null) {
       print("image null");
     }
-    StorageUploadTask uploadTask = ref
+    UploadTask uploadTask = ref
         .child('users')
         .child(userId)
         .child('images')
@@ -93,6 +93,7 @@ class StorageWorks {
         .putData(image);
 
     try {
+      /*
       return await uploadTask.onComplete.then((value) async {
         return await value.ref.getDownloadURL().then((url) async {
           await locator<DatabaseWorks>()
@@ -105,6 +106,7 @@ class StorageWorks {
           return true;
         });
       });
+      */
     } catch (e) {
       print(e);
       return false;
@@ -113,31 +115,33 @@ class StorageWorks {
 
   Future sendImageMessage(File image, ChatUser user, String currentUser,
       String chatID, String time) async {
-    final StorageReference storageRef =
+    final Reference storageRef =
         ref.child("users").child(currentUser).child("images").child(time);
-
-    StorageUploadTask uploadTask = storageRef.putFile(
+/*
+    UploadTask  uploadTask = storageRef.putFile(
       image,
       StorageMetadata(
         contentType: 'image/jpg',
       ),
     );
-    StorageTaskSnapshot download = await uploadTask.onComplete;
+    
+    TaskSnapshot download = await uploadTask.onComplete;
 
     return await download.ref.getDownloadURL().then((url) {
       ChatMessage message = ChatMessage(text: "", user: user, image: url);
       return message;
     });
+    */
   }
 
   Future<String> sendEventImage(Uint8List image) async {
     String url;
-    StorageUploadTask uploadTask = ref
+    UploadTask uploadTask = ref
         .child('events')
         .child('images')
         .child(AutoIdGenerator.autoId() + '.jpeg')
         .putData(image);
-
+/*
     StreamSubscription<StorageTaskEvent> streamSubscription =
         uploadTask.events.listen((event) {
       print('UpdatingProfile Image :${event.type}');
@@ -153,6 +157,7 @@ class StorageWorks {
     }).catchError((e) {
       print(e);
     });
+    */
   }
 }
 
