@@ -4,10 +4,10 @@ import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
+import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 class Message extends StatefulWidget {
   //ANCHOR Karşıdak kullanıcının Idsi ve ismi geliyor
@@ -21,7 +21,9 @@ class Message extends StatefulWidget {
 
 class _MessageState extends State<Message> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
-  List<ChatMessage> messages;
+  var userService = locator<UserService>();
+  var messageService = locator<MessagingService>();
+  List<ChatMessage> messages = [];
   StreamSubscription messageStream;
   //UserService userService;
   // MessagingService messageService;
@@ -34,25 +36,22 @@ class _MessageState extends State<Message> {
   var i = 0;
   bool runFutureOnce = false;
   ChatUser user;
-/*
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    //ANCHOR Providerda context e ihtiyacımız olduğundan didchangedependecies ile contexte ulaşabiliyoruz, bu bir nevi initstate işlevi görüyor
-    userService = Provider.of<UserService>(context, listen: false);
-    currentUserID = userService.userModel.getUserId();
+  void initState() {
+    currentUserID = userService.userModel.id;
     otherUserID = widget.otherUserID;
-    currentUserPhotoUrl = userService.userModel.getUserProfilePhotoUrl();
-    messageService = Provider.of<MessagingService>(context, listen: false);
+    currentUserPhotoUrl = userService.userModel.profilePhotoUrl;
 
     //ANCHOR Buradaki user sağ tarafta görülen kendimiz
     user = ChatUser(
-      name: userService.userModel.getUserName(),
+      name: userService.userModel.id,
       uid: currentUserID,
       avatar: currentUserPhotoUrl, // Kendi url miz
     );
+    super.initState();
   }
-*/
+
   @override
   void dispose() {
     if (messageStream != null) messageStream.cancel();
@@ -61,12 +60,30 @@ class _MessageState extends State<Message> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
-/*
-  @override
-  Widget build(BuildContext context) {
+    Future<void> initializeMessages() async {
+      if (messageStream == null && chatID != "temp") {
+        /*
+        messages =
+            await messageService.getChatPoolMessages(chatID).then((value) {
+          return value.values
+              .map((e) => ChatMessage.fromJson(Map.from(e)))
+              .toList();
+        });*/
+
+        messageStream = messageService
+            .getChatPoolMessagesSnapshot(chatID)
+            .listen((snapshot) {
+          // print("messages: " + snapshot.snapshot.value.toString());
+
+          if (snapshot.snapshot.value != null)
+            setState(() {
+              messages
+                  .add(ChatMessage.fromJson(snapshot.snapshot.value as Map));
+            });
+        });
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: MyColors().blueThemeColor,
@@ -75,7 +92,7 @@ class _MessageState extends State<Message> {
       ),
       body: FutureBuilder(
         future: messageService.checkConversation(currentUserID, otherUserID),
-        builder: (context, AsyncSnapshot snapshot) {
+        builder: (context, AsyncSnapshot<String> snapshot) {
           print("Control Future");
           if (snapshot.connectionState == ConnectionState.done ||
               runFutureOnce) {
@@ -88,18 +105,7 @@ class _MessageState extends State<Message> {
               if (chatID == "temp") chatID = snapshot.data;
             }
 
-            if (messageStream == null && chatID != "temp") {
-              messageStream =
-                  messageService.getMessagesSnapshot(chatID).listen((snapshot) {
-                print("Subscribe oldu");
-                if (snapshot != null)
-                  setState(() {
-                    messages = snapshot.documents
-                        .map((i) => ChatMessage.fromJson(i.data))
-                        .toList();
-                  });
-              });
-            }
+            initializeMessages();
 
             print("ChatID:" + chatID);
             return DashChat(
@@ -109,6 +115,7 @@ class _MessageState extends State<Message> {
                 messageService
                     .sendMessage(chatID, message, currentUserID, otherUserID)
                     .then((id) {
+                  print("ChatID: " + id);
                   if (messages == null) {
                     print("ilkmesaj");
                     setState(() {
@@ -169,8 +176,10 @@ class _MessageState extends State<Message> {
                     if (result != null) {
                       String time =
                           DateTime.now().millisecondsSinceEpoch.toString();
+/*
                       await messageService.sendImageMessage(
                           result, user, currentUserID, chatID, time);
+                          */
                     }
                   },
                 )
@@ -184,5 +193,4 @@ class _MessageState extends State<Message> {
       ),
     );
   }
-*/
 }

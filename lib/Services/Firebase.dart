@@ -40,6 +40,148 @@ class DatabaseWorks {
     ref = database.reference();
   }
 
+  Future<String> sendMessage(ChatMessage message, String chatID,
+      String currentUser, String otherUser) async {
+    if (chatID == "temp") {
+      chatID = AutoIdGenerator.autoId();
+      final TransactionResult transactionResult = await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child('users')
+          .child(currentUser)
+          .child('messages')
+          .child(chatID)
+          .runTransaction((MutableData mutableData) async {
+        mutableData.value = {"OtherUserID": otherUser};
+        return mutableData;
+      });
+      if (transactionResult.committed) {
+        await ref
+            .child(settings.appName)
+            .child(settings.getServer())
+            .child('users')
+            .child(otherUser)
+            .child('messages')
+            .child(chatID)
+            .set({"OtherUserID": currentUser});
+      } else {
+        print('Transaction not committed.');
+        if (transactionResult.error != null) {
+          print(transactionResult.error.message);
+        }
+      }
+    }
+
+    Map<String, dynamic> messageMap = message.toJson();
+
+    final TransactionResult transactionResult2 = await ref
+        .child(settings.appName)
+        .child(settings.getServer())
+        .child('messagePool')
+        .child(chatID)
+        .child('messages')
+        .child(DateTime.now().millisecondsSinceEpoch.toString())
+        .runTransaction((MutableData mutableData) async {
+      mutableData.value = messageMap;
+      return mutableData;
+    });
+
+    if (transactionResult2.committed) {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child('messagePool')
+          .child(chatID)
+          .update({
+        "lastMessage": {
+          "senderID": currentUser,
+          "message": messageMap['text'],
+          "createdAt": messageMap['createdAt']
+        }
+      });
+    } else {
+      print('Transaction not committed.');
+      if (transactionResult2.error != null) {
+        print(transactionResult2.error.message);
+      }
+    }
+
+    return chatID;
+  }
+
+  Future<String> checkConversation(String currentUser, String otherUser) async {
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child('users')
+          .child(currentUser)
+          .child('messages')
+          .orderByChild("OtherUserID")
+          .equalTo(otherUser)
+          //.where("OtherUserID", isEqualTo: otherUser)
+
+          .once()
+          .then((data) {
+        return (data.value as Map).keys.first;
+      });
+    } catch (e) {
+      print(e);
+      return "bos";
+    }
+  }
+
+  //NOTE - Gereksiz Olabilir
+  Future<Map<String, dynamic>> getChatPoolMessages(String chatID) async {
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("messagePool")
+          .child(chatID)
+          .child("messages")
+          //.orderByChild("createdAt")
+          .once()
+          .then((chats) {
+        return Map<String, dynamic>.from(chats.value);
+      });
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Stream<Event> getChatPoolMessagesSnapshot(String chatID) {
+    return ref
+        .child(settings.appName)
+        .child(settings.getServer())
+        .child("messagePool")
+        .child(chatID)
+        .child("messages")
+        .onChildAdded;
+  }
+
+  Stream<Event> getChatPoolSnapshot(String chatID) {
+    return ref
+        .child(settings.appName)
+        .child(settings.getServer())
+        .child("messagePool")
+        .child(chatID)
+        .child("lastMessage")
+        .onValue;
+  }
+
+  Stream<Event> getUserChatsSnapshots(String currentUserID) {
+    return ref
+        .child(settings.appName)
+        .child(settings.getServer())
+        .child("users")
+        .child(currentUserID)
+        .child("messages")
+        .limitToFirst(10)
+        .onValue;
+  }
+
   Future<bool> newUser(Map<String, dynamic> data) async {
     try {
       await ref
@@ -74,7 +216,7 @@ class DatabaseWorks {
 }
 
 class StorageWorks {
-  final Reference ref = FirebaseStorage().ref();
+  final Reference ref = FirebaseStorage.instance.ref();
   AppSettings settings = locator<AppSettings>();
   StorageWorks() {
     print("StorageWorks locator running");
@@ -542,61 +684,7 @@ class DatabaseWorks {
         .snapshots();
   }
 
-  Future<String> sendMessage(ChatMessage message, String chatID,
-      String currentUser, String otherUser) async {
-    if (chatID == "temp") {
-      chatID = AutoIdGenerator.autoId();
-      await ref.runTransaction((transaction) async {
-        await transaction.set(
-            ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection('users')
-                .document(currentUser)
-                .collection('messages')
-                .document(chatID),
-            {"OtherUserID": otherUser});
-        await transaction.set(
-            ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection('users')
-                .document(otherUser)
-                .collection('messages')
-                .document(chatID),
-            {"OtherUserID": currentUser});
-      });
-    }
-    var messageRef = ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('messagePool')
-        .document(chatID)
-        .collection('messages')
-        .document(DateTime.now().millisecondsSinceEpoch.toString());
-    Map<String, dynamic> messageMap = message.toJson();
-    ref.runTransaction((transaction) async {
-      await transaction.set(
-        messageRef,
-        messageMap,
-      );
-      await transaction.set(
-        ref
-            .collection(settings.appName)
-            .document(settings.getServer())
-            .collection('messagePool')
-            .document(chatID),
-        {
-          "LastMessage": {
-            "SenderID": currentUser,
-            "Message": messageMap['text'],
-            "createdAt": messageMap['createdAt']
-          }
-        },
-      );
-    }, timeout: Duration(seconds: 1));
-    return chatID;
-  }
+  
 
   Future<String> checkConversation(String currentUser, String otherUser) async {
     try {

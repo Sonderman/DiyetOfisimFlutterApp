@@ -1,7 +1,14 @@
+import 'dart:collection';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Components/CustomScroll.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Tools/Message.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
+import 'package:diyet_ofisim/assets/Colors.dart';
+import 'package:diyet_ofisim/locator.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -29,7 +36,7 @@ class _ChatPageState extends State<ChatPage> {
             SizedBox(
               height: heightSize(5),
             ),
-            //chatRows(),
+            chatRows(),
             SizedBox(
               height: heightSize(5),
             ),
@@ -39,16 +46,15 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-/*
   Widget chatRows() {
-    var messageService = Provider.of<MessagingService>(context);
-    var userService = Provider.of<UserService>(context);
+    var messageService = locator<MessagingService>();
+    var userService = locator<UserService>();
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Mesajlar",
+            "Görüşmeler",
             style: TextStyle(
               fontFamily: "Zona",
               fontSize: heightSize(3),
@@ -60,15 +66,25 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: messageService
-                  .getUserChatsSnapshot(userService.userModel.getUserId()),
-              builder: (context, snapshot) {
+              stream:
+                  messageService.getUserChatsSnapshot(userService.userModel.id),
+              builder: (context, AsyncSnapshot<Event> snapshot) {
                 if (!snapshot.hasData) {
                   return PageComponents(context)
                       .loadingOverlay(backgroundColor: Colors.white);
                 } else {
-                  List<DocumentSnapshot> items = snapshot.data.documents;
-                  int itemLength = items.length;
+                  List items =
+                      (snapshot.data.snapshot.value as Map).values.toList();
+                  List chatIds =
+                      (snapshot.data.snapshot.value as Map).keys.toList();
+                  /*
+                  var temp = (snapshot.data.snapshot.value as Map)
+                      .map<String, dynamic>(
+                          (key, value) => MapEntry(key, value));
+                  */
+
+                  int itemLength = (snapshot.data.snapshot.value as Map).length;
+
                   return ScrollConfiguration(
                     behavior: NoScrollEffectBehavior(),
                     child: ListView.separated(
@@ -78,8 +94,9 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                         itemCount: itemLength,
                         itemBuilder: (context, index) {
-                          String otherUserID = items[index].data['OtherUserID'];
-                          String chatID = items[index].documentID;
+                          String otherUserID = items[index]['OtherUserID'];
+                          String chatID = chatIds[index];
+
                           return FutureBuilder(
                               future: userService.findUserByID(otherUserID),
                               builder: (context, snapshot) {
@@ -102,21 +119,23 @@ class _ChatPageState extends State<ChatPage> {
                                       child: StreamBuilder(
                                           stream: messageService
                                               .getChatPoolSnapshot(chatID),
-                                          builder: (_, lastMessageSnap) {
+                                          builder: (_,
+                                              AsyncSnapshot<Event>
+                                                  lastMessageSnap) {
                                             if (lastMessageSnap.hasData) {
-                                              var lastMessagemap =
-                                                  lastMessageSnap.data;
+                                              Map lastMessagemap =
+                                                  lastMessageSnap
+                                                      .data.snapshot.value;
+
                                               String message =
-                                                  lastMessagemap["LastMessage"]
-                                                      ["Message"];
+                                                  lastMessagemap["message"];
 
                                               String formattedTime = DateFormat(
                                                       'kk:mm')
                                                   .format(DateTime
                                                       .fromMillisecondsSinceEpoch(
                                                           lastMessagemap[
-                                                                  "LastMessage"]
-                                                              ["createdAt"]));
+                                                              "createdAt"]));
 
                                               return Row(
                                                 children: <Widget>[
@@ -213,6 +232,4 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-*/
-
 }
