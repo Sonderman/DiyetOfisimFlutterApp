@@ -12,7 +12,7 @@ void setupLocator() {
   locator.registerSingleton<DatabaseWorks>(DatabaseWorks());
   locator.registerSingleton<StorageWorks>(StorageWorks());
   locator.registerSingleton<UserService>(UserService());
-
+  locator.registerSingleton<MessagingService>(MessagingService());
   //locator.registerSingleton<LoginRegisterService>(LoginRegisterService());
 }
 

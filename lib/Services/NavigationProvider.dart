@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class NavigationProvider with ChangeNotifier {
   int _bottomNavIndex = locator<AppSettings>().defaultNavIndex;
-  PageController _createEventPageController = PageController(
+  PageController _questionPageController = PageController(
     initialPage: 0,
   );
 
@@ -17,7 +17,7 @@ class NavigationProvider with ChangeNotifier {
   //ANCHOR Getters Here
   int getBottomNavIndex() => _bottomNavIndex;
   List<Widget> getPageStack() => _pageStack;
-  PageController getCreateEventPageController() => _createEventPageController;
+  PageController getQuestionPageController() => _questionPageController;
 
   //ANCHOR Setters Here
   void setBottomNavIndex(int index) {

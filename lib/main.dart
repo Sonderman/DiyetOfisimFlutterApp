@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  //TODO FlutterFire Dökümanında önerilen şekilde initialize yap
   await Firebase.initializeApp();
 
   setupLocator();

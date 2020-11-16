@@ -15,10 +15,10 @@ class NavigationManager {
   }
 
   bool onBackButtonPressed() {
-    if (nav.getBottomNavIndex() == 1 &&
-        nav.getCreateEventPageController().page == 1) {
-      nav.getCreateEventPageController().previousPage(
-          duration: Duration(seconds: 1), curve: Curves.easeInOutCubic);
+    if (nav.getBottomNavIndex() == 0 &&
+        nav.getQuestionPageController().page.round() > 0) {
+      nav.getQuestionPageController().previousPage(
+          duration: Duration(seconds: 1), curve: Curves.bounceOut);
       return true;
     } else if (isEmpty()) {
       return false;
@@ -28,8 +28,7 @@ class NavigationManager {
     }
   }
 
-  PageController getCreateEventPageController() =>
-      nav.getCreateEventPageController();
+  PageController getQuestionPageController() => nav.getQuestionPageController();
 
   bool isEmpty() {
     return nav.getPageStack().isEmpty;

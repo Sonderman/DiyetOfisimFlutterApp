@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
@@ -289,20 +290,14 @@ class EventService with ChangeNotifier {
     return firebaseDatabaseWorks.getParticipants(eventID);
   }
 }
-
+*/
 ///MessageService*****************************************************************************************************
-/*
-class MessagingService with ChangeNotifier {
+
+class MessagingService {
   final DatabaseWorks firebaseDatabaseWorks = locator<DatabaseWorks>();
   final StorageWorks firebaseStorageWorks = locator<StorageWorks>();
 
-  Future<String> sendMessage(String chatID, ChatMessage message,
-      String currentUser, String otherUser) async {
-    return await firebaseDatabaseWorks.sendMessage(
-        message, chatID, currentUser, otherUser);
-  }
-
-  Future sendImageMessage(File image, ChatUser user, String currentUser,
+  /*Future sendImageMessage(File image, ChatUser user, String currentUser,
       String chatID, String time) async {
     await firebaseDatabaseWorks.sendImageMessage(
         await firebaseStorageWorks.sendImageMessage(
@@ -311,25 +306,43 @@ class MessagingService with ChangeNotifier {
         chatID);
   }
 
+  
+
+  Stream<QuerySnapshot> getMessagesSnapshot(String chatID) {
+    return firebaseDatabaseWorks.getMessagesSnapshot(chatID);
+  }
+
+  */
+  //NOTE - Gereksiz Olabilir
+  Future<Map<String, dynamic>> getChatPoolMessages(String chatID) async {
+    return await firebaseDatabaseWorks.getChatPoolMessages(chatID);
+  }
+
+  Future<String> sendMessage(String chatID, ChatMessage message,
+      String currentUserID, String otherUserID) async {
+    return await firebaseDatabaseWorks.sendMessage(
+        message, chatID, currentUserID, otherUserID);
+  }
+
   Future<String> checkConversation(
       String currentUserID, String otherUserID) async {
     return await firebaseDatabaseWorks.checkConversation(
         currentUserID, otherUserID);
   }
 
-  Stream<QuerySnapshot> getMessagesSnapshot(String chatID) {
-    return firebaseDatabaseWorks.getMessagesSnapshot(chatID);
+  Stream<Event> getChatPoolMessagesSnapshot(String chatID) {
+    return firebaseDatabaseWorks.getChatPoolMessagesSnapshot(chatID);
   }
 
-  Stream<QuerySnapshot> getUserChatsSnapshot(String currentUser) {
-    return firebaseDatabaseWorks.getUserChatsSnapshots(currentUser);
-  }
-
-  Stream<DocumentSnapshot> getChatPoolSnapshot(String chatID) {
+  Stream<Event> getChatPoolSnapshot(String chatID) {
     return firebaseDatabaseWorks.getChatPoolSnapshot(chatID);
   }
+
+  Stream<Event> getUserChatsSnapshot(String currentUser) {
+    return firebaseDatabaseWorks.getUserChatsSnapshots(currentUser);
+  }
 }
-*/
+/*
 Provider kullanımı
 final  userService = Provider.of<UserService>(context);
 */
