@@ -43,11 +43,14 @@ class Inspection {
   int proceedAnswer(int questionIndex, int i) {
     switch (questionIndex) {
       case 0:
-        if (i == 0)
+        if (i == 0) {
           isDiabetes = true;
-        else
+          return 1;
+        } else {
           isDiabetes = false;
-        return 1;
+          return 2;
+        }
+
         break;
       case 1:
         if (i == 0)
