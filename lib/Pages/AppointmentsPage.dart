@@ -1,13 +1,14 @@
+import 'package:diyet_ofisim/Tools/AppointmentCalendar.dart';
 import 'package:flutter/material.dart';
 
-class SearchDatePage extends StatefulWidget {
-  SearchDatePage({Key key}) : super(key: key);
+class AppointmentsPage extends StatefulWidget {
+  AppointmentsPage({Key key}) : super(key: key);
 
   @override
-  _SearchDatePageState createState() => _SearchDatePageState();
+  _AppointmentsPageState createState() => _AppointmentsPageState();
 }
 
-class _SearchDatePageState extends State<SearchDatePage> {
+class _AppointmentsPageState extends State<AppointmentsPage> {
   //Text(DateTime.now().weekday.toString()),
 
   String convertDayToName(int day) {
@@ -26,6 +27,7 @@ class _SearchDatePageState extends State<SearchDatePage> {
 
   @override
   Widget build(BuildContext context) {
+    /*
     return ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 30,
@@ -37,5 +39,7 @@ class _SearchDatePageState extends State<SearchDatePage> {
             ],
           );
         });
+        */
+    return Scaffold(body: AppointmentCalendar());
   }
 }
