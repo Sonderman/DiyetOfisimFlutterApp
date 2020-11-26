@@ -72,6 +72,10 @@ class _ChatPageState extends State<ChatPage> {
                 if (!snapshot.hasData) {
                   return PageComponents(context)
                       .loadingOverlay(backgroundColor: Colors.white);
+                } else if (snapshot.data.snapshot.value == null) {
+                  return Center(
+                    child: Text("Henüz Görüşme Yapmadınız."),
+                  );
                 } else {
                   List items =
                       (snapshot.data.snapshot.value as Map).values.toList();

@@ -213,6 +213,38 @@ class DatabaseWorks {
       return null;
     }
   }
+
+  Future<bool> updateUserProfile(
+      String id, Map<String, dynamic> userData) async {
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(id)
+          .update(userData);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+//NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
+  Future<bool> insertNewDietician(String id, List treatments) async {
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("dieticians")
+          .child(id)
+          .set({"DieticianID": id, "Treatments": treatments});
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }
 
 class StorageWorks {
@@ -225,6 +257,7 @@ class StorageWorks {
   Future<bool> updateProfilePhoto(String userId, Uint8List image) async {
     if (image == null) {
       print("image null");
+      return false;
     }
     UploadTask uploadTask = ref
         .child('users')
@@ -235,18 +268,30 @@ class StorageWorks {
         .putData(image);
 
     try {
+      return await uploadTask.snapshot.ref.getDownloadURL().then((url) async {
+        await locator<DatabaseWorks>()
+            .ref
+            .child(settings.appName)
+            .child(settings.getServer())
+            .child("users")
+            .child(userId)
+            .update({"ProfilePhotoUrl": url});
+        return true;
+      });
       /*
-      return await uploadTask.onComplete.then((value) async {
-        return await value.ref.getDownloadURL().then((url) async {
-          await locator<DatabaseWorks>()
-              .ref
-              .child(settings.appName)
-              .child(settings.getServer())
-              .child("users")
-              .child(userId)
-              .update({"ProfilePhotoUrl": url});
-          return true;
-        });
+      uploadTask.snapshotEvents.listen((event) async {
+        if (event.state == firebase_storage.TaskState.success) {
+          return await event.ref.getDownloadURL().then((url) async {
+            await locator<DatabaseWorks>()
+                .ref
+                .child(settings.appName)
+                .child(settings.getServer())
+                .child("users")
+                .child(userId)
+                .update({"ProfilePhotoUrl": url});
+            return true;
+          });
+        }
       });
       */
     } catch (e) {

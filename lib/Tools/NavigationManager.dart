@@ -15,16 +15,18 @@ class NavigationManager {
   }
 
   bool onBackButtonPressed() {
-    if (nav.getBottomNavIndex() == 0 &&
-        nav.getQuestionPageController().page.round() > 0) {
-      nav.getQuestionPageController().previousPage(
-          duration: Duration(seconds: 1), curve: Curves.bounceOut);
-      return true;
-    } else if (isEmpty()) {
+    if (isEmpty()) {
       return false;
     } else {
-      popPage();
-      return true;
+      if (nav.getBottomNavIndex() == 0 &&
+          nav.getQuestionPageController().page.round() > 0) {
+        nav.getQuestionPageController().previousPage(
+            duration: Duration(seconds: 1), curve: Curves.bounceOut);
+        return true;
+      } else {
+        popPage();
+        return true;
+      }
     }
   }
 
