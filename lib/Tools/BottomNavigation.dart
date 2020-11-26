@@ -4,7 +4,7 @@ import 'package:diyet_ofisim/Pages/Dietician/MyCalendarPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/ProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
-import 'package:diyet_ofisim/Pages/SearchDatePage.dart';
+import 'package:diyet_ofisim/Pages/AppointmentsPage.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
@@ -21,7 +21,7 @@ Widget getNavigatedPage(BuildContext context) {
     //ANCHOR hasta sayfaları burada
     List<Widget> patientPages = [
       HomePage(),
-      SearchDatePage(),
+      AppointmentsPage(),
       ChatPage(),
       DieticianListPage(),
     ];

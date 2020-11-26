@@ -28,28 +28,32 @@ class _QuestionsPageState extends State<QuestionsPage> {
     return Scaffold(
         body: Center(
             child: Container(
-      height: PageComponents(context).heightSize(80),
-      child: PageView(
-        onPageChanged: (position) {
-          setState(() {
-            currentPageIndex = _nav.getQuestionPageController().page.round();
-            currentPageIndex == 0
-                ? showBackButton = false
-                : showBackButton = true;
-          });
-        },
-        physics: NeverScrollableScrollPhysics(),
-        controller: _nav.getQuestionPageController(),
-        children: [
-          basicInformations(context),
-          questionCard(context: context, questionIndex: 0, type: answerType),
-          questionCard(context: context, questionIndex: 1, type: answerType),
-          questionCard(context: context, questionIndex: 2, type: answerType),
-          questionCard(context: context, questionIndex: 3, type: answerType),
-          questionCard(context: context, questionIndex: 4, type: answerType),
-        ],
-      ),
-    )));
+                height: PageComponents(context).heightSize(80),
+                child: PageView.builder(
+                    onPageChanged: (position) {
+                      setState(() {
+                        currentPageIndex =
+                            _nav.getQuestionPageController().page.round();
+                        currentPageIndex == 0
+                            ? showBackButton = false
+                            : showBackButton = true;
+                      });
+                    },
+                    physics: NeverScrollableScrollPhysics(),
+                    controller: _nav.getQuestionPageController(),
+                    itemCount: inspection != null
+                        ? inspection.gender
+                            ? questionsAndAnswers.length
+                            : questionsAndAnswers.length + 1
+                        : questionsAndAnswers.length,
+                    itemBuilder: (context, index) {
+                      if (index == 0) return basicInformations(context);
+
+                      return questionCard(
+                          context: context,
+                          questionIndex: index - 1,
+                          type: answerType);
+                    }))));
   }
 
   Widget basicInformations(BuildContext context) {
@@ -248,8 +252,11 @@ class _QuestionsPageState extends State<QuestionsPage> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                          Text(questionsAndAnswers[questionIndex]
-                              [type == 0 ? 0 : 2]),
+                          Text(type == 0
+                              ? (questionsAndAnswers[questionIndex] as List)
+                                  .first
+                              : (questionsAndAnswers[questionIndex] as List)
+                                  .last),
                           SizedBox(
                             height: PageComponents(context).heightSize(5),
                           ),
@@ -276,9 +283,13 @@ class _QuestionsPageState extends State<QuestionsPage> {
         onPressed: () {
           answerType = inspection.proceedAnswer(questionIndex,
               (questionsAndAnswers[questionIndex][1] as List).indexOf(element));
-          if (answerType != 0) {
+          if (answerType == 1) {
             setState(() {});
+          } else if (questionIndex == questionsAndAnswers.length - 1) {
+            //TODO - Bağlanacak
+            print("Son Sayfa");
           } else {
+            answerType = 0;
             _nav.getQuestionPageController().nextPage(
                 duration: Duration(seconds: 1), curve: Curves.bounceOut);
           }
