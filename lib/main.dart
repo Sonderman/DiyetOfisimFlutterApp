@@ -5,9 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   //TODO FlutterFire Dökümanında önerilen şekilde initialize yap
   await Firebase.initializeApp();
 
@@ -46,6 +48,11 @@ class MyApp extends StatelessWidget {
             supportedLocales: const <Locale>[
               Locale('en', 'US'),
               Locale('tr', 'TR')
+            ],
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
             ],
             home: SplashScreen()));
   }
