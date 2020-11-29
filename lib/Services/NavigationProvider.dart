@@ -20,9 +20,9 @@ class NavigationProvider with ChangeNotifier {
   PageController getQuestionPageController() => _questionPageController;
 
   //ANCHOR Setters Here
-  void setBottomNavIndex(int index) {
+  void setBottomNavIndex(int index, {bool reFresh = true}) {
     _bottomNavIndex = index;
-    refresh();
+    if (reFresh) refresh();
   }
 
   void flushStack() {

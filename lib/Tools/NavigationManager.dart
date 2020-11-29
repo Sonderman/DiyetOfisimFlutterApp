@@ -58,13 +58,13 @@ class NavigationManager {
     return nav.getBottomNavIndex();
   }
 
-  void setBottomNavIndex(int newIndex) {
+  void setBottomNavIndex(int newIndex, {bool reFresh = true}) {
     if (nav.getBottomNavIndex() != newIndex) {
-      nav.setBottomNavIndex(newIndex);
+      nav.setBottomNavIndex(newIndex, reFresh: reFresh);
       nav.flushStack(); //Only clever boys can do this:D
 
     } else if (!isEmpty()) {
-      nav.setBottomNavIndex(newIndex);
+      nav.setBottomNavIndex(newIndex, reFresh: reFresh);
       nav.flushStack(); //Only clever boys can do this:D
     }
   }

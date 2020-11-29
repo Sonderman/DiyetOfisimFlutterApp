@@ -1,7 +1,7 @@
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Pages/ChatPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/MyCalendarPage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/ProfilePage.dart';
+import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/AppointmentsPage.dart';
@@ -29,7 +29,7 @@ Widget getNavigatedPage(BuildContext context) {
     List<Widget> dieticianPages = [
       ChatPage(),
       AppointmentsPage(),
-      ProfilePage()
+      DieticianProfilePage()
     ];
 
     if (userService.userModel.runtimeType == Dietician)

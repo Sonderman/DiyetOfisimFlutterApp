@@ -40,6 +40,51 @@ class DatabaseWorks {
     ref = database.reference();
   }
 
+  Future<bool> sendComment(
+      String userID, String currentUserID, String comment) async {
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(userID)
+          .child("Comments")
+          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .set({"Comment": comment, "CommentOwnerID": currentUserID}).then((_) {
+        return true;
+      });
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<List<Map>> getComments(String userID) async {
+    List<Map> commmentList = [];
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(userID)
+          .child("Comments")
+          .once()
+          .then((data) {
+        if (data.value != null) {
+          (data.value as Map).forEach((key, value) {
+            commmentList.add(value);
+          });
+        }
+
+        //print("Comments:" + commmentList.toString());
+        return commmentList;
+      });
+    } catch (e) {
+      print(e);
+      return commmentList;
+    }
+  }
+
   Future<String> sendMessage(ChatMessage message, String chatID,
       String currentUser, String otherUser) async {
     if (chatID == "temp") {
@@ -887,47 +932,7 @@ class DatabaseWorks {
     }
   }
 
-  Future<bool> sendComment(
-      String eventID, String userID, String comment) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .collection("Comments")
-          .document(DateTime.now().millisecondsSinceEpoch.toString())
-          .setData({"Comment": comment, "CommentOwnerID": userID}).then((_) {
-        return true;
-      });
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getComments(String eventID) async {
-    List<Map<String, dynamic>> commmentList = [];
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .collection("Comments")
-          .getDocuments()
-          .then((docs) {
-        docs.documents.forEach((comment) {
-          commmentList.add(comment.data);
-        });
-        //print("Comments:" + commmentList.toString());
-        return commmentList;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
+  
 
   Future<List<Map<String, dynamic>>> getParticipants(String eventID) async {
     List<Map<String, dynamic>> participants = [];

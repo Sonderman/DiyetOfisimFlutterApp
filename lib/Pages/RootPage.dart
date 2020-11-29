@@ -5,7 +5,6 @@ import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/BottomNavigation.dart';
 import 'package:diyet_ofisim/Tools/Dialogs.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
-import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,13 +17,12 @@ class _RootPageState extends State<RootPage> {
   @override
   void didChangeDependencies() {
     NavigationManager navigation = NavigationManager(context);
-    navigation.setBottomNavIndex(0);
+    navigation.setBottomNavIndex(0, reFresh: false);
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    var responsive = PageComponents(context);
     var user = locator<UserService>().userModel;
 
     bool checkFirstTime() {

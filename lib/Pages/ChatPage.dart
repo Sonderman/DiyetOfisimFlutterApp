@@ -1,6 +1,5 @@
-import 'dart:collection';
 import 'package:dash_chat/dash_chat.dart';
-import 'package:diyet_ofisim/Components/CustomScroll.dart';
+import 'package:diyet_ofisim/Pages/Components/CustomScroll.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/Message.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';

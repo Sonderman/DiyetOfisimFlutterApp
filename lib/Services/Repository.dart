@@ -94,6 +94,14 @@ class UserService {
     return await _database.insertNewDietician(
         userModel.id, userModel.treatments);
   }
+
+  Future<List<Map>> getComments(String userID) async {
+    return await _database.getComments(userID);
+  }
+
+  Future<bool> sendComment(String userID, String text) async {
+    return await _database.sendComment(userID, userModel.id, text);
+  }
 }
 /*
 class UserService with ChangeNotifier {

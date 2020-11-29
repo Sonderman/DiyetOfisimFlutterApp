@@ -10,9 +10,3 @@ class AppSettings {
 
   List<String> diseases = ["Hastalık 1", "Hastalık 2"];
 }
-/*
-{
-                      "title": "Walking",
-                      "value": "Walking",
-                    },
-                    */
