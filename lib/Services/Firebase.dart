@@ -299,49 +299,39 @@ class StorageWorks {
     print("StorageWorks locator running");
   }
 
-  Future<bool> updateProfilePhoto(String userId, Uint8List image) async {
+  Future<String> updateProfilePhoto(String userId, Uint8List image) async {
+    String url = "";
     if (image == null) {
       print("image null");
-      return false;
+      return url;
     }
-    UploadTask uploadTask = ref
-        .child('users')
-        .child(userId)
-        .child('images')
-        .child('profile')
-        .child('ProfileImage')
-        .putData(image);
 
     try {
-      return await uploadTask.snapshot.ref.getDownloadURL().then((url) async {
-        await locator<DatabaseWorks>()
-            .ref
-            .child(settings.appName)
-            .child(settings.getServer())
-            .child("users")
-            .child(userId)
-            .update({"ProfilePhotoUrl": url});
-        return true;
+      Reference imgRef = ref
+          .child('users')
+          .child(userId)
+          .child('images')
+          .child('profile')
+          .child('ProfileImage');
+
+      UploadTask uploadTask = imgRef.putData(image);
+
+      await uploadTask.whenComplete(() async {
+        await imgRef.getDownloadURL().then((value) async {
+          url = value;
+          return await locator<DatabaseWorks>()
+              .ref
+              .child(settings.appName)
+              .child(settings.getServer())
+              .child("users")
+              .child(userId)
+              .update({"ProfilePhotoUrl": value});
+        });
       });
-      /*
-      uploadTask.snapshotEvents.listen((event) async {
-        if (event.state == firebase_storage.TaskState.success) {
-          return await event.ref.getDownloadURL().then((url) async {
-            await locator<DatabaseWorks>()
-                .ref
-                .child(settings.appName)
-                .child(settings.getServer())
-                .child("users")
-                .child(userId)
-                .update({"ProfilePhotoUrl": url});
-            return true;
-          });
-        }
-      });
-      */
+      return url;
     } catch (e) {
       print(e);
-      return false;
+      return url;
     }
   }
 

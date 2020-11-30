@@ -86,7 +86,10 @@ class UserService {
     if (userModel.runtimeType == Dietician)
       userModel.firstTimeProfileCreation = false;
     Map<String, dynamic> userData = userModel.toMap();
-    if (image != null) await _storage.updateProfilePhoto(userModel.id, image);
+    if (image != null) {
+      (userModel as Dietician).profilePhotoUrl =
+          await _storage.updateProfilePhoto(userModel.id, image);
+    }
     return await _database.updateUserProfile(userModel.id, userData);
   }
 

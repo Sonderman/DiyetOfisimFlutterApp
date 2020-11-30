@@ -4,6 +4,7 @@ import 'package:diyet_ofisim/Pages/LoginPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
+import 'package:diyet_ofisim/Tools/Dialogs.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
@@ -50,19 +51,29 @@ class _DieticianProfilePageState extends State<DieticianProfilePage> {
         ),
         body: DefaultTabController(
           length: 3,
+          initialIndex: 0,
           child: Column(
             children: [
               ListTile(
                 contentPadding: EdgeInsets.all(10),
                 trailing: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    updateUserInfoDialog(context).then((value) {
+                      if (value != null) if (value) {
+                        print("Kaydedildi");
+                      } else
+                        print("İptal edildi");
+                    });
+                  },
                   icon: Icon(Icons.mode_edit),
                 ),
-                leading: ExtendedImage.network(
-                  "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png",
+                leading: FadeInImage(
+                  image:
+                      ExtendedNetworkImageProvider(usermodel.profilePhotoUrl),
+                  placeholder: ExtendedNetworkImageProvider(
+                      "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png"),
                   height: 100,
                   fit: BoxFit.contain,
-                  cache: true,
                 ),
                 title: Text(usermodel.name + " " + usermodel.surname),
                 subtitle: Text("Diyetisyen"),

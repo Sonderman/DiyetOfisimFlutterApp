@@ -1,10 +1,152 @@
+import 'dart:typed_data';
+import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
+import 'package:diyet_ofisim/Tools/imagePicker.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
+import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
+
+Future<bool> updateUserInfoDialog(BuildContext context) {
+  Uint8List image;
+  Dietician user = locator<UserService>().userModel;
+  TextEditingController nameController = TextEditingController(text: user.name);
+  TextEditingController surnameController =
+      TextEditingController(text: user.surname);
+  return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text("Güncellemek istediğiniz bilgileri doldurunuz"),
+            contentPadding: EdgeInsets.all(15),
+            content: StatefulBuilder(
+              builder: (BuildContext ctx, StateSetter setState) {
+                return Container(
+                  height: PageComponents(context).heightSize(50),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          image = await showImageSelectionDialog(context)
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        child: Container(
+                          width: PageComponents(context).widthSize(20),
+                          height: PageComponents(context).widthSize(20),
+                          /*
+        decoration: BoxDecoration(
+          color: MyColors().orangeContainer,
+          shape: BoxShape.circle,
+        ),*/
+                          child: CircleAvatar(
+                            backgroundColor: MyColors().orangeContainer,
+                            radius: 100,
+                            child: image == null
+                                ? Image.asset(
+                                    'assets/images/add-user.png',
+                                    height:
+                                        PageComponents(context).heightSize(5),
+                                  )
+                                : ClipOval(
+                                    child: Image.memory(
+                                      image,
+                                      width:
+                                          PageComponents(context).widthSize(20),
+                                      height:
+                                          PageComponents(context).widthSize(20),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        child: Text("Adınız:"),
+                        alignment: Alignment.topLeft,
+                      ),
+                      TextFormField(
+                        controller: nameController,
+                      ),
+                      Align(
+                        child: Text("Soyadınız:"),
+                        alignment: Alignment.topLeft,
+                      ),
+                      TextFormField(
+                        controller: surnameController,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: Text("İptal")),
+              FlatButton(
+                  onPressed: () {
+                    user.name = nameController.text;
+                    user.surname = surnameController.text;
+                    locator<UserService>()
+                        .updateUserProfile(image: image)
+                        .then((value) {
+                      if (value) {
+                        Navigator.pop(context, true);
+                      }
+                    });
+                  },
+                  child: Text("Kaydet"))
+            ],
+          ));
+}
+
+Future<Uint8List> showImageSelectionDialog(BuildContext context) async {
+  return await showDialog(
+      context: context,
+      builder: (BuildContext context2) {
+        return AlertDialog(
+          title: Text(
+            'Bir Seçim Yapınız',
+            style: TextStyle(
+              fontSize: PageComponents(context2).heightSize(2.5),
+              fontFamily: "Zona",
+              color: MyColors().loginGreyColor,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                    child: Text(
+                      'Galeri',
+                    ),
+                    onTap: () {
+                      getImageFromGallery(context2).then((value) {
+                        Navigator.pop(context2, value);
+                      });
+                    }),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                ),
+                GestureDetector(
+                    child: Text(
+                      'Kamera',
+                    ),
+                    onTap: () {
+                      getImageFromCamera(context2).then((value) {
+                        Navigator.pop(context2, value);
+                      });
+                    }),
+              ],
+            ),
+          ),
+        );
+      });
+}
 
 Future<bool> askForQuit(BuildContext context) => showDialog(
     context: context,
