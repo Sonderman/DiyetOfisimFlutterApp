@@ -82,7 +82,8 @@ class UserService {
     return _database.findUserbyID(userID);
   }
 
-  Future<bool> updateUserProfile({Uint8List image}) async {
+  Future<bool> updateUserProfile(
+      {Uint8List image, bool isUpdatingTreatments = false}) async {
     if (userModel.runtimeType == Dietician)
       userModel.firstTimeProfileCreation = false;
     Map<String, dynamic> userData = userModel.toMap();
@@ -90,12 +91,15 @@ class UserService {
       (userModel as Dietician).profilePhotoUrl =
           await _storage.updateProfilePhoto(userModel.id, image);
     }
+    if (isUpdatingTreatments == true) {
+      await insertNewDietician(update: true);
+    }
     return await _database.updateUserProfile(userModel.id, userData);
   }
 
-  Future<bool> insertNewDietician() async {
+  Future<bool> insertNewDietician({bool update = false}) async {
     return await _database.insertNewDietician(
-        userModel.id, userModel.treatments);
+        userModel.id, userModel.treatments, update);
   }
 
   Future<List<Map>> getComments(String userID) async {

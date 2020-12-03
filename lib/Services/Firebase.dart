@@ -276,14 +276,19 @@ class DatabaseWorks {
   }
 
 //NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
-  Future<bool> insertNewDietician(String id, List treatments) async {
+  Future<bool> insertNewDietician(
+      String id, List treatments, bool update) async {
     try {
-      await ref
+      var ref2 = ref
           .child(settings.appName)
           .child(settings.getServer())
           .child("dieticians")
-          .child(id)
-          .set({"DieticianID": id, "Treatments": treatments});
+          .child(id);
+
+      if (update)
+        await ref2.update({"DieticianID": id, "Treatments": treatments});
+      else
+        await ref2.set({"DieticianID": id, "Treatments": treatments});
       return true;
     } catch (e) {
       print(e);

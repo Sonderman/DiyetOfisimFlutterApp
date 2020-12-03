@@ -20,11 +20,14 @@ class DieticianProfilePage extends StatefulWidget {
 }
 
 class _DieticianProfilePageState extends State<DieticianProfilePage> {
-  bool loading = false;
+  bool loading = false, canEdit = false;
   Dietician usermodel;
   @override
   void initState() {
-    if (widget.userID == null) usermodel = locator<UserService>().userModel;
+    if (widget.userID == null) {
+      usermodel = locator<UserService>().userModel;
+      canEdit = true;
+    }
     super.initState();
   }
 
@@ -56,16 +59,19 @@ class _DieticianProfilePageState extends State<DieticianProfilePage> {
             children: [
               ListTile(
                 contentPadding: EdgeInsets.all(10),
-                trailing: IconButton(
-                  onPressed: () {
-                    updateUserInfoDialog(context).then((value) {
-                      if (value != null) if (value) {
-                        print("Kaydedildi");
-                      } else
-                        print("İptal edildi");
-                    });
-                  },
-                  icon: Icon(Icons.mode_edit),
+                trailing: Visibility(
+                  visible: canEdit,
+                  child: IconButton(
+                    onPressed: () {
+                      updateUserInfoDialog(context).then((value) {
+                        if (value != null) if (value) {
+                          print("Kaydedildi");
+                        } else
+                          print("İptal edildi");
+                      });
+                    },
+                    icon: Icon(Icons.mode_edit),
+                  ),
                 ),
                 leading: FadeInImage(
                   image:
@@ -120,18 +126,61 @@ class _DieticianProfilePageState extends State<DieticianProfilePage> {
   Widget backgroundPage() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [Text("Hakkımda:"), Text(usermodel.about)],
+      children: [
+        ListTile(
+          title: Text("Hakkımda:"),
+          trailing: Visibility(
+            visible: canEdit,
+            child: IconButton(
+              onPressed: () {
+                updateUserAboutDialog(context).then((value) {
+                  if (value != null) if (value) {
+                    setState(() {
+                      print("Kaydedildi");
+                    });
+                  } else
+                    print("İptal edildi");
+                });
+              },
+              icon: Icon(Icons.mode_edit),
+            ),
+          ),
+        ),
+        ListTile(
+          title: Text(usermodel.about),
+        )
+      ],
     );
   }
 
   Widget servicesPage() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-            Text("Tedavi edilen hastalıklar:"),
+      children: <Widget>[
+            ListTile(
+              title: Text("Tedavi edilen hastalıklar:"),
+              trailing: Visibility(
+                visible: canEdit,
+                child: IconButton(
+                  onPressed: () {
+                    updateUserTreatmentsDialog(context).then((value) {
+                      if (value != null) if (value) {
+                        setState(() {
+                          print("Kaydedildi");
+                        });
+                      } else
+                        print("İptal edildi");
+                    });
+                  },
+                  icon: Icon(Icons.mode_edit),
+                ),
+              ),
+            )
           ] +
           List.generate(usermodel.treatments.length, (index) {
-            return Text(AppSettings().diseases[usermodel.treatments[index]]);
+            return ListTile(
+              title: Text(AppSettings().diseases[usermodel.treatments[index]]),
+            );
           }),
     );
   }
@@ -168,96 +217,99 @@ class _DieticianProfilePageState extends State<DieticianProfilePage> {
         SizedBox(
           height: PageComponents(context).heightSize(5),
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Wrap(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                        padding: EdgeInsets.fromLTRB(5, 3, 5, 1),
-                        child: TextField(
-                          style: TextStyle(
-                            fontFamily: "ZonaLight",
-                            fontSize: PageComponents(context).heightSize(2),
-                            color: MyColors().darkblueText,
-                          ),
-                          controller: commentController,
-                          keyboardType: TextInputType.text,
-                          enableInteractiveSelection: true,
-                          cursorColor: MyColors().blueThemeColor,
-                          maxLength: 256,
-                          textCapitalization: TextCapitalization.sentences,
-                          onChanged: (text) {},
-                          decoration: InputDecoration(
-                            labelText: 'Yorum yapın.',
-                            labelStyle: TextStyle(
+        Visibility(
+          visible: canEdit,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Wrap(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(5, 3, 5, 1),
+                          child: TextField(
+                            style: TextStyle(
                               fontFamily: "ZonaLight",
                               fontSize: PageComponents(context).heightSize(2),
                               color: MyColors().darkblueText,
                             ),
-                            errorStyle: TextStyle(
-                              color: Colors.red,
-                            ),
-                            fillColor: MyColors().blueThemeColor,
-                            border: OutlineInputBorder(
+                            controller: commentController,
+                            keyboardType: TextInputType.text,
+                            enableInteractiveSelection: true,
+                            cursorColor: MyColors().blueThemeColor,
+                            maxLength: 256,
+                            textCapitalization: TextCapitalization.sentences,
+                            onChanged: (text) {},
+                            decoration: InputDecoration(
+                              labelText: 'Yorum yapın.',
+                              labelStyle: TextStyle(
+                                fontFamily: "ZonaLight",
+                                fontSize: PageComponents(context).heightSize(2),
+                                color: MyColors().darkblueText,
+                              ),
+                              errorStyle: TextStyle(
+                                color: Colors.red,
+                              ),
+                              fillColor: MyColors().blueThemeColor,
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: MyColors().blueThemeColor)),
+                              counterText: '',
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)),
                                 borderSide: BorderSide(
-                                    color: MyColors().blueThemeColor)),
-                            counterText: '',
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
-                              borderSide: BorderSide(
-                                  width: 1, color: MyColors().blueThemeColor),
+                                    width: 1, color: MyColors().blueThemeColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)),
+                                borderSide: BorderSide(
+                                    width: 1, color: MyColors().blueThemeColor),
+                              ),
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
-                              borderSide: BorderSide(
-                                  width: 1, color: MyColors().blueThemeColor),
-                            ),
-                          ),
-                        )),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 3, 5, 1),
-                      child: FlatButton(
-                        onPressed: () async {
-                          //ANCHOR  Yorum gönderme backend işlemleri
-                          if (commentController.text != "") {
-                            await userService
-                                .sendComment(
-                                    usermodel.id, commentController.text)
-                                .then((value) {
-                              if (value)
-                                print("Yorum yapıldı");
-                              else
-                                print("Yorum yapılırken hata!!");
-                            });
-                            setState(() {
-                              commentController.text = '';
-                            });
+                          )),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 3, 5, 1),
+                        child: FlatButton(
+                          onPressed: () async {
+                            //ANCHOR  Yorum gönderme backend işlemleri
+                            if (commentController.text != "") {
+                              await userService
+                                  .sendComment(
+                                      usermodel.id, commentController.text)
+                                  .then((value) {
+                                if (value)
+                                  print("Yorum yapıldı");
+                                else
+                                  print("Yorum yapılırken hata!!");
+                              });
+                              setState(() {
+                                commentController.text = '';
+                              });
 
-                            /* nestedScrollController.jumpTo(
-                                nestedScrollController
-                                        .position.maxScrollExtent
-                                    );*/
-                          }
-                        },
-                        child: Text(
-                          "Gönder",
-                          style: TextStyle(
-                            fontFamily: "Zona",
-                            fontSize: PageComponents(context).heightSize(2),
-                            color: MyColors().darkblueText,
+                              /* nestedScrollController.jumpTo(
+                                  nestedScrollController
+                                          .position.maxScrollExtent
+                                      );*/
+                            }
+                          },
+                          child: Text(
+                            "Gönder",
+                            style: TextStyle(
+                              fontFamily: "Zona",
+                              fontSize: PageComponents(context).heightSize(2),
+                              color: MyColors().darkblueText,
+                            ),
                           ),
-                        ),
-                      ))
-                ],
-              ),
-            ],
+                        ))
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         SizedBox(

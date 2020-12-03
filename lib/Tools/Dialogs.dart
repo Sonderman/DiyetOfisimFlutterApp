@@ -1,12 +1,14 @@
 import 'dart:typed_data';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/Tools/imagePicker.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:multiselect_formfield/multiselect_formfield.dart';
 
 Future<bool> updateUserInfoDialog(BuildContext context) {
   Uint8List image;
@@ -93,6 +95,139 @@ Future<bool> updateUserInfoDialog(BuildContext context) {
                     user.surname = surnameController.text;
                     locator<UserService>()
                         .updateUserProfile(image: image)
+                        .then((value) {
+                      if (value) {
+                        Navigator.pop(context, true);
+                      }
+                    });
+                  },
+                  child: Text("Kaydet"))
+            ],
+          ));
+}
+
+Future<bool> updateUserAboutDialog(BuildContext context) {
+  Dietician user = locator<UserService>().userModel;
+  TextEditingController aboutController =
+      TextEditingController(text: user.about);
+
+  return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            contentPadding: EdgeInsets.all(15),
+            content: Container(
+              height: PageComponents(context).heightSize(50),
+              width: PageComponents(context).widthSize(70),
+              child: Column(children: [
+                Align(
+                  child: Text("Hakkımda:"),
+                  alignment: Alignment.topLeft,
+                ),
+                TextFormField(
+                  controller: aboutController,
+                  maxLines: 8,
+                  minLines: 1,
+                ),
+              ]),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: Text("İptal")),
+              FlatButton(
+                  onPressed: () {
+                    user.about = aboutController.text;
+                    locator<UserService>().updateUserProfile().then((value) {
+                      if (value) {
+                        Navigator.pop(context, true);
+                      }
+                    });
+                  },
+                  child: Text("Kaydet"))
+            ],
+          ));
+}
+
+Future<bool> updateUserTreatmentsDialog(BuildContext context) {
+  Dietician user = locator<UserService>().userModel;
+  List diseases;
+
+  List<Map> dataParser() {
+    List<Map> temp = [];
+    num i = 0;
+    AppSettings().diseases.forEach((e) {
+      temp.add({
+        "title": e,
+        "value": i,
+      });
+      i++;
+    });
+    return temp;
+  }
+
+  return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            contentPadding: EdgeInsets.all(15),
+            content: StatefulBuilder(
+              builder: (BuildContext ctx, StateSetter setState) {
+                return Container(
+                  height: PageComponents(context).heightSize(50),
+                  width: PageComponents(context).widthSize(70),
+                  child: Column(
+                    children: [
+                      Align(
+                        child: Text("Tedavi Edebildiğim Hastalıklar:"),
+                        alignment: Alignment.topLeft,
+                      ),
+                      SizedBox(
+                        height: PageComponents(context).heightSize(10),
+                      ),
+                      MultiSelectFormField(
+                        chipBackGroundColor: Colors.green,
+                        chipLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                        checkBoxActiveColor: Colors.blue,
+                        checkBoxCheckColor: Colors.black,
+                        dialogShapeBorder: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12.0))),
+                        title: Text(
+                          "Tedavi edebileceğiniz hastalıklar",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        dataSource: dataParser(),
+                        textField: 'title',
+                        valueField: 'value',
+                        okButtonLabel: 'TAMAM',
+                        cancelButtonLabel: 'İPTAL',
+                        hintWidget:
+                            Text('Lütfen bir veya daha fazla hastalık seçiniz'),
+                        onSaved: (value) {
+                          if (value == null) return;
+                          setState(() {
+                            diseases = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: Text("İptal")),
+              FlatButton(
+                  onPressed: () {
+                    user.treatments = diseases;
+                    locator<UserService>()
+                        .updateUserProfile(isUpdatingTreatments: true)
                         .then((value) {
                       if (value) {
                         Navigator.pop(context, true);
