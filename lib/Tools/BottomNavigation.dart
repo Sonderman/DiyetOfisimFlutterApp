@@ -1,10 +1,10 @@
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Pages/ChatPage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/MyCalendarPage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/ProfilePage.dart';
+import 'package:diyet_ofisim/Pages/Patient/MyCalendarPage.dart';
+import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
-import 'package:diyet_ofisim/Pages/AppointmentsPage.dart';
+import 'package:diyet_ofisim/Pages/Dietician/AppointmentsPage.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
@@ -21,12 +21,16 @@ Widget getNavigatedPage(BuildContext context) {
     //ANCHOR hasta sayfaları burada
     List<Widget> patientPages = [
       HomePage(),
-      AppointmentsPage(),
+      MyCalendarPage(),
       ChatPage(),
       DieticianListPage(),
     ];
     //ANCHOR diyetisyen sayfaları burada
-    List<Widget> dieticianPages = [ChatPage(), MyCalendarPage(), ProfilePage()];
+    List<Widget> dieticianPages = [
+      ChatPage(),
+      AppointmentsPage(),
+      DieticianProfilePage()
+    ];
 
     if (userService.userModel.runtimeType == Dietician)
       return dieticianPages[NavigationManager(context).getBottomNavIndex()];

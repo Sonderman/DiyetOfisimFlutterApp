@@ -12,6 +12,10 @@ class Dietician {
   String gender;
   String about;
   String profilePhotoUrl;
+  List treatments;
+  String education;
+  String experiences;
+  bool firstTimeProfileCreation;
 
   Dietician({@required this.id});
 
@@ -21,12 +25,16 @@ class Dietician {
       'Surname': surname ?? 'null',
       'NickName': nickname ?? 'null',
       'Email': email ?? 'null',
-      'BirthDay': birthday ?? 'null',
+      //'BirthDay': birthday ?? 'null',
       'Gender': gender ?? 'null',
-      'City': city ?? 'null',
+      //'City': city ?? 'null',
       'ProfilePhotoUrl': profilePhotoUrl ?? 'null',
       'About': about ?? 'null',
-      'PhoneNumber': telNo ?? 0,
+      'Treatments': treatments ?? "null",
+      "Education": education ?? "null",
+      "Experiences": experiences ?? "null",
+      "isFirstTime": firstTimeProfileCreation ?? true,
+      //'PhoneNumber': telNo ?? 0,
     };
   }
 
@@ -35,11 +43,15 @@ class Dietician {
     surname = map["Surname"] ?? "null";
     nickname = map["NickName"] ?? "null";
     email = map["Email"] ?? "null";
-    city = map["City"] ?? "null";
-    birthday = map["BirthDay"] ?? "null";
+    //city = map["City"] ?? "null";
+    //birthday = map["BirthDay"] ?? "null";
     gender = map["Gender"] ?? "null";
     profilePhotoUrl = map["ProfilePhotoUrl"];
     about = map['About'] ?? "Henüz Detay Girilmedi.";
-    telNo = map["PhoneNumber"] ?? 0;
+    treatments = map["Treatments"] ?? [-1];
+    education = map["Education"] ?? " Belirtilmedi";
+    experiences = map["Experiences"] ?? "Belirtilmedi";
+    //telNo = map["PhoneNumber"] ?? 0;
+    firstTimeProfileCreation = map["isFirstTime"] ?? true;
   }
 }

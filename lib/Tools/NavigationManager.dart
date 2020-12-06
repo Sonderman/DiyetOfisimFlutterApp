@@ -15,16 +15,18 @@ class NavigationManager {
   }
 
   bool onBackButtonPressed() {
-    if (nav.getBottomNavIndex() == 0 &&
-        nav.getQuestionPageController().page.round() > 0) {
-      nav.getQuestionPageController().previousPage(
-          duration: Duration(seconds: 1), curve: Curves.bounceOut);
-      return true;
-    } else if (isEmpty()) {
+    if (isEmpty()) {
       return false;
     } else {
-      popPage();
-      return true;
+      if (nav.getBottomNavIndex() == 0 &&
+          nav.getQuestionPageController().page.round() > 0) {
+        nav.getQuestionPageController().previousPage(
+            duration: Duration(seconds: 1), curve: Curves.bounceOut);
+        return true;
+      } else {
+        popPage();
+        return true;
+      }
     }
   }
 
@@ -56,13 +58,13 @@ class NavigationManager {
     return nav.getBottomNavIndex();
   }
 
-  void setBottomNavIndex(int newIndex) {
+  void setBottomNavIndex(int newIndex, {bool reFresh = true}) {
     if (nav.getBottomNavIndex() != newIndex) {
-      nav.setBottomNavIndex(newIndex);
+      nav.setBottomNavIndex(newIndex, reFresh: reFresh);
       nav.flushStack(); //Only clever boys can do this:D
 
     } else if (!isEmpty()) {
-      nav.setBottomNavIndex(newIndex);
+      nav.setBottomNavIndex(newIndex, reFresh: reFresh);
       nav.flushStack(); //Only clever boys can do this:D
     }
   }

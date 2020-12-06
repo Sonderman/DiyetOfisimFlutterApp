@@ -40,6 +40,51 @@ class DatabaseWorks {
     ref = database.reference();
   }
 
+  Future<bool> sendComment(
+      String userID, String currentUserID, String comment) async {
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(userID)
+          .child("Comments")
+          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .set({"Comment": comment, "CommentOwnerID": currentUserID}).then((_) {
+        return true;
+      });
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<List<Map>> getComments(String userID) async {
+    List<Map> commmentList = [];
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(userID)
+          .child("Comments")
+          .once()
+          .then((data) {
+        if (data.value != null) {
+          (data.value as Map).forEach((key, value) {
+            commmentList.add(value);
+          });
+        }
+
+        //print("Comments:" + commmentList.toString());
+        return commmentList;
+      });
+    } catch (e) {
+      print(e);
+      return commmentList;
+    }
+  }
+
   Future<String> sendMessage(ChatMessage message, String chatID,
       String currentUser, String otherUser) async {
     if (chatID == "temp") {
@@ -213,6 +258,43 @@ class DatabaseWorks {
       return null;
     }
   }
+
+  Future<bool> updateUserProfile(
+      String id, Map<String, dynamic> userData) async {
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(id)
+          .update(userData);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+//NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
+  Future<bool> insertNewDietician(
+      String id, List treatments, bool update) async {
+    try {
+      var ref2 = ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("dieticians")
+          .child(id);
+
+      if (update)
+        await ref2.update({"DieticianID": id, "Treatments": treatments});
+      else
+        await ref2.set({"DieticianID": id, "Treatments": treatments});
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }
 
 class StorageWorks {
@@ -222,36 +304,39 @@ class StorageWorks {
     print("StorageWorks locator running");
   }
 
-  Future<bool> updateProfilePhoto(String userId, Uint8List image) async {
+  Future<String> updateProfilePhoto(String userId, Uint8List image) async {
+    String url = "";
     if (image == null) {
       print("image null");
+      return url;
     }
-    UploadTask uploadTask = ref
-        .child('users')
-        .child(userId)
-        .child('images')
-        .child('profile')
-        .child('ProfileImage')
-        .putData(image);
 
     try {
-      /*
-      return await uploadTask.onComplete.then((value) async {
-        return await value.ref.getDownloadURL().then((url) async {
-          await locator<DatabaseWorks>()
+      Reference imgRef = ref
+          .child('users')
+          .child(userId)
+          .child('images')
+          .child('profile')
+          .child('ProfileImage');
+
+      UploadTask uploadTask = imgRef.putData(image);
+
+      await uploadTask.whenComplete(() async {
+        await imgRef.getDownloadURL().then((value) async {
+          url = value;
+          return await locator<DatabaseWorks>()
               .ref
               .child(settings.appName)
               .child(settings.getServer())
               .child("users")
               .child(userId)
-              .update({"ProfilePhotoUrl": url});
-          return true;
+              .update({"ProfilePhotoUrl": value});
         });
       });
-      */
+      return url;
     } catch (e) {
       print(e);
-      return false;
+      return url;
     }
   }
 
@@ -842,47 +927,7 @@ class DatabaseWorks {
     }
   }
 
-  Future<bool> sendComment(
-      String eventID, String userID, String comment) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .collection("Comments")
-          .document(DateTime.now().millisecondsSinceEpoch.toString())
-          .setData({"Comment": comment, "CommentOwnerID": userID}).then((_) {
-        return true;
-      });
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getComments(String eventID) async {
-    List<Map<String, dynamic>> commmentList = [];
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .collection("Comments")
-          .getDocuments()
-          .then((docs) {
-        docs.documents.forEach((comment) {
-          commmentList.add(comment.data);
-        });
-        //print("Comments:" + commmentList.toString());
-        return commmentList;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
+  
 
   Future<List<Map<String, dynamic>>> getParticipants(String eventID) async {
     List<Map<String, dynamic>> participants = [];

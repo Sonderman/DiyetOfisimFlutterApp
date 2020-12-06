@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:diyet_ofisim/Components/CustomScroll.dart';
+
+import 'package:diyet_ofisim/Pages/Components/CustomScroll.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/ImageEditor.dart';
 import 'package:diyet_ofisim/Tools/loading.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart' as imgsrc;
 
@@ -28,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Uint8List _image;
   final picker = imgsrc.ImagePicker();
   bool loading = false;
-  String _name, _surname, _phoneNumber, _country, _birthday;
+  String _name, _surname, _country, _birthday;
   bool _gender, _isDietisian = false;
   bool showPassword = true;
 
@@ -187,7 +187,6 @@ class _SignUpPageState extends State<SignUpPage> {
       mailController.text,
       _gender ? "Man" : "Woman",
       _isDietisian ? "Y" : "N",
-      _birthday,
       generateNickName(_name)
     ];
     print(datalist);
@@ -197,8 +196,6 @@ class _SignUpPageState extends State<SignUpPage> {
               mailController.text, passwordController.text, datalist, _image)
           .then((userID) {
         if (userID != null) {
-          print("Upload işlemi bitti");
-
           Fluttertoast.showToast(
               msg:
                   "Hesabınız başarıyla oluşturuldu. Lütfen mailinizi doğrulayınız.",
@@ -437,6 +434,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+/*
   Widget telephoneNumber() {
     return TextFormField(
       onChanged: (phone) => _phoneNumber = phone,
@@ -466,7 +464,7 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
-
+*/
   Widget countryAndBirthDate() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -659,7 +657,9 @@ class _SignUpPageState extends State<SignUpPage> {
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender ? menColor() : Colors.grey
+                  ? _gender
+                      ? menColor()
+                      : Colors.grey
                   : Colors.grey,
               borderRadius: BorderRadius.all(
                 Radius.circular(20),
@@ -688,7 +688,9 @@ class _SignUpPageState extends State<SignUpPage> {
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender ? Colors.grey : womenColor()
+                  ? _gender
+                      ? Colors.grey
+                      : womenColor()
                   : Colors.grey,
               borderRadius: new BorderRadius.all(
                 Radius.circular(20),
@@ -786,7 +788,9 @@ class _SignUpPageState extends State<SignUpPage> {
             height: heightSize(5),
             decoration: new BoxDecoration(
               color: _gender != null
-                  ? _gender ? Colors.black : menColor()
+                  ? _gender
+                      ? Colors.black
+                      : menColor()
                   : menColor(),
               borderRadius: new BorderRadius.all(
                 Radius.circular(20),
@@ -818,7 +822,9 @@ class _SignUpPageState extends State<SignUpPage> {
             height: heightSize(5),
             decoration: new BoxDecoration(
               color: _gender != null
-                  ? _gender ? womenColor() : Colors.black
+                  ? _gender
+                      ? womenColor()
+                      : Colors.black
                   : womenColor(),
               borderRadius: new BorderRadius.all(
                 Radius.circular(20),

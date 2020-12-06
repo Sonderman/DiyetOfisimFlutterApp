@@ -8,6 +8,8 @@ import 'package:diyet_ofisim/locator.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class LoginRegisterService {
+  final DatabaseWorks _database = locator<DatabaseWorks>();
+  final StorageWorks _storage = locator<StorageWorks>();
   Future<String> registerUser(String eposta, String password,
       List<String> datalist, Uint8List image) async {
     Map<String, dynamic> data = {
@@ -17,10 +19,10 @@ class LoginRegisterService {
       //"PhoneNumber": int.parse(datalist[3]),
       "Gender": datalist[3],
       "isDietisian": datalist[4],
-      "BirthDay": datalist[5],
-      "NickName": datalist[6],
+      "NickName": datalist[5],
       "ProfilePhotoUrl": "",
-      "RegisteredAt": ServerValue.timestamp
+      "RegisteredAt": ServerValue.timestamp,
+      "isFirstTime": true
     };
     try {
       AuthService auth = locator<AuthService>();
@@ -28,9 +30,8 @@ class LoginRegisterService {
         if (userId != null) {
           data['UserID'] = userId;
 
-          await locator<DatabaseWorks>().newUser(data).then((value) async {
-            if (value)
-              await locator<StorageWorks>().updateProfilePhoto(userId, image);
+          await _database.newUser(data).then((value) async {
+            if (value) await _storage.updateProfilePhoto(userId, image);
           });
 
           //auth.sendEmailVerification();
@@ -48,11 +49,11 @@ class LoginRegisterService {
 ///UserService*****************************************************************************************************
 class UserService {
   var userModel;
-  final DatabaseWorks database = locator<DatabaseWorks>();
-  final StorageWorks storage = locator<StorageWorks>();
+  final DatabaseWorks _database = locator<DatabaseWorks>();
+  final StorageWorks _storage = locator<StorageWorks>();
 
   Future<bool> userInitializer(String userID) async {
-    if (userID == null) return null;
+    if (userID == null) return false;
     return await userModelSync(userID);
   }
 
@@ -62,11 +63,13 @@ class UserService {
         if (map['isDietisian'] == "Y") {
           print("User: Diyetisyen");
           userModel = Dietician(id: userID);
+          userModel.parseMap(map);
         } else {
           print("User: Hasta");
           userModel = Patient(id: userID);
+          userModel.parseMap(map);
         }
-        userModel.parseMap(map);
+
         return true;
       });
     } catch (e) {
@@ -76,7 +79,35 @@ class UserService {
   }
 
   Future<Map<String, dynamic>> findUserByID(String userID) {
-    return database.findUserbyID(userID);
+    return _database.findUserbyID(userID);
+  }
+
+  Future<bool> updateUserProfile(
+      {Uint8List image, bool isUpdatingTreatments = false}) async {
+    if (userModel.runtimeType == Dietician)
+      userModel.firstTimeProfileCreation = false;
+    Map<String, dynamic> userData = userModel.toMap();
+    if (image != null) {
+      (userModel as Dietician).profilePhotoUrl =
+          await _storage.updateProfilePhoto(userModel.id, image);
+    }
+    if (isUpdatingTreatments == true) {
+      await insertNewDietician(update: true);
+    }
+    return await _database.updateUserProfile(userModel.id, userData);
+  }
+
+  Future<bool> insertNewDietician({bool update = false}) async {
+    return await _database.insertNewDietician(
+        userModel.id, userModel.treatments, update);
+  }
+
+  Future<List<Map>> getComments(String userID) async {
+    return await _database.getComments(userID);
+  }
+
+  Future<bool> sendComment(String userID, String text) async {
+    return await _database.sendComment(userID, userModel.id, text);
   }
 }
 /*

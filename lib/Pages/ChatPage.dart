@@ -1,6 +1,5 @@
-import 'dart:collection';
 import 'package:dash_chat/dash_chat.dart';
-import 'package:diyet_ofisim/Components/CustomScroll.dart';
+import 'package:diyet_ofisim/Pages/Components/CustomScroll.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/Message.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
@@ -72,6 +71,10 @@ class _ChatPageState extends State<ChatPage> {
                 if (!snapshot.hasData) {
                   return PageComponents(context)
                       .loadingOverlay(backgroundColor: Colors.white);
+                } else if (snapshot.data.snapshot.value == null) {
+                  return Center(
+                    child: Text("Henüz Görüşme Yapmadınız."),
+                  );
                 } else {
                   List items =
                       (snapshot.data.snapshot.value as Map).values.toList();
