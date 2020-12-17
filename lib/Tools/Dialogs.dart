@@ -10,6 +10,55 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 
+Future<bool> appointmentCancelAsking(mycontext) {
+  return showDialog(
+      context: mycontext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          title: Text(
+            "Uyarı",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.redAccent[400]),
+          ),
+          content:
+              Text("Randevunuzu İptal Etmek İstediğinize \nEmin misiniz ? "),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          actions: <Widget>[
+            Container(
+              width: 150,
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: Text(
+                  "Vazgeç".toUpperCase(),
+                  style: TextStyle(
+                      color: Colors.deepPurpleAccent.shade100, fontSize: 15),
+                ),
+                //color: Colors.white,
+              ),
+            ),
+            Container(
+              width: 150,
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: Text(
+                  "Evet".toUpperCase(),
+                  style: TextStyle(
+                      color: Colors.deepPurpleAccent.shade100, fontSize: 15),
+                ),
+                //color: Colors.white,
+              ),
+            ),
+          ],
+        );
+      });
+}
+
 Future<bool> updateUserInfoDialog(BuildContext context) {
   Uint8List image;
   var user = locator<UserService>().userModel;

@@ -18,6 +18,8 @@ class _RootPageState extends State<RootPage> {
   void didChangeDependencies() {
     NavigationManager navigation = NavigationManager(context);
     navigation.setBottomNavIndex(0, reFresh: false);
+    Provider.of<NavigationProvider>(context, listen: false)
+        .resetControllerIndex();
     super.didChangeDependencies();
   }
 

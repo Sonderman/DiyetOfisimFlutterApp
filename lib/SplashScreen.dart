@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:diyet_ofisim/Pages/RootPage.dart';
-import 'package:diyet_ofisim/Pages/LoginPage.dart';
+import 'package:diyet_ofisim/Pages/LoginSignupPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/locator.dart';
@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) => LoginPage()));
+                  builder: (BuildContext context) => LoginSignupPage()));
         }
       });
     });

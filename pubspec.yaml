@@ -24,9 +24,14 @@ dependencies:
   image_editor: ^0.7.3
   image_picker: ^0.6.7+14
   fancy_bottom_navigation: ^0.3.2
+  
   dash_chat: ^1.1.15
   line_awesome_icons: ^1.0.4+2
   font_awesome_flutter: ^8.10.0
+  flutter_datetime_picker: 1.2.5
+  #New
+  table_calendar: ^2.2.3
+  circular_bottom_navigation: ^1.0.1
   
   flutter:
     sdk: flutter
@@ -41,9 +46,18 @@ dev_dependencies:
 
 
 flutter:
+  fonts:
+    - family: Genel
+      fonts:
+        - asset: assets\fonts\Genel\MavenPro-SemiBold.ttf
+    - family: Kalam
+      fonts:
+        - asset: assets\fonts\Kalam\Kalam-Regular.ttf
+
   assets:
     - assets/images/
     - assets/icons/
+    - assets/photo/
     
   
   uses-material-design: true

@@ -40,6 +40,8 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
             theme: ThemeData(
+              fontFamily: "Genel",
+              primaryColor: Colors.deepPurpleAccent.shade100,
               primarySwatch: Colors.blue,
               visualDensity: VisualDensity.adaptivePlatformDensity,
             ),

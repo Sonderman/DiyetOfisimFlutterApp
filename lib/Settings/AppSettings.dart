@@ -1,6 +1,7 @@
 import 'package:diyet_ofisim/Pages/ChatPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/AppointmentsPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
+import 'package:diyet_ofisim/Pages/Dietician/MyAppointments.dart';
 import 'package:diyet_ofisim/Pages/Patient/PatientProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/MyCalendarPage.dart';
@@ -26,7 +27,7 @@ class AppSettings {
   //ANCHOR diyetisyen sayfaları burada
   List<Widget> dieticianPages = [
     ChatPage(),
-    AppointmentsPage(),
+    MyAppointmentsPage(),
     DieticianProfilePage()
   ];
 
