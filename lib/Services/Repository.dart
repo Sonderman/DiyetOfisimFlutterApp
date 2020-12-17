@@ -91,7 +91,7 @@ class UserService {
       (userModel as Dietician).profilePhotoUrl =
           await _storage.updateProfilePhoto(userModel.id, image);
     }
-    if (isUpdatingTreatments == true) {
+    if (isUpdatingTreatments == true && userModel.runtimeType == Dietician) {
       await insertNewDietician(update: true);
     }
     return await _database.updateUserProfile(userModel.id, userData);

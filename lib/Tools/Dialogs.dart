@@ -12,7 +12,7 @@ import 'package:multiselect_formfield/multiselect_formfield.dart';
 
 Future<bool> updateUserInfoDialog(BuildContext context) {
   Uint8List image;
-  Dietician user = locator<UserService>().userModel;
+  var user = locator<UserService>().userModel;
   TextEditingController nameController = TextEditingController(text: user.name);
   TextEditingController surnameController =
       TextEditingController(text: user.surname);

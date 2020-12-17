@@ -218,7 +218,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage> {
           height: PageComponents(context).heightSize(5),
         ),
         Visibility(
-          visible: canEdit,
+          visible: !canEdit,
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Wrap(
