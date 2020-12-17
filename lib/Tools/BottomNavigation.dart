@@ -1,16 +1,14 @@
+import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
+import 'package:circular_bottom_navigation/tab_item.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
-import 'package:diyet_ofisim/Pages/ChatPage.dart';
-import 'package:diyet_ofisim/Pages/Patient/MyCalendarPage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
-import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
-import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/AppointmentsPage.dart';
+import 'package:diyet_ofisim/Services/NavigationProvider.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
-import 'package:diyet_ofisim/assets/Colors.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 Widget getNavigatedPage(BuildContext context) {
   //ANCHOR stack de widget varsa o sayfayı döndürür yoksa default veya mevcut indexe göre sayfayı açar
@@ -18,30 +16,21 @@ Widget getNavigatedPage(BuildContext context) {
     return NavigationManager(context).getLastPage();
   } else {
     UserService userService = locator<UserService>();
-    //ANCHOR hasta sayfaları burada
-    List<Widget> patientPages = [
-      HomePage(),
-      MyCalendarPage(),
-      ChatPage(),
-      DieticianListPage(),
-    ];
-    //ANCHOR diyetisyen sayfaları burada
-    List<Widget> dieticianPages = [
-      ChatPage(),
-      AppointmentsPage(),
-      DieticianProfilePage()
-    ];
 
     if (userService.userModel.runtimeType == Dietician)
-      return dieticianPages[NavigationManager(context).getBottomNavIndex()];
+      return AppSettings()
+          .dieticianPages[NavigationManager(context).getBottomNavIndex()];
     else
-      return patientPages[NavigationManager(context).getBottomNavIndex()];
+      return AppSettings()
+          .patientPages[NavigationManager(context).getBottomNavIndex()];
   }
 }
 
 Widget bottomNavigationBar(BuildContext context, _rootPageState) {
   NavigationManager navigation = NavigationManager(context);
   int currentPosition = navigation.getBottomNavIndex();
+  var navController = Provider.of<NavigationProvider>(context, listen: false)
+      .getNavController();
 
   currentPageSetter() {
     //ANCHOR - Burada hem RootPage Hemde içerideki page rebuild olur
@@ -51,7 +40,7 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
   }
 
   if (locator<UserService>().userModel.runtimeType == Dietician)
-    return FancyBottomNavigation(
+    /*return FancyBottomNavigation(
       initialSelection: currentPosition,
       inactiveIconColor: MyColors().purpleContainer,
       circleColor: MyColors().purpleContainer,
@@ -71,8 +60,39 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
         currentPageSetter();
       },
     );
+    */
+    return CircularBottomNavigation(
+      [
+        TabItem(Icons.date_range_sharp, "Randevularım",
+            Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+        TabItem(Icons.message_rounded, "Görüşmeler",
+            Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+        TabItem(Icons.account_circle_rounded, "Profilim",
+            Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+      ],
+      controller: navController,
+      barHeight: PageComponents(context).heightSize(8),
+      barBackgroundColor: Colors.white,
+      animationDuration: Duration(milliseconds: 300),
+      selectedCallback: (position) {
+        currentPosition = position;
+        currentPageSetter();
+      },
+    );
   else
-    return BottomNavigationBar(
+    /* return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -95,6 +115,43 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
       currentIndex: currentPosition,
       selectedItemColor: Colors.amber[800],
       onTap: (position) {
+        currentPosition = position;
+        currentPageSetter();
+      },
+    );*/
+
+    return CircularBottomNavigation(
+      [
+        TabItem(Icons.home, "Anasayfa", Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+        TabItem(Icons.date_range_sharp, "Randevularım",
+            Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+        TabItem(Icons.message_rounded, "Görüşmeler",
+            Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+        TabItem(Icons.account_circle_rounded, "Profilim",
+            Colors.deepPurpleAccent.shade100,
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurpleAccent.shade100,
+            )),
+      ],
+      controller: navController,
+      barHeight: PageComponents(context).heightSize(8),
+      barBackgroundColor: Colors.white,
+      animationDuration: Duration(milliseconds: 300),
+      selectedCallback: (position) {
+        print(position);
         currentPosition = position;
         currentPageSetter();
       },
