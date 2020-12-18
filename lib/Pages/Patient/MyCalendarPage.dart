@@ -65,6 +65,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                           planlanmisRandevular("Çiğdem Atak"),
                           planlanmisRandevular("Zeynep Ünal"),
                           planlanmisRandevular("Şevval Sakin"),
+                          planlanmisRandevular("Şevval Sakin"),
                         ],
                       ),
                     ),

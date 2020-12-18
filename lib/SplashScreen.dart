@@ -109,7 +109,11 @@ class _SplashScreenState extends State<SplashScreen> {
         gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            colors: [Colors.blue, Colors.red]),
+            colors: [
+              Colors.deepPurpleAccent[200],
+              Colors.deepPurpleAccent[100],
+              Colors.deepPurple[50],
+            ]),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Text("Diyet Ofisim",
               style: TextStyle(
                 decoration: TextDecoration.none,
-                fontFamily: 'IndieFlower',
+                fontFamily: 'Kalam',
                 fontSize: 50,
                 letterSpacing: 2.0,
                 fontWeight: FontWeight.bold,
@@ -134,7 +138,7 @@ class _SplashScreenState extends State<SplashScreen> {
             size: 100.0,
             duration: Duration(seconds: 2),
           ),
-          SizedBox(height: 50.0),
+          SizedBox(height: 40.0),
           Text(
             "Loading",
             style: TextStyle(

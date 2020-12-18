@@ -83,7 +83,7 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
             )),
       ],
       controller: navController,
-      barHeight: PageComponents(context).heightSize(8),
+      barHeight: PageComponents(context).heightSize(6),
       barBackgroundColor: Colors.white,
       animationDuration: Duration(milliseconds: 300),
       selectedCallback: (position) {
@@ -147,7 +147,7 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
             )),
       ],
       controller: navController,
-      barHeight: PageComponents(context).heightSize(8),
+      barHeight: PageComponents(context).heightSize(6),
       barBackgroundColor: Colors.white,
       animationDuration: Duration(milliseconds: 300),
       selectedCallback: (position) {

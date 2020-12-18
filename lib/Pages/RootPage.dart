@@ -4,6 +4,7 @@ import 'package:diyet_ofisim/Services/NavigationProvider.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/BottomNavigation.dart';
 import 'package:diyet_ofisim/Tools/Dialogs.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
@@ -145,10 +146,18 @@ class _RootPageState extends State<RootPage> {
               ),
             ),
             */
-                body: Consumer<NavigationProvider>(
-                  builder: (con, nav, w) => getNavigatedPage(context),
-                ),
-                bottomNavigationBar: bottomNavigationBar(context, this)));
+                body: Stack(children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      bottom: PageComponents(context).heightSize(6)),
+                    child: Consumer<NavigationProvider>(
+                      builder: (con, nav, w) => getNavigatedPage(context),
+                    ),
+                  ),
+                   Align(alignment: Alignment.bottomCenter, child:  bottomNavigationBar(context, this))
+                ]),
+               // bottomNavigationBar: bottomNavigationBar(context, this)
+                ));
   }
 
   //ANCHOR burada stack de widget varmı kontrol eder, eğer widget varsa pop eder
