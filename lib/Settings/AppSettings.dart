@@ -14,6 +14,8 @@ class AppSettings {
   final int defaultNavIndex = 0;
   //final String _server = "Release";
   final String _server = "Development";
+
+  var odemeType;
   //final String _server = "OpenTest";
   String getServer() => _server;
 
@@ -31,5 +33,30 @@ class AppSettings {
     DieticianProfilePage()
   ];
 
-  List<String> diseases = ["Hastalık 1", "Hastalık 2"];
+  List<String> diseases = [
+    "Anoreksiya ve Bulimia Hastalarında Beslenme",
+    "Bariatri Diyetisyenliği",
+    "Çocuk Beslenmesi",
+    "Çölyak Hastalığında Beslenme",
+    "Diyabet Diyeti",
+    "Enteral Beslenme",
+    "Gebelik ve Beslenme",
+    "Gluten İntoleransında Beslenme",
+    "Gut Hastalığı ve Beslenme",
+    "Haşimato Hastalığında Beslenme",
+    "Hipertansiyonda Beslenme",
+    "Kalp Damar Hastalıkları ve Beslenme",
+    "Kilo Alma Diyetleri",
+    "Kilo Verme Diyetleri"
+        "Menopozda Beslenme",
+    "Metabolik Hastalıklarda Beslenme",
+    "Migrende Beslenme",
+    "Obezite",
+    "Parenteral Beslenme",
+    "Reaktif Hipoglisemi ve Beslenme",
+    "Sporcu Beslenmesi",
+    "Troid Hastalıklarında Beslenme",
+    "Tüp Bebek ve İnfertilite Tedavisinde Beslenme",
+  ];
+  List<String> insuranceType = ["Sigortalı Hastalar", "Sigortasız Hastalar"];
 }

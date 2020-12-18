@@ -422,6 +422,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         ),
         SizedBox(height: 30.0),
         TextField(
+          style: TextStyle(color: Colors.white),
+            cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
           controller: email,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(16.0),
@@ -448,6 +451,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         ),
         SizedBox(height: 10.0),
         TextField(
+          style: TextStyle(color: Colors.white),
+           cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
           controller: password,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(16.0),
@@ -560,7 +566,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   fontFamily: "Kalam"),
             ),
           ]),
+          SizedBox(
+            height: PageComponents(context).heightSize(3),
+          ),
           addPhoto(),
+          SizedBox(
+            height: PageComponents(context).heightSize(1.1),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -568,6 +580,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 height: 50,
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
+                  style: TextStyle(color: Colors.white),
+                  cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
                   onChanged: (name) => _name = name,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(top: 0, left: 20),
@@ -588,6 +603,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 height: 50,
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
+                  style: TextStyle(color: Colors.white),
+                   cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
                   onChanged: (surname) => _surname = surname,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
@@ -607,6 +625,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             height: PageComponents(context).heightSize(3),
           ),
           TextField(
+            style: TextStyle(color: Colors.white),
+            cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
             controller: mailController,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.only(top: 10, left: 20),
@@ -623,6 +644,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             height: PageComponents(context).heightSize(3),
           ),
           TextField(
+            obscureText: true,
+            style: TextStyle(color: Colors.white),
+             cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
             controller: passwordController,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.only(top: 10, left: 20),
@@ -639,6 +664,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             height: PageComponents(context).heightSize(3),
           ),
           TextField(
+            obscureText: true,
+            style: TextStyle(color: Colors.white),
+            cursorWidth: 3,
+            cursorColor: Colors.deepPurpleAccent,
             controller: password2Controller,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.only(top: 10, left: 20),
@@ -933,15 +962,16 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   menColor() {
-    return Colors.blueAccent;
+    return Colors.blue[300];
   }
 
   womenColor() {
-    return Colors.pink;
+    return Colors.pink[300];
   }
 
   Widget selectGender() {
     return Row(
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         InkWell(
@@ -951,23 +981,21 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             });
           },
           child: Container(
-            width: widthSize(43),
+            width: widthSize(42),
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
                   ? _gender
                       ? menColor()
-                      : Colors.grey
-                  : Colors.grey,
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
-              ),
+                      : Colors.deepPurpleAccent[300]
+                  : Colors.deepPurpleAccent[300],
+              borderRadius: BorderRadius.circular(15),
             ),
             child: Center(
               child: Text(
-                ("Erkek"),
+                "Erkek",
                 style: TextStyle(
-                  fontFamily: "Zona",
+                  fontFamily: "Genel",
                   fontSize: heightSize(2),
                   color: MyColors().whiteTextColor,
                 ),
@@ -982,23 +1010,23 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             });
           },
           child: Container(
-            width: widthSize(43),
+            width: widthSize(42),
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
                   ? _gender
-                      ? Colors.grey
+                      ? Colors.deepPurpleAccent[300]
                       : womenColor()
-                  : Colors.grey,
+                  : Colors.deepPurpleAccent[300],
               borderRadius: new BorderRadius.all(
-                Radius.circular(20),
+                Radius.circular(15),
               ),
             ),
             child: Center(
               child: Text(
                 "Kadın",
                 style: TextStyle(
-                  fontFamily: "Zona",
+                  fontFamily: "Genel",
                   fontSize: heightSize(2),
                   color: MyColors().whiteTextColor,
                 ),
@@ -1021,19 +1049,21 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             });
           },
           child: Container(
-            width: widthSize(43),
+            width: widthSize(42),
             height: heightSize(5),
             decoration: BoxDecoration(
-              color: _isDietisian ? Colors.grey : Colors.green,
+              color: _isDietisian
+                  ? Colors.deepPurpleAccent[300]
+                  : Colors.green[200],
               borderRadius: BorderRadius.all(
-                Radius.circular(20),
+                Radius.circular(15),
               ),
             ),
             child: Center(
               child: Text(
                 ("Hasta"),
                 style: TextStyle(
-                  fontFamily: "Zona",
+                  fontFamily: "Genel",
                   fontSize: heightSize(2),
                   color: MyColors().whiteTextColor,
                 ),
@@ -1048,19 +1078,21 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             });
           },
           child: Container(
-            width: widthSize(43),
+            width: widthSize(42),
             height: heightSize(5),
             decoration: new BoxDecoration(
-              color: _isDietisian ? Colors.green : Colors.grey,
+              color: _isDietisian
+                  ? Colors.green[200]
+                  : Colors.deepPurpleAccent[300],
               borderRadius: new BorderRadius.all(
-                Radius.circular(20),
+                Radius.circular(15),
               ),
             ),
             child: Center(
               child: Text(
                 "Diyetisyen",
                 style: TextStyle(
-                  fontFamily: "Zona",
+                  fontFamily: "Genel",
                   fontSize: heightSize(2),
                   color: MyColors().whiteTextColor,
                 ),
@@ -1078,20 +1110,16 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         _showChoiceDialog(context);
       },
       child: Container(
-        width: widthSize(25),
-        height: widthSize(25),
-        /*
-        decoration: BoxDecoration(
-          color: MyColors().orangeContainer,
-          shape: BoxShape.circle,
-        ),*/
+        width: widthSize(27),
+        height: widthSize(27),
         child: CircleAvatar(
-          backgroundColor: MyColors().orangeContainer,
+          backgroundColor: Colors.teal,
           radius: 100,
           child: _image == null
               ? Image.asset(
                   'assets/icons/add_user.png',
-                  height: heightSize(5),
+                  color: Colors.white.withOpacity(0.7),
+                  height: heightSize(14),
                 )
               : ClipOval(
                   child: Image.memory(
