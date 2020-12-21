@@ -13,6 +13,7 @@ class Dietician {
   String about;
   String profilePhotoUrl;
   List treatments;
+  List insuranceTypes;
   String education;
   String experiences;
   bool firstTimeProfileCreation;
@@ -31,6 +32,7 @@ class Dietician {
       'ProfilePhotoUrl': profilePhotoUrl ?? 'null',
       'About': about ?? 'null',
       'Treatments': treatments ?? "null",
+      'InsuranceTypes': insuranceTypes ?? "null",
       "Education": education ?? "null",
       "Experiences": experiences ?? "null",
       "isFirstTime": firstTimeProfileCreation ?? true,
@@ -48,7 +50,8 @@ class Dietician {
     gender = map["Gender"] ?? "null";
     profilePhotoUrl = map["ProfilePhotoUrl"];
     about = map['About'] ?? "Henüz Detay Girilmedi.";
-    treatments = map["Treatments"] ?? [-1];
+    treatments = map["Treatments"] ?? [];
+    insuranceTypes = map["InsuranceTypes"] ?? [];
     education = map["Education"] ?? " Belirtilmedi";
     experiences = map["Experiences"] ?? "Belirtilmedi";
     //telNo = map["PhoneNumber"] ?? 0;

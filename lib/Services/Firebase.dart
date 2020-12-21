@@ -278,6 +278,14 @@ class DatabaseWorks {
 //NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
   Future<bool> insertNewDietician(
       String id, List treatments, bool update) async {
+    String temp = "";
+    int i = 0;
+    treatments.forEach((element) {
+      temp += element.toString();
+      if (i != treatments.length - 1) temp += ",";
+      i++;
+    });
+
     try {
       var ref2 = ref
           .child(settings.appName)
@@ -286,13 +294,39 @@ class DatabaseWorks {
           .child(id);
 
       if (update)
-        await ref2.update({"DieticianID": id, "Treatments": treatments});
+        await ref2.update({"DieticianID": id, "Treatments": temp});
       else
-        await ref2.set({"DieticianID": id, "Treatments": treatments});
+        await ref2.set({"DieticianID": id, "Treatments": temp});
       return true;
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> findDieticianbyResults(
+      List<Diseases> results) async {
+    String temp = "";
+    int i = 0;
+    results.forEach((e) {
+      temp += e.index.toString();
+      if (i != results.length - 1) temp += ",";
+      i++;
+    });
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("dieticians")
+          .orderByChild('Treatments')
+          .equalTo(temp)
+          .once()
+          .then((userData) {
+        return Map<String, dynamic>.from(userData.value);
+      });
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 }
