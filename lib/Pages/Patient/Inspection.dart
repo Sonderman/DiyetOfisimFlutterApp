@@ -1,3 +1,5 @@
+import 'package:diyet_ofisim/Settings/AppSettings.dart';
+
 List questionsAndAnswers = [
   [
     "Diyabet Hastasımısınız?",
@@ -24,7 +26,7 @@ List questionsAndAnswers = [
 
 class Inspection {
   final int age, length, weight;
-
+  List<Diseases> result = [];
   final bool gender;
   bool isPregnant = false,
       isDiabetes = false,
@@ -33,58 +35,27 @@ class Inspection {
       isKidney = false;
 
   num bodyMassIndex;
-  num fastingBloodSugar;
+  //num fastingBloodSugar;
 
   Inspection({this.age, this.length, this.weight, this.gender}) {
     //Beden Kitle İndeksi Formülü
     bodyMassIndex = (weight / ((length ~/ 10) * (length ~/ 10))) * 100;
   }
 
-  int proceedAnswer(int questionIndex, int i) {
-    switch (questionIndex) {
-      case 0:
-        if (i == 0) {
-          isDiabetes = true;
-          return 1;
-        } else {
-          isDiabetes = false;
-          return 2;
-        }
-
-        break;
-      case 1:
-        if (i == 0)
-          isCardiovascular = true;
-        else
-          isCardiovascular = false;
-        break;
-      case 2:
-        if (i == 0)
-          isCeliac = true;
-        else
-          isCeliac = false;
-        break;
-      case 3:
-        if (i == 0)
-          isKidney = true;
-        else
-          isKidney = false;
-        break;
-      case 4:
-        if (i == 0)
-          isPregnant = true;
-        else
-          isPregnant = false;
-        break;
-      default:
-        return 0;
-    }
-    return 0;
+  List<Diseases> proceedAnswer(List yesNoAnswers) {
+    isDiabetes = yesNoAnswers[0];
+    isCardiovascular = yesNoAnswers[1];
+    isCeliac = yesNoAnswers[2];
+    isKidney = yesNoAnswers[3];
+    isPregnant = yesNoAnswers[4] ?? null;
+    inspect();
+    return result;
   }
 
   void inspect() {
     //Çocuk ise
     if (age < 19) {
+      result.add(Diseases.cocuk);
       print("Çocuk Beslenmesi");
     }
     //Yetişkin ise
@@ -93,6 +64,7 @@ class Inspection {
       if (!gender) {
         if (bodyMassIndex <= 17.5) {
           print("Anoreksi(Aşırı zayıf) -> YEME BOZUKLUKLARI BESLENMESİ");
+          result.add(Diseases.anoreksiya);
         }
         if (bodyMassIndex > 17.5 && bodyMassIndex <= 19.1) {
           print("Zayıf");
@@ -108,14 +80,18 @@ class Inspection {
         }
         if (bodyMassIndex > 32.3 && bodyMassIndex <= 34.9) {
           print("Çok Fazla Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
         if (bodyMassIndex > 34.9 && bodyMassIndex <= 40) {
           print("Sağlık Açısından Yüksek Riskli Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
         if (bodyMassIndex > 40 && bodyMassIndex <= 50) {
           print("Hastalıklı bir Şekilde Aşırı Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
         if (bodyMassIndex > 50 && bodyMassIndex <= 60) {
+          result.add(Diseases.obezite);
           print("Süper Aşırı  Kilolu -> OBEZİTE");
         }
 
@@ -129,6 +105,7 @@ class Inspection {
       else {
         if (bodyMassIndex <= 17.5) {
           print("Anoreksi(Aşırı zayıf) -> YEME BOZUKLUKLARI BESLENMESİ");
+          result.add(Diseases.anoreksiya);
         }
         if (bodyMassIndex > 17.5 && bodyMassIndex <= 20.7) {
           print("Zayıf");
@@ -144,15 +121,19 @@ class Inspection {
         }
         if (bodyMassIndex > 31.1 && bodyMassIndex <= 34.9) {
           print("Çok Fazla Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
         if (bodyMassIndex > 34.9 && bodyMassIndex <= 40) {
           print("Sağlık Açısından Yüksek Riskli Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
         if (bodyMassIndex > 40 && bodyMassIndex <= 50) {
           print("Hastalıklı bir Şekilde Aşırı Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
         if (bodyMassIndex > 50 && bodyMassIndex <= 60) {
           print("Süper Aşırı  Kilolu -> OBEZİTE");
+          result.add(Diseases.obezite);
         }
 
         diyabet();
@@ -166,38 +147,35 @@ class Inspection {
   void hamile() {
     if (isPregnant) {
       print("Gebelik Dönemi Beslenmesi");
+      result.add(Diseases.gebelik);
     }
   }
 
   void diyabet() {
     if (isDiabetes) {
-      if (fastingBloodSugar <= 100) {
-        print("Normal değer");
-      }
-      if (fastingBloodSugar > 100 && fastingBloodSugar < 125) {
-        print("Bozulmuş açlık glilozu");
-      }
-      if (fastingBloodSugar >= 126) {
-        print("Tip 2 Diyabet");
-      }
+      print("Diyabet Beslenmesi");
+      result.add(Diseases.diyabet);
     }
   }
 
   void kalpDamar() {
     if (isCardiovascular) {
       print("Kalp Damar Hastalıkları Beslenmesi");
+      result.add(Diseases.kalp_Damar);
     }
   }
 
   void colyak() {
     if (isCeliac) {
       print("Gastrointestinal Sistem Hastalıkları Beslenmesi");
+      result.add(Diseases.colyak);
     }
   }
 
   void bobrek() {
     if (isKidney) {
       print("Böbrek Hastalıkları Beslenmesi");
+      result.add(Diseases.bariatri);
     }
   }
 }

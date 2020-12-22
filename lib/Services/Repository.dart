@@ -4,6 +4,7 @@ import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Firebase.dart';
+import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -110,6 +111,10 @@ class UserService {
 
   Future<bool> sendComment(String userID, String text) async {
     return await _database.sendComment(userID, userModel.id, text);
+  }
+
+  Future<List<Dietician>> findDieticianbyResults(List<Diseases> results) async {
+    return await _database.findDieticianbyResults(results);
   }
 }
 /*

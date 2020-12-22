@@ -20,7 +20,7 @@ class _FirstTimeProfileUpdatePageState
   TextEditingController aboutTextCon = TextEditingController();
   List diseases;
   List insuranceType;
-  
+
   TextEditingController educationTextCon = TextEditingController();
   TextEditingController experiencesTextCon = TextEditingController();
   bool isLoading = false;
@@ -170,7 +170,7 @@ class _FirstTimeProfileUpdatePageState
                     SizedBox(
                       height: PageComponents(context).heightSize(5),
                     ),
-               
+
                     SizedBox(
                       height: PageComponents(context).heightSize(10),
                     ),
@@ -186,6 +186,7 @@ class _FirstTimeProfileUpdatePageState
                         });
                         user.about = aboutTextCon.text;
                         user.treatments = diseases;
+                        user.insuranceTypes = insuranceType;
                         user.education = educationTextCon.text;
                         user.experiences = experiencesTextCon.text;
                         locator<UserService>()
@@ -246,5 +247,4 @@ class _FirstTimeProfileUpdatePageState
     });
     return temp;
   }
-
 }

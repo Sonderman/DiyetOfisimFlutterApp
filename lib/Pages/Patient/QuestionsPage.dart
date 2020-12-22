@@ -281,6 +281,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
     answers.forEach((element) {
       temp.add(MaterialButton(
         onPressed: () {
+          /*
           answerType = inspection.proceedAnswer(questionIndex,
               (questionsAndAnswers[questionIndex][1] as List).indexOf(element));
           if (answerType == 1) {
@@ -293,6 +294,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
             _nav.getQuestionPageController().nextPage(
                 duration: Duration(seconds: 1), curve: Curves.bounceOut);
           }
+        */
         },
         color: Colors.green,
         child: Text(element),

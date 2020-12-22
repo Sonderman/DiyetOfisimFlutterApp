@@ -1,5 +1,4 @@
 import 'package:diyet_ofisim/Pages/ChatPage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/AppointmentsPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/MyAppointments.dart';
 import 'package:diyet_ofisim/Pages/Patient/PatientProfilePage.dart';
@@ -7,7 +6,31 @@ import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/MyCalendarPage.dart';
 import 'package:flutter/material.dart';
 
-enum Diseases { h1, h2 }
+enum Diseases {
+  anoreksiya,
+  bariatri,
+  cocuk,
+  colyak,
+  diyabet,
+  enteral,
+  gebelik,
+  gluten,
+  gut,
+  hasimato,
+  hipertansiyon,
+  kalp_Damar,
+  kiloAlma,
+  kiloVerme,
+  menopoz,
+  metabolik,
+  migren,
+  obezite,
+  parenteral,
+  reaktif,
+  sporcu,
+  troid,
+  tupBebek
+}
 
 class AppSettings {
   final String appName = "DiyetOfisimApp";
@@ -47,8 +70,8 @@ class AppSettings {
     "Hipertansiyonda Beslenme",
     "Kalp Damar Hastalıkları ve Beslenme",
     "Kilo Alma Diyetleri",
-    "Kilo Verme Diyetleri"
-        "Menopozda Beslenme",
+    "Kilo Verme Diyetleri",
+    "Menopozda Beslenme",
     "Metabolik Hastalıklarda Beslenme",
     "Migrende Beslenme",
     "Obezite",

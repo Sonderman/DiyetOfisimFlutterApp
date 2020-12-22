@@ -1,4 +1,10 @@
+import 'package:diyet_ofisim/Models/Patient.dart';
+import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
+import 'package:diyet_ofisim/Pages/Patient/Inspection.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/locator.dart';
 import "package:flutter/material.dart";
+import 'package:flutter/services.dart';
 
 class QuestionsPageNew extends StatefulWidget {
   QuestionsPageNew({Key key}) : super(key: key);
@@ -8,22 +14,18 @@ class QuestionsPageNew extends StatefulWidget {
 }
 
 class _QuestionsPageNewState extends State<QuestionsPageNew> {
-  int _aktifStep = 0;
-  var boy, kilo, yas;
-  String cevap = " ";
+  Patient usermodel = locator<UserService>().userModel;
+  ScrollController _scrollController = ScrollController();
+  Inspection inspection;
+  int aktifStep = 0;
+  num boy, kilo, yas;
+  var cevap = List(5);
   //validator değerlerine göre hata varsa
   //statelerin işaretini değiştirmek için kullanıcaz
   bool hata = false;
   var key0 = GlobalKey<FormFieldState>();
   var key1 = GlobalKey<FormFieldState>();
   var key2 = GlobalKey<FormFieldState>();
-  var key3 = GlobalKey<FormFieldState>();
-  var key4 = GlobalKey<FormFieldState>();
-  var key5 = GlobalKey<FormFieldState>();
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,29 +52,38 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
 
             //İçinde Stepler olan bi Liste Bekliyor.
             child: ListView(
+              controller: _scrollController,
               children: [
                 Stepper(
+                  physics: ClampingScrollPhysics(),
                   controlsBuilder: (BuildContext context,
                       {VoidCallback onStepContinue,
                       VoidCallback onStepCancel}) {
                     return Row(children: <Widget>[
-                      TextButton(
-                        onPressed: onStepContinue,
-                        child: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.deepPurpleAccent.shade100,
-                          size: 50,
+                      Visibility(
+                        visible:
+                            aktifStep != (usermodel.gender == "Man" ? 6 : 7),
+                        child: TextButton(
+                          onPressed: onStepContinue,
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.deepPurpleAccent.shade100,
+                            size: 50,
+                          ),
                         ),
                       ),
                       SizedBox(
                         width: 10,
                       ),
-                      TextButton(
-                        onPressed: onStepContinue,
-                        child: Icon(
-                          Icons.keyboard_arrow_up_outlined,
-                          color: Colors.deepPurpleAccent.shade100,
-                          size: 50,
+                      Visibility(
+                        visible: aktifStep != 0,
+                        child: TextButton(
+                          onPressed: onStepCancel,
+                          child: Icon(
+                            Icons.keyboard_arrow_up_outlined,
+                            color: Colors.deepPurpleAccent.shade100,
+                            size: 50,
+                          ),
                         ),
                       ),
                     ]);
@@ -81,7 +92,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
                   steps: sorular(),
                   type: StepperType.vertical,
                   //currentStep = mevcut step
-                  currentStep: _aktifStep,
+                  currentStep: aktifStep,
                   //Tıkladığım step aktifleşiyor
                   /*onStepTapped: (tiklanilanStep) {
                                 setState(() {
@@ -91,22 +102,19 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
                   //Continue Butonu Aktifleşti
                   onStepContinue: () {
                     setState(() {
-                      ContinueButonuKontrolu();
+                      continueButonuKontrolu();
                     });
                   },
                   //Cancel Butonu Aktifleşti
                   onStepCancel: () {
                     setState(() {
-                      if (_aktifStep > 0) {
-                        _aktifStep--;
+                      if (aktifStep > 0) {
+                        aktifStep--;
                       } else {
-                        _aktifStep = 0;
+                        aktifStep = 0;
                       }
                     });
                   },
-                ),
-                SizedBox(
-                  height: 10,
                 ),
                 RaisedButton(
                   color: Colors.deepPurpleAccent.shade100,
@@ -116,7 +124,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
                     "Kaydet".toUpperCase(),
                     style: TextStyle(fontFamily: "Genel", fontSize: 17),
                   ),
-                  onPressed: () {},
+                  onPressed: saveButton,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0)),
                 ),
@@ -138,16 +146,22 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             color: Colors.deepPurpleAccent[100],
           ),
         ),
-        state: StepAyar(0),
+        state: stepAyar(0),
         content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
           key: key0,
           validator: (girilenDeger) {
             if (girilenDeger.isEmpty) {
               return "Lütfen Bir Değer Giriniz";
-            }
+            } else if (!(int.tryParse(girilenDeger) >= 18 &&
+                int.tryParse(girilenDeger) <= 100)) {
+              return "Lütfen 18 ile 100 arasında değer giriniz";
+            } else
+              return null;
           },
           onSaved: (girilenDeger) {
-            yas = girilenDeger;
+            yas = int.tryParse(girilenDeger);
           },
           decoration: InputDecoration(
             labelText: "Yaşınız",
@@ -155,6 +169,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
             ),
+
             //filled: true,
           ),
         ),
@@ -167,19 +182,25 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             color: Colors.deepPurpleAccent[100],
           ),
         ),
-        state: StepAyar(1),
+        state: stepAyar(1),
         content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
           key: key1,
           validator: (girilenDeger) {
             if (girilenDeger.isEmpty || girilenDeger.length < 3) {
               return "Lütfen Bir Değer Giriniz";
-            }
+            } else if (!(int.tryParse(girilenDeger) >= 150 &&
+                int.tryParse(girilenDeger) <= 240)) {
+              return "Lütfen 150 ile 240 arasında değer giriniz";
+            } else
+              return null;
           },
           onSaved: (girilenDeger) {
-            boy = girilenDeger;
+            boy = int.tryParse(girilenDeger);
           },
           decoration: InputDecoration(
-            labelText: "Boyunuz ",
+            labelText: "Boyunuz (cm) ",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -196,16 +217,22 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             //color: Colors.deepPurpleAccent.shade100,
           ),
         ),
-        state: StepAyar(2),
+        state: stepAyar(2),
         content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
           key: key2,
           validator: (girilenDeger) {
-            if (girilenDeger.isEmpty || girilenDeger.length < 3) {
+            if (girilenDeger.isEmpty) {
               return "Lütfen Bir Değer Giriniz";
-            }
+            } else if (!(int.tryParse(girilenDeger) >= 40 &&
+                int.tryParse(girilenDeger) <= 300)) {
+              return "Lütfen 40 ile 300 arasında değer giriniz";
+            } else
+              return null;
           },
           onSaved: (girilenDeger) {
-            kilo = girilenDeger;
+            kilo = int.tryParse(girilenDeger);
           },
           decoration: InputDecoration(
             labelText: "Kilonuz",
@@ -226,17 +253,16 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             color: Colors.deepPurpleAccent[100],
           ),
         ),
-        state: StepAyar(3),
+        state: stepAyar(3),
         content: Column(
-          key: key3,
           children: [
             RadioListTile(
                 title: Text("Evet"),
-                value: "Evet",
-                groupValue: cevap,
+                value: true,
+                groupValue: cevap[0],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[0] = value;
                   });
                 }),
             SizedBox(
@@ -244,11 +270,11 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             ),
             RadioListTile(
                 title: Text("Hayır"),
-                value: "Hayır",
-                groupValue: cevap,
+                value: false,
+                groupValue: cevap[0],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[0] = value;
                   });
                 }),
           ],
@@ -262,17 +288,16 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             color: Colors.deepPurpleAccent[100],
           ),
         ),
-        state: StepAyar(4),
+        state: stepAyar(4),
         content: Column(
-          key: key4,
           children: [
             RadioListTile(
                 title: Text("Evet"),
-                value: "Evet",
-                groupValue: cevap,
+                value: true,
+                groupValue: cevap[1],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[1] = value;
                   });
                 }),
             SizedBox(
@@ -280,11 +305,11 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             ),
             RadioListTile(
                 title: Text("Hayır"),
-                value: "Hayır",
-                groupValue: cevap,
+                value: false,
+                groupValue: cevap[1],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[1] = value;
                   });
                 }),
           ],
@@ -298,17 +323,16 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             color: Colors.deepPurpleAccent[100],
           ),
         ),
-        state: StepAyar(5),
+        state: stepAyar(5),
         content: Column(
-          key: key5,
           children: [
             RadioListTile(
                 title: Text("Evet"),
-                value: "Evet",
-                groupValue: cevap,
+                value: true,
+                groupValue: cevap[2],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[2] = value;
                   });
                 }),
             SizedBox(
@@ -316,11 +340,11 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             ),
             RadioListTile(
                 title: Text("Hayır"),
-                value: "Hayır",
-                groupValue: cevap,
+                value: false,
+                groupValue: cevap[2],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[2] = value;
                   });
                 }),
           ],
@@ -334,17 +358,17 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             color: Colors.deepPurpleAccent[100],
           ),
         ),
-        state: StepAyar(6),
+        state: stepAyar(6),
         content: Column(
           //key: key6,
           children: [
             RadioListTile(
                 title: Text("Evet"),
-                value: "Evet",
-                groupValue: cevap,
+                value: true,
+                groupValue: cevap[3],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[3] = value;
                   });
                 }),
             SizedBox(
@@ -352,28 +376,65 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             ),
             RadioListTile(
                 title: Text("Hayır"),
-                value: "Hayır",
-                groupValue: cevap,
+                value: false,
+                groupValue: cevap[3],
                 onChanged: (value) {
                   setState(() {
-                    cevap = value;
+                    cevap[3] = value;
                   });
                 }),
           ],
         ),
       ),
     ];
+    if (usermodel.gender == "Woman")
+      stepler.add(
+        Step(
+          title: Text(
+            "Hamilemisiniz ?",
+            style: TextStyle(
+              fontSize: 17,
+              color: Colors.deepPurpleAccent[100],
+            ),
+          ),
+          state: stepAyar(7),
+          content: Column(
+            children: [
+              RadioListTile(
+                  title: Text("Evet"),
+                  value: true,
+                  groupValue: cevap[4],
+                  onChanged: (value) {
+                    setState(() {
+                      cevap[4] = value;
+                    });
+                  }),
+              SizedBox(
+                width: 10,
+              ),
+              RadioListTile(
+                  title: Text("Hayır"),
+                  value: false,
+                  groupValue: cevap[4],
+                  onChanged: (value) {
+                    setState(() {
+                      cevap[4] = value;
+                    });
+                  }),
+            ],
+          ),
+        ),
+      );
     return stepler;
   }
 
-  // ignore: non_constant_identifier_names
-  void ContinueButonuKontrolu() {
-    switch (_aktifStep) {
+  void continueButonuKontrolu() {
+    switch (aktifStep) {
       case 0:
         if (key0.currentState.validate()) {
           key0.currentState.save();
           hata = false;
-          _aktifStep++;
+          aktifStep++;
         } else {
           hata = true;
         }
@@ -382,7 +443,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
         if (key1.currentState.validate()) {
           key1.currentState.save();
           hata = false;
-          _aktifStep++;
+          aktifStep++;
         } else {
           hata = true;
         }
@@ -391,51 +452,47 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
         if (key2.currentState.validate()) {
           key2.currentState.save();
           hata = false;
-          _aktifStep++;
+          aktifStep++;
         } else {
           hata = true;
         }
         break;
-      case 3:
-        //key3.currentState.save();
-
-        _aktifStep++;
-
-        break;
-      case 4:
-        // key4.currentState.save();
-
-        _aktifStep++;
-
-        break;
-      case 5:
-        //key5.currentState.save();
-
-        _aktifStep++;
-
-        break;
-      case 5:
-        //key6.currentState.save();
-
-        _aktifStep = 5;
+      default:
+        aktifStep++;
+        if (aktifStep == (usermodel.gender == "Man" ? 6 : 7)) {
+          print("girdi");
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
 
         break;
     }
   }
 
-  // ignore: non_constant_identifier_names
-  StepState StepAyar(int stepIndex) {
-    if (_aktifStep == stepIndex) {
+  StepState stepAyar(int stepIndex) {
+    if (aktifStep == stepIndex) {
       if (hata == true) {
         return StepState.error;
       } else {
         return StepState.editing;
       }
     }
-    if (_aktifStep > stepIndex) {
+    if (aktifStep > stepIndex) {
       return StepState.complete;
     } else {
       return StepState.indexed;
     }
+  }
+
+  void saveButton() {
+    inspection = Inspection(
+        age: yas,
+        gender: usermodel.gender == "Man" ? true : false,
+        length: boy,
+        weight: kilo);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                DieticianListPage(results: inspection.proceedAnswer(cevap))));
   }
 }

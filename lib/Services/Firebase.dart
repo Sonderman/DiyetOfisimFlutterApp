@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -278,6 +279,15 @@ class DatabaseWorks {
 //NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
   Future<bool> insertNewDietician(
       String id, List treatments, bool update) async {
+    /* String temp = "";
+    int i = 0;
+    treatments.sort();
+    treatments.forEach((element) {
+      temp += element.toString();
+      if (i != treatments.length - 1) temp += ",";
+      i++;
+    });
+*/
     try {
       var ref2 = ref
           .child(settings.appName)
@@ -293,6 +303,75 @@ class DatabaseWorks {
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<List<Dietician>> findDieticianbyResults(List<Diseases> r) async {
+    List<int> results = [];
+
+    results = r.map((e) => e.index).toList();
+    /*
+    String temp = "";
+    int i = 0;
+    
+
+    
+
+    results.sort((a, b) {
+      if (a < b)
+        return b;
+      else
+        return a;
+    });
+    print(results);
+
+    results.forEach((e) {
+      temp += e.toString();
+      if (i != results.length - 1) temp += ",";
+      i++;
+    });
+*/
+    bool compareLists(List list, List list2) {
+      for (int e in list2) {
+        if (list.contains(e)) return true;
+      }
+      return false;
+    }
+
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("dieticians")
+          // .orderByChild('Treatments')
+          // .equalTo(temp)
+          .once()
+          .then((userData) async {
+        List<String> idList = [];
+        List<Dietician> dieticianList = [];
+        print(results.length);
+        Map<String, dynamic>.from(userData.value).values.forEach((e) {
+          if (compareLists(e["Treatments"], results)) {
+            print("girdi");
+            idList.add(e["DieticianID"]);
+          } else
+            print("girmedi");
+        });
+
+        await Future.forEach(idList, (id) async {
+          Dietician t = await findUserbyID(id).then((data) {
+            var model = Dietician(id: data["UserID"]);
+            model.parseMap(data);
+            return model;
+          });
+          dieticianList.add(t);
+        });
+
+        return dieticianList;
+      });
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 }
