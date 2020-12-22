@@ -113,8 +113,7 @@ class UserService {
     return await _database.sendComment(userID, userModel.id, text);
   }
 
-  Future<Map<String, dynamic>> findDieticianbyResults(
-      List<Diseases> results) async {
+  Future<List<Dietician>> findDieticianbyResults(List<Diseases> results) async {
     return await _database.findDieticianbyResults(results);
   }
 }

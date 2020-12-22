@@ -1,9 +1,11 @@
+import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/randevuTakvimi.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
+import 'package:extended_image/extended_image.dart';
 import "package:flutter/material.dart";
 
 class DieticianListPage extends StatefulWidget {
@@ -19,7 +21,7 @@ class _DieticianListPageState extends State<DieticianListPage> {
   UserService userService = locator<UserService>();
   @override
   Widget build(BuildContext context) {
-    print(widget.results);
+    // print(widget.results);
     return Scaffold(
         body: Container(
             width: MediaQuery.of(context).size.width,
@@ -43,21 +45,26 @@ class _DieticianListPageState extends State<DieticianListPage> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      height: 50,
-                      width: 50,
-                      child: Icon(
-                        Icons.arrow_back_ios_sharp,
-                        color: Colors.white,
-                        size: 30,
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        child: Icon(
+                          Icons.arrow_back_ios_sharp,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color:
+                              Colors.deepPurpleAccent.shade100.withOpacity(0.7),
+                        ),
+                        margin: EdgeInsets.all(20),
+                        alignment: Alignment.center,
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color:
-                            Colors.deepPurpleAccent.shade100.withOpacity(0.7),
-                      ),
-                      margin: EdgeInsets.all(20),
-                      alignment: Alignment.center,
                     ),
                     SizedBox(
                       width: 70,
@@ -104,16 +111,13 @@ class _DieticianListPageState extends State<DieticianListPage> {
                       )),
                 ),
                 Expanded(
-                  // flex: 5,
                   child: FutureBuilder(
                     future: userService.findDieticianbyResults(widget.results),
                     builder: (context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        print(snapshot.data);
+                        //print(snapshot.data);
                         return ListView(
-                          children: [
-                            searchList(),
-                          ],
+                          children: searchList(snapshot.data),
                         );
                       } else
                         return Center(
@@ -126,97 +130,101 @@ class _DieticianListPageState extends State<DieticianListPage> {
             )));
   }
 
-  Widget searchList() {
-    return Container(
-      margin: EdgeInsets.only(top: 5, bottom: 5, left: 12, right: 12),
-      padding: EdgeInsets.all(10),
-      height: 135,
-      width: MediaQuery.of(context).size.width - 90,
-      child: Material(
-        elevation: 0,
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white.withOpacity(0.5),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => DieticianProfilePage(
-                          userID: "UAqBr09g9IToUF5JX1KjN5GYhMQ2",
-                        )));
-              },
-              child: Container(
-                margin: EdgeInsets.all(10),
-                height: 90,
-                width: 90,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                      "assets/photo/nutri.jpg",
-                    ),
-                    fit: BoxFit.cover,
+  List<Widget> searchList(List<Dietician> dmodels) {
+    List<Widget> temp = [];
+    dmodels.forEach((model) {
+      temp.add(Container(
+        margin: EdgeInsets.only(top: 5, bottom: 5, left: 12, right: 12),
+        padding: EdgeInsets.all(10),
+        height: 135,
+        width: MediaQuery.of(context).size.width - 90,
+        child: Material(
+          elevation: 0,
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white.withOpacity(0.5),
+          child: Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => DieticianProfilePage(
+                            userID: model.id,
+                          )));
+                },
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  height: 90,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  borderRadius: BorderRadius.circular(18),
+                  child: FadeInImage(
+                    image: ExtendedNetworkImageProvider(model.profilePhotoUrl),
+                    placeholder:
+                        ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                    top: 15,
-                    bottom: 10,
-                  ),
-                  child: Text(
-                    "Uzm. Dyt. Rumeysa Ayvalı",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+              SizedBox(
+                width: 10,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: 15,
+                      bottom: 10,
                     ),
-                  ),
-                ),
-                Text(
-                  "Diyetisyen",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Colors.grey),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 30,
-                  width: 180,
-                  child: MaterialButton(
-                    elevation: 4,
-                    color: Colors.white,
-                    textColor: Colors.deepPurpleAccent.shade100,
-                    padding: const EdgeInsets.all(3.0),
                     child: Text(
-                      "Randevu Al",
-                      style: TextStyle(fontSize: 14),
+                      model.name + " " + model.surname,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  RandevuTakvimi()));
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3.0)),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  Text(
+                    "Diyetisyen",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.grey),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 30,
+                    width: 180,
+                    child: MaterialButton(
+                      elevation: 4,
+                      color: Colors.white,
+                      textColor: Colors.deepPurpleAccent.shade100,
+                      padding: const EdgeInsets.all(3.0),
+                      child: Text(
+                        "Randevu Al",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    RandevuTakvimi()));
+                      },
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3.0)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      ));
+    });
+    return temp;
   }
 }
