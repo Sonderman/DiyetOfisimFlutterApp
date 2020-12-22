@@ -25,6 +25,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   String errorText;
   bool _loginSignUpToggle = true;
   bool _loading = false;
+  bool _forgotPasswordToggle = false;
   bool visiblePassword = true;
   bool showLogin = false;
   String sendPasswordMailText = "Giriş Yap";
@@ -74,7 +75,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             ],
           ),
         ),
-        child: _loginSignUpToggle ? loginDesign(context) : signUpDesign(),
+        child: _loginSignUpToggle
+            ? _forgotPasswordToggle
+                ? forgotPasswordPage()
+                : loginDesign(context)
+            : signUpDesign(),
       ),
 
       /*Stack(
@@ -122,6 +127,106 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  Widget forgotPasswordPage() {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: InkWell(
+            onTap: () {
+              setState(() {
+                _forgotPasswordToggle = !_forgotPasswordToggle;
+              });
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              size: 30,
+              color: Colors.white,
+            )),
+      ),
+      body: Container(
+        padding: EdgeInsets.symmetric(vertical: 150, horizontal: 30),
+        child: Column(
+          children: [
+            Container(
+              child: Text(
+                "Forgot Password",
+                style: TextStyle(
+                    color: Colors.white70, fontSize: 48, fontFamily: "Kalam"),
+              ),
+            ),
+            SizedBox(
+              height: PageComponents(context).heightSize(5),
+            ),
+            Container(
+              margin: EdgeInsets.all(18),
+              child: Text(
+                "Lütfen Şifre Sıfırlama Talebiniz İçin E-Mail Adresinizi Giriniz ..",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            TextField(
+              style: TextStyle(color: Colors.white),
+              cursorWidth: 3,
+              cursorColor: Colors.deepPurpleAccent,
+              controller: email,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(16.0),
+                prefixIcon: Container(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                    margin: const EdgeInsets.only(right: 8.0),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.deepPurpleAccent[100],
+                    )),
+                hintText: "enter your email",
+                hintStyle: TextStyle(
+                  color: Colors.white,
+                ),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.18),
+              ),
+            ),
+            SizedBox(
+              height: PageComponents(context).heightSize(4),
+            ),
+            SizedBox(
+              height: 45,
+              width: PageComponents(context).widthSize(35),
+              child: RaisedButton(
+                elevation: 8,
+                color: Colors.white,
+                textColor: Colors.deepPurpleAccent[100],
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "Submit".toUpperCase(),
+                  style: TextStyle(fontFamily: "Genel", fontSize: 15),
+                ),
+                onPressed: () {
+                  setState(() {
+                    // forgetPassword();
+                  });
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   double heightSize(double value) {
     value /= 100;
     return MediaQuery.of(context).size.height * value;
@@ -132,7 +237,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return MediaQuery.of(context).size.width * value;
   }
 
-  Widget welcomeText() {
+  /*Widget welcomeText() {
     if (visiblePassword == false) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +505,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       ],
     );
   }
-
+*/
   Widget loginDesign(BuildContext context) {
     return Column(
       children: <Widget>[
@@ -423,8 +528,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         SizedBox(height: 30.0),
         TextField(
           style: TextStyle(color: Colors.white),
-            cursorWidth: 3,
-            cursorColor: Colors.deepPurpleAccent,
+          cursorWidth: 3,
+          cursorColor: Colors.deepPurpleAccent,
           controller: email,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(16.0),
@@ -452,8 +557,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         SizedBox(height: 10.0),
         TextField(
           style: TextStyle(color: Colors.white),
-           cursorWidth: 3,
-            cursorColor: Colors.deepPurpleAccent,
+          cursorWidth: 3,
+          cursorColor: Colors.deepPurpleAccent,
           controller: password,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(16.0),
@@ -523,7 +628,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               child: Text(
                 "Forgot Password".toUpperCase(),
               ),
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  _forgotPasswordToggle = !_forgotPasswordToggle;
+                });
+              },
             ),
           ],
         ),
@@ -582,7 +691,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 child: TextField(
                   style: TextStyle(color: Colors.white),
                   cursorWidth: 3,
-            cursorColor: Colors.deepPurpleAccent,
+                  cursorColor: Colors.deepPurpleAccent,
                   onChanged: (name) => _name = name,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(top: 0, left: 20),
@@ -604,8 +713,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
                   style: TextStyle(color: Colors.white),
-                   cursorWidth: 3,
-            cursorColor: Colors.deepPurpleAccent,
+                  cursorWidth: 3,
+                  cursorColor: Colors.deepPurpleAccent,
                   onChanged: (surname) => _surname = surname,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
@@ -646,7 +755,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           TextField(
             obscureText: true,
             style: TextStyle(color: Colors.white),
-             cursorWidth: 3,
+            cursorWidth: 3,
             cursorColor: Colors.deepPurpleAccent,
             controller: passwordController,
             decoration: InputDecoration(
@@ -808,9 +917,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIosWeb: 3,
-                      backgroundColor: Colors.red,
+                      backgroundColor: Colors.deepPurpleAccent,
                       textColor: Colors.white,
-                      fontSize: 18.0);
+                      fontSize: 15.0);
                 }
               },
               shape: RoundedRectangleBorder(
@@ -859,7 +968,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 2,
-              backgroundColor: Colors.green,
+              backgroundColor: Colors.deepPurpleAccent,
               textColor: Colors.white,
               fontSize: 18.0);
           setState(() {
@@ -920,7 +1029,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               'Bir Seçim Yapınız',
               style: TextStyle(
                 fontSize: heightSize(2.5),
-                fontFamily: "Zona",
+                fontFamily: "Genel",
                 color: MyColors().loginGreyColor,
               ),
             ),
