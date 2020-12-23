@@ -214,8 +214,10 @@ class _DieticianListPageState extends State<DieticianListPage> {
                             .getAppointmentCalendar(model.id)
                             .then((map) {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  RandevuTakvimi(calendar: map)));
+                              builder: (context) => RandevuTakvimi(
+                                    calendar: map,
+                                    dModel: model,
+                                  )));
                         });
                       },
                       shape: RoundedRectangleBorder(

@@ -1,27 +1,22 @@
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:diyet_ofisim/Settings/AppSettings.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:flutter/material.dart';
 
+typedef DateChangeListener = void Function(
+    int year, int month, int day, String hour);
+
 class AppointmentCalendar extends StatefulWidget {
-  AppointmentCalendar({Key key}) : super(key: key);
+  final DateChangeListener onDateSelected;
+
+  const AppointmentCalendar({Key key,@required this.onDateSelected}) : super(key: key);
 
   @override
   _AppointmentCalendarState createState() => _AppointmentCalendarState();
 }
 
 class _AppointmentCalendarState extends State<AppointmentCalendar> {
-  final List<String> saatler = [
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00"
-  ];
+  List saatler = AppSettings().appointmentHours;
   Map<String, dynamic> appointments = {
     "2020": {
       "12": {
@@ -30,7 +25,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
       }
     }
   };
-
+  String selectedHour;
   int year = DateTime.now().year;
   int month = DateTime.now().month;
   int day = DateTime.now().day;
@@ -49,6 +44,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
           daysCount: 60,
           onDateChange: (date) {
             setState(() {
+              selectedHour = null;
               year = date.year;
               month = date.month;
               day = date.day;
@@ -56,6 +52,9 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
           },
         ),
         Divider(),
+        SizedBox(
+          height: PageComponents(context).heightSize(3),
+        ),
         Container(
           child: Wrap(children: hoursCardsGenerator()),
         )
@@ -76,13 +75,12 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
   }
 
   List<Widget> hoursCardsGenerator() {
-    print("gün değişti");
     try {
       if (calendarCheck(appointments)) {
         Map temp = (appointments[year.toString()][month.toString()]
             [day.toString()] as Map);
 
-        List sList = saatler;
+        List sList = List.from(saatler);
         temp.keys.forEach((e) {
           sList.remove(e);
         });
@@ -97,15 +95,23 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
     }
   }
 
-  Card hourCard(String e) {
-    return Card(
-      margin: EdgeInsets.all(15),
-      color: Colors.blue,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          e,
-          style: TextStyle(color: Colors.white, fontSize: 20),
+  Widget hourCard(String hour) {
+    return InkWell(
+      onTap: () {
+        widget.onDateSelected(year, month, day, hour);
+        setState(() {
+          selectedHour = hour;
+        });
+      },
+      child: Card(
+        margin: EdgeInsets.all(15),
+        color: selectedHour == hour ? Colors.green : Colors.blue,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            hour,
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
       ),
     );

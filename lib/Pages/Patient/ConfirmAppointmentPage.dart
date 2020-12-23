@@ -1,17 +1,42 @@
+import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Appointment.dart';
+import 'package:diyet_ofisim/Models/Dietician.dart';
+import 'package:diyet_ofisim/Models/Patient.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/locator.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
-class RandevuAlma extends StatefulWidget {
+class ConfirmAppointmentPage extends StatefulWidget {
+  final Dietician dModel;
+  final int year, month, day;
+  final String hour;
+
+  const ConfirmAppointmentPage(
+      {Key key, this.year, this.month, this.day, this.hour, this.dModel})
+      : super(key: key);
+
   @override
-  _RandevuAlmaState createState() => _RandevuAlmaState();
+  _ConfirmAppointmentPageState createState() => _ConfirmAppointmentPageState();
 }
 
-class _RandevuAlmaState extends State<RandevuAlma> {
+class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
+  UserService userService = locator<UserService>();
+  Patient usermodel;
   FocusNode _focusNode;
   int maxLine;
+  TextEditingController nameC = TextEditingController();
+  TextEditingController surnameC = TextEditingController();
+  TextEditingController emailC = TextEditingController();
+  TextEditingController extraC = TextEditingController();
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    usermodel = userService.userModel;
+    nameC.text = usermodel.name;
+    surnameC.text = usermodel.surname;
+    emailC.text = usermodel.email;
 
     _focusNode.addListener(() {
       setState(() {
@@ -28,7 +53,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Randevu Al"),
+        title: Text("Randevu Onayla"),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -43,6 +68,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
                 height: 50,
               ),
               TextFormField(
+                controller: nameC,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[300]),
@@ -61,7 +87,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
                 height: 30,
               ),
               TextFormField(
-                keyboardType: TextInputType.emailAddress,
+                controller: surnameC,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[300]),
@@ -80,6 +106,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
                 height: 30,
               ),
               TextFormField(
+                controller: emailC,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -99,7 +126,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
                 height: 30,
               ),
               TextFormField(
-                keyboardType: TextInputType.emailAddress,
+                controller: extraC,
                 focusNode: _focusNode,
                 maxLines: maxLine,
                 decoration: InputDecoration(
@@ -133,8 +160,27 @@ class _RandevuAlmaState extends State<RandevuAlma> {
                     color: Colors.deepPurpleAccent[100],
                     padding: const EdgeInsets.all(6.0),
                     icon: Icon(Icons.save_alt_outlined),
-                    label: Text("KAYDET"),
-                    onPressed: () {},
+                    label: Text("ONAYLA"),
+                    onPressed: () {
+                      Appointment appointment = Appointment();
+                      appointment.name = nameC.text;
+                      appointment.surname = surnameC.text;
+                      appointment.email = emailC.text;
+                      appointment.dID = widget.dModel.id;
+                      appointment.pID = usermodel.id;
+                      appointment.extra = extraC.text;
+                      appointment.year = widget.year;
+                      appointment.month = widget.month;
+                      appointment.day = widget.day;
+                      appointment.hour = widget.hour;
+                      appointment.status = 0;
+                      userService.createAppointment(appointment).then((value) {
+                        if (value)
+                          print("Başarılı");
+                        else
+                          print("Hata!!");
+                      });
+                    },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0)),
                   ),
@@ -148,6 +194,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
   }
 
   Widget randevuDetayi() {
+    DateTime date = DateTime(widget.year, widget.month, widget.day);
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -165,10 +212,14 @@ class _RandevuAlmaState extends State<RandevuAlma> {
                 height: 50,
                 width: 50,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/photo/nutri.jpg"),
-                      fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
+                ),
+                child: FadeInImage(
+                  image: ExtendedNetworkImageProvider(
+                      widget.dModel.profilePhotoUrl),
+                  placeholder:
+                      ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
+                  fit: BoxFit.contain,
                 ),
               ),
               SizedBox(
@@ -177,7 +228,7 @@ class _RandevuAlmaState extends State<RandevuAlma> {
               Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
                 child: Text(
-                  "Uzm. Dyt. Rumeysa Ayvalı",
+                  widget.dModel.name + " " + widget.dModel.surname,
                   style: TextStyle(fontSize: 15),
                 ),
               ),
@@ -199,7 +250,12 @@ class _RandevuAlmaState extends State<RandevuAlma> {
               Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
                 child: Text(
-                  "Randevu Tarihi :  14 Aralık Pazar\nRandevu Saati :  17.00",
+                  "Randevu Tarihi :" +
+                      widget.day.toString() +
+                      " " +
+                      DateFormat("MMM", "tr").format(date) +
+                      " " +
+                      DateFormat("E", "tr").format(date),
                   style: TextStyle(fontSize: 15),
                 ),
               ),

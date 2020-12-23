@@ -30,9 +30,8 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
   @override
   void initState() {
     tabController = TabController(length: 4, vsync: this);
-    userService=locator<UserService>();
+    userService = locator<UserService>();
     if (widget.userID == null) {
-      
       usermodel = userService.userModel;
       canEdit = true;
     } else {
@@ -55,7 +54,10 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       appBar: widget.userID != null
           ? null
           : AppBar(
-              title: Text("Profilim",style: TextStyle(fontSize: 25),),
+              title: Text(
+                "Profilim",
+                style: TextStyle(fontSize: 25),
+              ),
               //centerTitle: true,
               backgroundColor: Colors.transparent,
               elevation: 0,
@@ -170,14 +172,17 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                 padding: const EdgeInsets.all(5.0),
                                 child: Text("Randevu Al"),
                                 onPressed: () {
-                                  userService.getAppointmentCalendar(usermodel.id).then((map) {
+                                  userService
+                                      .getAppointmentCalendar(usermodel.id)
+                                      .then((map) {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                RandevuTakvimi( calendar: map)));
+                                                RandevuTakvimi(
+                                                  calendar: map,
+                                                  dModel: usermodel,
+                                                )));
                                   });
-                                    
-                                 
                                 },
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),

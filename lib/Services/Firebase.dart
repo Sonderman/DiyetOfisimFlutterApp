@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
@@ -392,6 +393,27 @@ class DatabaseWorks {
     } catch (e) {
       print("Catched:" + e);
       return null;
+    }
+  }
+
+  Future<bool> createAppointment(Appointment a) async {
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("appointmentCalendar")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(a.month.toString())
+          .child(a.day.toString())
+          .child(a.hour)
+          .update(a.toMap());
+
+      {}
+      return true;
+    } catch (e) {
+      print("Catched:" + e);
+      return false;
     }
   }
 }
