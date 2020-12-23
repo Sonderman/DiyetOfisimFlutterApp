@@ -164,7 +164,9 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
             yas = int.tryParse(girilenDeger);
           },
           decoration: InputDecoration(
+            focusColor: Colors.teal,
             labelText: "Yaşınız",
+            labelStyle: TextStyle(fontSize: 14),
 
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
@@ -188,7 +190,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
           keyboardType: TextInputType.number,
           key: key1,
           validator: (girilenDeger) {
-            if (girilenDeger.isEmpty || girilenDeger.length < 3) {
+            if (girilenDeger.isEmpty) {
               return "Lütfen Bir Değer Giriniz";
             } else if (!(int.tryParse(girilenDeger) >= 150 &&
                 int.tryParse(girilenDeger) <= 240)) {
@@ -201,6 +203,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
           },
           decoration: InputDecoration(
             labelText: "Boyunuz (cm) ",
+            labelStyle: TextStyle(fontSize: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -236,7 +239,7 @@ class _QuestionsPageNewState extends State<QuestionsPageNew> {
           },
           decoration: InputDecoration(
             labelText: "Kilonuz",
-            helperText: "",
+            labelStyle: TextStyle(fontSize: 14),
 
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),

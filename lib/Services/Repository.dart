@@ -116,6 +116,10 @@ class UserService {
   Future<List<Dietician>> findDieticianbyResults(List<Diseases> results) async {
     return await _database.findDieticianbyResults(results);
   }
+
+  Future<Map<String, dynamic>> getAppointmentCalendar(String dID) async {
+    return await _database.getAppointmentCalendar(dID);
+  }
 }
 /*
 class UserService with ChangeNotifier {

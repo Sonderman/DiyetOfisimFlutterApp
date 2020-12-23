@@ -370,7 +370,27 @@ class DatabaseWorks {
         return dieticianList;
       });
     } catch (e) {
-      print(e);
+      print("Catched:" + e);
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> getAppointmentCalendar(String dID) async {
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("appointmentCalendar")
+          .child(dID)
+          .once()
+          .then((data) {
+        if (data.value != null)
+          return Map<String, dynamic>.from(data.value);
+        else
+          return null;
+      });
+    } catch (e) {
+      print("Catched:" + e);
       return null;
     }
   }

@@ -1,7 +1,12 @@
+import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:diyet_ofisim/Tools/AppointmentCalendar.dart';
 import "package:flutter/material.dart";
 import 'package:diyet_ofisim/Pages/Patient/randevuAlma.dart';
 
 class RandevuTakvimi extends StatefulWidget {
+  final Map<String, dynamic> calendar;
+
+  const RandevuTakvimi({Key key, @required this.calendar}) : super(key: key);
   @override
   _RandevuTakvimiState createState() => _RandevuTakvimiState();
 }
@@ -33,6 +38,14 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
     "19.00",
     "20.00"
   ];
+  Map<String, dynamic> appointments = {
+    "2020": {
+      "12": {
+        "23": {"08:00": true, "10.00": true, "14.00": true, "18.00": true},
+        "24": {"09:00": true, "11.00": true, "15.00": true, "19.00": true}
+      }
+    }
+  };
 
   List<bool> _selected = List.generate(11, (i) => false);
   bool _hasBeenPressed = false;
@@ -40,6 +53,7 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
   Color primaryColor = Color(0xffdfdeff);
   @override
   Widget build(BuildContext context) {
+    print("Calendar:" + widget.calendar.toString());
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -52,6 +66,8 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
         ),
         body: Column(
           children: [
+       Expanded(child: AppointmentCalendar()),
+            /*
             Container(
               //color: Colors.blueGrey[50],
               height: MediaQuery.of(context).size.height / 2 + 200,
@@ -66,7 +82,8 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
                         weekdays: DateTime.now().day.toString(),
                         daysOftheMounth: DateTime.now().year.toString());
                   }),
-              /*SingleChildScrollView(
+/*
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
@@ -76,7 +93,7 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
                 ),
               ),*/
             ),
-
+*/
             /*oneDayWidget(weekdays: "Bugün", daysOftheMounth: "11 Aralık"),
                       oneDayWidget("Yarın", "12 Aralık"),
                       oneDayWidget("Pazar", "13 Aralık"),
