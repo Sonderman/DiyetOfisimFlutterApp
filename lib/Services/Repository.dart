@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
@@ -115,6 +116,14 @@ class UserService {
 
   Future<List<Dietician>> findDieticianbyResults(List<Diseases> results) async {
     return await _database.findDieticianbyResults(results);
+  }
+
+  Future<Map<String, dynamic>> getAppointmentCalendar(String dID) async {
+    return await _database.getAppointmentCalendar(dID);
+  }
+
+  Future<bool> createAppointment(Appointment appointment) async {
+    return await _database.createAppointment( appointment);
   }
 }
 /*

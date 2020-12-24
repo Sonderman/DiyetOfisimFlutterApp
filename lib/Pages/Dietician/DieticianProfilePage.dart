@@ -25,12 +25,14 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
   bool loading = false, canEdit = false;
   TabController tabController;
   Dietician usermodel;
+  UserService userService;
 
   @override
   void initState() {
     tabController = TabController(length: 4, vsync: this);
+    userService = locator<UserService>();
     if (widget.userID == null) {
-      usermodel = locator<UserService>().userModel;
+      usermodel = userService.userModel;
       canEdit = true;
     } else {
       loading = true;
@@ -52,12 +54,16 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       appBar: widget.userID != null
           ? null
           : AppBar(
-              title: Text("Profilim"),
-              centerTitle: true,
-              backgroundColor: Colors.white,
+              title: Text(
+                "Profilim",
+                style: TextStyle(fontSize: 25),
+              ),
+              //centerTitle: true,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
               actions: [
                 IconButton(
-                    color: Colors.blue,
+                    color: Colors.deepPurpleAccent[100],
                     iconSize: 30,
                     icon: Icon(Icons.exit_to_app_outlined),
                     onPressed: () {
@@ -166,11 +172,16 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                 padding: const EdgeInsets.all(5.0),
                                 child: Text("Randevu Al"),
                                 onPressed: () {
-                                  setState(() {
+                                  userService
+                                      .getAppointmentCalendar(usermodel.id)
+                                      .then((map) {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                RandevuTakvimi()));
+                                                RandevuTakvimi(
+                                                  calendar: map,
+                                                  dModel: usermodel,
+                                                )));
                                   });
                                 },
                                 shape: RoundedRectangleBorder(
@@ -672,7 +683,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
         borderRadius: BorderRadius.circular(10),
       ),
       child: TabBar(
-        indicatorWeight: 3,
+        indicatorWeight: 4,
         indicatorColor: Colors.white,
         controller: tabController,
         tabs: [

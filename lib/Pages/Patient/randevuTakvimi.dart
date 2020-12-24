@@ -1,7 +1,14 @@
+
+import 'package:diyet_ofisim/Models/Dietician.dart';
+import 'package:diyet_ofisim/Tools/AppointmentCalendar.dart';
 import "package:flutter/material.dart";
-import 'package:diyet_ofisim/Pages/Patient/randevuAlma.dart';
+import 'package:diyet_ofisim/Pages/Patient/ConfirmAppointmentPage.dart';
 
 class RandevuTakvimi extends StatefulWidget {
+  final Map<String, dynamic> calendar;
+  final Dietician dModel;
+
+  const RandevuTakvimi({Key key, @required this.calendar, this.dModel}) : super(key: key);
   @override
   _RandevuTakvimiState createState() => _RandevuTakvimiState();
 }
@@ -33,13 +40,24 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
     "19.00",
     "20.00"
   ];
+  Map<String, dynamic> appointments = {
+    "2020": {
+      "12": {
+        "23": {"08:00": true, "10.00": true, "14.00": true, "18.00": true},
+        "24": {"09:00": true, "11.00": true, "15.00": true, "19.00": true}
+      }
+    }
+  };
 
   List<bool> _selected = List.generate(11, (i) => false);
   bool _hasBeenPressed = false;
   Color clickColor = Colors.cyan[100];
   Color primaryColor = Color(0xffdfdeff);
+  int year, month, day;
+  String hour;
   @override
   Widget build(BuildContext context) {
+    print("Calendar:" + widget.calendar.toString());
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -51,50 +69,30 @@ class _RandevuTakvimiState extends State<RandevuTakvimi> {
           elevation: 0,
         ),
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
-              //color: Colors.blueGrey[50],
-              height: MediaQuery.of(context).size.height / 2 + 200,
-              margin:
-                  EdgeInsets.only(top: 15.0, bottom: 10, left: 24, right: 24),
-              padding: EdgeInsets.all(10),
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 20,
-                  itemBuilder: (BuildContext context, int i) {
-                    return oneDayWidget(
-                        weekdays: DateTime.now().day.toString(),
-                        daysOftheMounth: DateTime.now().year.toString());
-                  }),
-              /*SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    times(),
-                    times(),
-                  ],
-                ),
-              ),*/
+            AppointmentCalendar(
+              onDateSelected: (y, m, d, h) {
+                year = y;
+                month = m;
+                day = d;
+                hour = h;
+              },
             ),
-
-            /*oneDayWidget(weekdays: "Bugün", daysOftheMounth: "11 Aralık"),
-                      oneDayWidget("Yarın", "12 Aralık"),
-                      oneDayWidget("Pazar", "13 Aralık"),
-                      oneDayWidget("Pazartesi", "14 Aralık"),
-                      oneDayWidget("Salı", "15 Aralık"),
-                      oneDayWidget("Çarşamba", "16 Aralık"),
-                      oneDayWidget("Perşembe", "17 Haziran"),
-                      oneDayWidget("Cuma", "18 Ağustos"),*/
-
             Container(
-              margin: EdgeInsets.only(top: 50),
               height: 40,
               width: MediaQuery.of(context).size.width / 2 - 20,
               child: RaisedButton(
                 onPressed: () {
                   setState(() {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => RandevuAlma()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ConfirmAppointmentPage(
+                          dModel: widget.dModel,
+                              year: year,
+                              month: month,
+                              day: day,
+                              hour: hour,
+                            )));
                   });
                 },
                 child: Text(

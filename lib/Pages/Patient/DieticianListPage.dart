@@ -1,8 +1,10 @@
 import 'package:diyet_ofisim/Models/Dietician.dart';
+import 'package:diyet_ofisim/Pages/Dietician/AppointmentsPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/randevuTakvimi.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
+import 'package:diyet_ofisim/Tools/AppointmentCalendar.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
@@ -208,11 +210,15 @@ class _DieticianListPageState extends State<DieticianListPage> {
                         style: TextStyle(fontSize: 14),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    RandevuTakvimi()));
+                        userService
+                            .getAppointmentCalendar(model.id)
+                            .then((map) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => RandevuTakvimi(
+                                    calendar: map,
+                                    dModel: model,
+                                  )));
+                        });
                       },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(3.0)),
