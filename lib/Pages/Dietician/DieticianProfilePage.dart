@@ -1,7 +1,7 @@
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Pages/Components/CommentsPageDetails.dart';
 import 'package:diyet_ofisim/Pages/LoginSignupPage.dart';
-import 'package:diyet_ofisim/Pages/Patient/randevuTakvimi.dart';
+import 'package:diyet_ofisim/Pages/Patient/AppointmentCalendarPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
@@ -178,7 +178,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                RandevuTakvimi(
+                                                AppointmentCalendarPage(
                                                   calendar: map,
                                                   dModel: usermodel,
                                                 )));
@@ -337,8 +337,13 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
           icon: Icon(Icons.date_range),
           label: Text("RANDEVU AL"),
           onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => RandevuTakvimi()));
+            userService.getAppointmentCalendar(usermodel.id).then((map) {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AppointmentCalendarPage(
+                        calendar: map,
+                        dModel: usermodel,
+                      )));
+            });
           },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),

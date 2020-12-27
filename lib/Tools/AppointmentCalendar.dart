@@ -8,8 +8,10 @@ typedef DateChangeListener = void Function(
 
 class AppointmentCalendar extends StatefulWidget {
   final DateChangeListener onDateSelected;
-
-  const AppointmentCalendar({Key key,@required this.onDateSelected}) : super(key: key);
+  final Map<String, dynamic> calendar;
+  const AppointmentCalendar(this.calendar,
+      {Key key, @required this.onDateSelected})
+      : super(key: key);
 
   @override
   _AppointmentCalendarState createState() => _AppointmentCalendarState();
@@ -17,7 +19,8 @@ class AppointmentCalendar extends StatefulWidget {
 
 class _AppointmentCalendarState extends State<AppointmentCalendar> {
   List saatler = AppSettings().appointmentHours;
-  Map<String, dynamic> appointments = {
+
+  Map<String, dynamic> a = {
     "2020": {
       "12": {
         "23": {"09:00": 0, "10:00": 0, "11:00": 0, "15:00": 0},
@@ -63,6 +66,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
   }
 
   bool calendarCheck(Map<String, dynamic> map) {
+    if (map == null) return false;
     if (map.containsKey(year.toString())) {
       if (map[year.toString()].containsKey(month.toString())) {
         if (map[year.toString()][month.toString()]
@@ -75,6 +79,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
   }
 
   List<Widget> hoursCardsGenerator() {
+    Map appointments = widget.calendar;
     try {
       if (calendarCheck(appointments)) {
         Map temp = (appointments[year.toString()][month.toString()]
