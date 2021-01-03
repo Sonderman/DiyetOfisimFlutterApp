@@ -1,9 +1,15 @@
+import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Appointment.dart';
+import 'package:diyet_ofisim/Models/Dietician.dart';
+import 'package:diyet_ofisim/Tools/Dialogs.dart';
+import 'package:extended_image/extended_image.dart';
 import "package:flutter/material.dart";
 
 class AppointmentDetail extends StatefulWidget {
-  final String diyetisyenAdi, imgPath;
+  final Dietician dModel;
+  final Appointment aModel;
 
-  const AppointmentDetail({Key key, this.diyetisyenAdi, this.imgPath})
+  const AppointmentDetail({Key key, this.dModel, this.aModel})
       : super(key: key);
 
   @override
@@ -31,6 +37,8 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
   }
 
   Widget bodyContainer() {
+    DateTime date =
+        DateTime(widget.aModel.year, widget.aModel.month, widget.aModel.day);
     return Container(
       margin: EdgeInsets.only(top: 20, bottom: 5, left: 10, right: 10),
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -42,15 +50,24 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
           diyetisyeniniz(),
           Divider(),
           baslik("Hasta/Danışan"),
-          icerik("Çiğdem Atak", Icon(Icons.person)),
+          icerik(widget.aModel.name + " " + widget.aModel.surname,
+              Icon(Icons.person)),
           Divider(),
           baslik("Randevu Özeti"),
-          icerik("02.11.2020", Icon(Icons.date_range)),
-          icerik("11.00", Icon(Icons.timer)),
+          icerik(
+              widget.aModel.day.toString() +
+                  "." +
+                  widget.aModel.month.toString() +
+                  "." +
+                  widget.aModel.year.toString() +
+                  " " +
+                  DateFormat("EEEE", "tr").format(date),
+              Icon(Icons.date_range)),
+          icerik(widget.aModel.hour, Icon(Icons.timer)),
           Divider(),
           baslik("Kabul Edilen Ödeme Şekli"),
           icerik("Nakit / Kredi Kartı", Icon(Icons.money)),
-          butonBar(),
+          Visibility(visible: widget.aModel.status == 0, child: butonBar()),
         ],
       ),
     );
@@ -67,17 +84,24 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             //color: Colors.amber,
             height: 60,
             width: 60,
+            child: ClipOval(
+              child: FadeInImage(
+                image:
+                    ExtendedNetworkImageProvider(widget.dModel.profilePhotoUrl),
+                placeholder:
+                    ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
+                fit: BoxFit.contain,
+              ),
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
-              image: DecorationImage(
-                  image: AssetImage(widget.imgPath), fit: BoxFit.cover),
             ),
           ),
           SizedBox(
             width: 20,
           ),
           Text(
-            widget.diyetisyenAdi,
+            widget.dModel.name,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ],
@@ -129,8 +153,11 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
           icon: Icon(Icons.date_range),
           label: Text("RANDEVUNU iPTAL ET"),
           onPressed: () {
-            setState(() {
-              alertDialogWidget(context);
+            appointmentCancelAsking(context, widget.aModel).then((value) {
+              if (value) {
+                print("Randevu silindi");
+                Navigator.pop(context, true);
+              }
             });
           },
           shape:
@@ -138,55 +165,5 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
         ),
       ),
     );
-  }
-
-  Widget alertDialogWidget(context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            title: Text(
-              "Uyarı",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.redAccent[400]),
-            ),
-            content:
-                Text("Randevunuzu İptal Etmek İstediğinize \nEmin misiniz ? "),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            actions: <Widget>[
-              Container(
-                width: 150,
-                child: MaterialButton(
-                  onPressed: () {
-                    setState(() {
-                      Navigator.of(context).pop(MaterialPageRoute(
-                          builder: (context) => AppointmentDetail()));
-                    });
-                  },
-                  child: Text(
-                    "Vazgeç".toUpperCase(),
-                    style: TextStyle(
-                        color: Colors.deepPurpleAccent.shade100, fontSize: 15),
-                  ),
-                  //color: Colors.white,
-                ),
-              ),
-              Container(
-                width: 150,
-                child: MaterialButton(
-                  onPressed: () {},
-                  child: Text(
-                    "Evet".toUpperCase(),
-                    style: TextStyle(
-                        color: Colors.deepPurpleAccent.shade100, fontSize: 15),
-                  ),
-                  //color: Colors.white,
-                ),
-              ),
-            ],
-          );
-        });
   }
 }

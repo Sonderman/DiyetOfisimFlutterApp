@@ -123,7 +123,15 @@ class UserService {
   }
 
   Future<bool> createAppointment(Appointment appointment) async {
-    return await _database.createAppointment( appointment);
+    return await _database.createAppointment(appointment, userModel.id);
+  }
+
+  Future<List<List<dynamic>>> getMyAppointments() async {
+    return await _database.getMyAppointments(userModel.id);
+  }
+
+  Future<bool> deleteAppointment(Appointment aModel) async {
+    return await _database.deleteAppointment(aModel);
   }
 }
 /*

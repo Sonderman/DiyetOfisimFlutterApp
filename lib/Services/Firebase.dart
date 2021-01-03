@@ -396,7 +396,7 @@ class DatabaseWorks {
     }
   }
 
-  Future<bool> createAppointment(Appointment a) async {
+  Future<bool> createAppointment(Appointment a, String myID) async {
     try {
       await ref
           .child(settings.appName)
@@ -409,8 +409,88 @@ class DatabaseWorks {
           .child(a.hour)
           .update(a.toMap());
 
-      {}
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(myID)
+          .child("myAppointments")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(a.month.toString())
+          .child(a.day.toString())
+          .child(a.hour)
+          .update(a.toMap());
+
       return true;
+    } catch (e) {
+      print("Catched:" + e);
+      return false;
+    }
+  }
+
+  Future<List<List<dynamic>>> getMyAppointments(String myId) async {
+    List<List<dynamic>> temp = [];
+
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(myId)
+          .child("myAppointments")
+          .once()
+          .then((data) async {
+        Map tmap = Map<String, dynamic>.from(data.value);
+        if (tmap == null) return [];
+
+        for (int c = 0; c < tmap.length; c++) {
+          await findUserbyID(tmap.keys.toList()[c]).then((v) {
+            Dietician dModel;
+            dModel = Dietician(id: tmap.keys.toList()[c]);
+            dModel.parseMap(v);
+
+            Map e = tmap.values.toList()[c];
+
+            (e).forEach((year, i) {
+              (i as Map).forEach((month, j) {
+                (j as Map).forEach((day, k) {
+                  (k as Map).forEach((hours, h) {
+                    Appointment a = Appointment();
+                    a.parseMap(Map<String, dynamic>.from(h));
+                    a.year = int.tryParse(year);
+                    a.month = int.tryParse(month);
+                    a.day = int.tryParse(day);
+                    a.hour = hours;
+                    temp.add([dModel, a]);
+                  });
+                });
+              });
+            });
+          });
+        }
+        return temp;
+      });
+    } catch (e) {
+      print("Catched:" + e);
+      return [];
+    }
+  }
+
+  Future<bool> deleteAppointment(Appointment a) async {
+    try {
+      return await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(a.pID)
+          .child("myAppointments")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(a.month.toString())
+          .child(a.day.toString())
+          .child(a.hour)
+          .update({"Status": 2}).then((x) => true);
     } catch (e) {
       print("Catched:" + e);
       return false;

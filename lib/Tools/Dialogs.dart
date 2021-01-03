@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
@@ -10,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 
-Future<bool> appointmentCancelAsking(mycontext) {
+Future<bool> appointmentCancelAsking(
+    BuildContext mycontext, Appointment aModel) {
+  UserService userService = locator<UserService>();
   return showDialog(
       context: mycontext,
       builder: (BuildContext context) {
@@ -44,7 +47,12 @@ Future<bool> appointmentCancelAsking(mycontext) {
               width: 150,
               child: MaterialButton(
                 onPressed: () {
-                  Navigator.pop(context, true);
+                  userService.deleteAppointment(aModel).then((r) {
+                    if (r)
+                      Navigator.pop(context, true);
+                    else
+                      print("Randevu silerken hata");
+                  });
                 },
                 child: Text(
                   "Evet".toUpperCase(),

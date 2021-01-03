@@ -175,9 +175,10 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                       appointment.hour = widget.hour;
                       appointment.status = 0;
                       userService.createAppointment(appointment).then((value) {
-                        if (value)
-                          print("Başarılı");
-                        else
+                        if (value) {
+                          print("Randevu Oluşturuldu");
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        } else
                           print("Hata!!");
                       });
                     },
@@ -255,7 +256,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                       " " +
                       DateFormat("MMM", "tr").format(date) +
                       " " +
-                      DateFormat("E", "tr").format(date),
+                      DateFormat("EEEE", "tr").format(date),
                   style: TextStyle(fontSize: 15),
                 ),
               ),
