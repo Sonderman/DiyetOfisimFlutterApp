@@ -20,14 +20,6 @@ class AppointmentCalendar extends StatefulWidget {
 class _AppointmentCalendarState extends State<AppointmentCalendar> {
   List saatler = AppSettings().appointmentHours;
 
-  Map<String, dynamic> a = {
-    "2020": {
-      "12": {
-        "23": {"09:00": 0, "10:00": 0, "11:00": 0, "15:00": 0},
-        "24": {"09:00": 0, "10:00": 0, "12:00": 0, "18:00": 0}
-      }
-    }
-  };
   String selectedHour;
   int year = DateTime.now().year;
   int month = DateTime.now().month;

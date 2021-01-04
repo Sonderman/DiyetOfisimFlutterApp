@@ -131,7 +131,7 @@ class DatabaseWorks {
         .runTransaction((MutableData mutableData) async {
       mutableData.value = messageMap;
       return mutableData;
-    });
+    }, timeout: Duration(seconds: 2));
 
     if (transactionResult2.committed) {
       await ref
@@ -167,9 +167,9 @@ class DatabaseWorks {
           .orderByChild("OtherUserID")
           .equalTo(otherUser)
           //.where("OtherUserID", isEqualTo: otherUser)
-
           .once()
           .then((data) {
+        if ((data.value as Map) == null) return "bos";
         return (data.value as Map).keys.first;
       });
     } catch (e) {
@@ -494,6 +494,20 @@ class DatabaseWorks {
     } catch (e) {
       print("Catched:" + e);
       return false;
+    }
+  }
+
+  Stream<Event> getMyCalendarSnapshot(String dID) {
+    try {
+      return ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("appointmentCalendar")
+          .child(dID)
+          .onValue;
+    } catch (e) {
+      print("Catched:" + e);
+      return null;
     }
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class NavigationProvider with ChangeNotifier {
   int _bottomNavIndex = locator<AppSettings>().defaultNavIndex;
+
   CircularBottomNavigationController _navigationController =
       CircularBottomNavigationController(0);
 

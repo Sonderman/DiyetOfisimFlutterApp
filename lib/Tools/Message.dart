@@ -116,7 +116,7 @@ class _MessageState extends State<Message> {
                     .sendMessage(chatID, message, currentUserID, otherUserID)
                     .then((id) {
                   print("ChatID: " + id);
-                  if (messages == null) {
+                  if (messages.length == 0) {
                     print("ilkmesaj");
                     setState(() {
                       chatID = id;

@@ -21,6 +21,7 @@ class _RootPageState extends State<RootPage> {
     navigation.setBottomNavIndex(0, reFresh: false);
     Provider.of<NavigationProvider>(context, listen: false)
         .resetControllerIndex();
+
     super.didChangeDependencies();
   }
 
@@ -149,15 +150,17 @@ class _RootPageState extends State<RootPage> {
                 body: Stack(children: [
                   Padding(
                     padding: EdgeInsets.only(
-                      bottom: PageComponents(context).heightSize(6)),
+                        bottom: PageComponents(context).heightSize(6)),
                     child: Consumer<NavigationProvider>(
                       builder: (con, nav, w) => getNavigatedPage(context),
                     ),
                   ),
-                   Align(alignment: Alignment.bottomCenter, child:  bottomNavigationBar(context, this))
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: bottomNavigationBar(context, this))
                 ]),
-               // bottomNavigationBar: bottomNavigationBar(context, this)
-                ));
+                // bottomNavigationBar: bottomNavigationBar(context, this)
+              ));
   }
 
   //ANCHOR burada stack de widget varmı kontrol eder, eğer widget varsa pop eder

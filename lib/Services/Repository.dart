@@ -133,6 +133,10 @@ class UserService {
   Future<bool> deleteAppointment(Appointment aModel) async {
     return await _database.deleteAppointment(aModel);
   }
+
+  Stream<Event> getMyCalendarSnapshot() {
+    return _database.getMyCalendarSnapshot(userModel.id);
+  }
 }
 /*
 class UserService with ChangeNotifier {
