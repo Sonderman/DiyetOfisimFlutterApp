@@ -397,6 +397,21 @@ class DatabaseWorks {
   }
 
   Future<bool> createAppointment(Appointment a, String myID) async {
+    String month, day;
+    if (a == null) {
+      a = Appointment();
+      a.dID = "oKukQkaAWPbk7itBmfWBmew5FR23";
+      a.year = 2021;
+      a.month = 1;
+      a.day = 1;
+      a.hour = "15:00";
+      a.pID = myID;
+      a.status = 0;
+    }
+    month = a.month.toString();
+    day = a.day.toString();
+    if (a.month < 10) month = "0" + month;
+    if (a.day < 10) day = "0" + day;
     try {
       await ref
           .child(settings.appName)
@@ -404,8 +419,8 @@ class DatabaseWorks {
           .child("appointmentCalendar")
           .child(a.dID)
           .child(a.year.toString())
-          .child(a.month.toString())
-          .child(a.day.toString())
+          .child(month)
+          .child(day)
           .child(a.hour)
           .update(a.toMap());
 
@@ -417,8 +432,8 @@ class DatabaseWorks {
           .child("myAppointments")
           .child(a.dID)
           .child(a.year.toString())
-          .child(a.month.toString())
-          .child(a.day.toString())
+          .child(month)
+          .child(day)
           .child(a.hour)
           .update(a.toMap());
 

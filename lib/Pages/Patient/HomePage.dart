@@ -1,4 +1,6 @@
 import 'package:diyet_ofisim/Pages/Patient/QuestionsPageNew.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,8 +15,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: new DecorationImage(
             fit: BoxFit.cover,
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        child: Column(
+        child: ListView(
           children: [
             Container(
               child: Column(
@@ -44,7 +44,10 @@ class _HomePageState extends State<HomePage> {
                       Container(
                         margin: EdgeInsets.only(left: 20, top: 20),
                         child: MaterialButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            //locator<UserService>().createAppointment(null);
+                            print("Test Butonu:)");
+                          },
                           child: Icon(
                             Icons.notifications,
                             color: Colors.black45,

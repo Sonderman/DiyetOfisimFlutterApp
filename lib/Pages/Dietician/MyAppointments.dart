@@ -101,24 +101,22 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                             color: myColor,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: SingleChildScrollView(
-                            child: Column(children: [
-                              Text(
-                                  selectedDate.day.toString() +
-                                      " " +
-                                      DateFormat("MMMM", "tr")
-                                          .format(selectedDate) +
-                                      " " +
-                                      selectedDate.year.toString(),
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  )),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              appointmentSection(calendar),
-                            ]),
-                          ),
+                          child: ListView(children: [
+                            Text(
+                                selectedDate.day.toString() +
+                                    " " +
+                                    DateFormat("MMMM", "tr")
+                                        .format(selectedDate) +
+                                    " " +
+                                    selectedDate.year.toString(),
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                )),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            appointmentSection(calendar),
+                          ]),
                         ),
                       ),
                     ],

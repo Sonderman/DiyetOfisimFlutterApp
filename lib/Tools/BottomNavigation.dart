@@ -148,7 +148,6 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
       barBackgroundColor: Colors.white,
       animationDuration: Duration(milliseconds: 300),
       selectedCallback: (position) {
-        print(position);
         currentPosition = position;
         currentPageSetter();
       },
