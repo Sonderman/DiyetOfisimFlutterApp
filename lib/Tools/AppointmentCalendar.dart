@@ -57,12 +57,12 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
     );
   }
 
-  bool calendarCheck(Map<String, dynamic> map) {
+  bool calendarCheck(Map<String, dynamic> map, String xmonth, String xday) {
     if (map == null) return false;
+
     if (map.containsKey(year.toString())) {
-      if (map[year.toString()].containsKey(month.toString())) {
-        if (map[year.toString()][month.toString()]
-            .containsKey(day.toString())) {
+      if (map[year.toString()].containsKey(xmonth)) {
+        if (map[year.toString()][xmonth].containsKey(xday)) {
           return true;
         }
       }
@@ -71,11 +71,15 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
   }
 
   List<Widget> hoursCardsGenerator() {
-    Map appointments = widget.calendar;
+    Map calendar = widget.calendar;
+    String xmonth, xday;
     try {
-      if (calendarCheck(appointments)) {
-        Map temp = (appointments[year.toString()][month.toString()]
-            [day.toString()] as Map);
+      xmonth = month.toString();
+      xday = day.toString();
+      if (month < 10) xmonth = "0" + xmonth;
+      if (day < 10) xday = "0" + xday;
+      if (calendarCheck(calendar, xmonth, xday)) {
+        Map temp = (calendar[year.toString()][xmonth][xday] as Map);
 
         List sList = List.from(saatler);
         temp.keys.forEach((e) {

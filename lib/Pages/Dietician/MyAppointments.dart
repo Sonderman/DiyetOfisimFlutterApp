@@ -126,13 +126,11 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
             }));
   }
 
-  bool calendarCheck(Map<String, dynamic> map) {
+  bool calendarCheck(Map<String, dynamic> map, String month, String day) {
     if (map == null) return false;
     if (map.containsKey(selectedDate.year.toString())) {
-      if (map[selectedDate.year.toString()]
-          .containsKey(selectedDate.month.toString())) {
-        if (map[selectedDate.year.toString()][selectedDate.month.toString()]
-            .containsKey(selectedDate.day.toString())) {
+      if (map[selectedDate.year.toString()].containsKey(month)) {
+        if (map[selectedDate.year.toString()][month].containsKey(day)) {
           return true;
         }
       }
@@ -141,9 +139,13 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
   }
 
   Widget appointmentSection(Map calendar) {
-    if (calendarCheck(calendar)) {
-      Map apMap = calendar[selectedDate.year.toString()]
-          [selectedDate.month.toString()][selectedDate.day.toString()];
+    String month, day;
+    month = selectedDate.month.toString();
+    day = selectedDate.day.toString();
+    if (selectedDate.month < 10) month = "0" + month;
+    if (selectedDate.day < 10) day = "0" + day;
+    if (calendarCheck(calendar, month, day)) {
+      Map apMap = calendar[selectedDate.year.toString()][month][day];
       List apList = apMap.values.toList();
       List apKList = apMap.keys.toList();
       return Column(
