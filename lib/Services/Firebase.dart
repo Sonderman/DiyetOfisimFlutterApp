@@ -89,8 +89,18 @@ class DatabaseWorks {
 
   Future<String> sendMessage(ChatMessage message, String chatID,
       String currentUser, String otherUser) async {
+    Map<String, dynamic> messageMap = message.toJson();
+    Map<String, dynamic> lastmessage = {
+      "lastMessage": {
+        "senderID": currentUser,
+        "message": messageMap['text'],
+        "createdAt": messageMap['createdAt']
+      }
+    };
+
     if (chatID == "temp") {
       chatID = AutoIdGenerator.autoId();
+      lastmessage["Status"] = true;
       final TransactionResult transactionResult = await ref
           .child(settings.appName)
           .child(settings.getServer())
@@ -119,8 +129,6 @@ class DatabaseWorks {
       }
     }
 
-    Map<String, dynamic> messageMap = message.toJson();
-
     final TransactionResult transactionResult2 = await ref
         .child(settings.appName)
         .child(settings.getServer())
@@ -139,13 +147,7 @@ class DatabaseWorks {
           .child(settings.getServer())
           .child('messagePool')
           .child(chatID)
-          .update({
-        "lastMessage": {
-          "senderID": currentUser,
-          "message": messageMap['text'],
-          "createdAt": messageMap['createdAt']
-        }
-      });
+          .update(lastmessage);
     } else {
       print('Transaction not committed.');
       if (transactionResult2.error != null) {
@@ -492,9 +494,15 @@ class DatabaseWorks {
     }
   }
 
-  Future<bool> deleteAppointment(Appointment a) async {
+  Future<bool> updateAppointmentStatus(Appointment a) async {
+    String month, day;
+    month = a.month.toString();
+    day = a.day.toString();
+    if (a.month < 10) month = "0" + month;
+    if (a.day < 10) day = "0" + day;
+
     try {
-      return await ref
+      await ref
           .child(settings.appName)
           .child(settings.getServer())
           .child("users")
@@ -502,10 +510,21 @@ class DatabaseWorks {
           .child("myAppointments")
           .child(a.dID)
           .child(a.year.toString())
-          .child(a.month.toString())
-          .child(a.day.toString())
+          .child(month)
+          .child(day)
           .child(a.hour)
-          .update({"Status": 2}).then((x) => true);
+          .update({"Status": a.status});
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("appointmentCalendar")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(month)
+          .child(day)
+          .child(a.hour)
+          .update({"Status": a.status});
+      return true;
     } catch (e) {
       print("Catched:" + e);
       return false;
@@ -519,6 +538,109 @@ class DatabaseWorks {
           .child(settings.getServer())
           .child("appointmentCalendar")
           .child(dID)
+          .onValue;
+    } catch (e) {
+      print("Catched:" + e);
+      return null;
+    }
+  }
+
+  Future<Stream<Event>> readyForAppointmentToggle(
+      Appointment a, bool readyToggle) async {
+    String month, day;
+    month = a.month.toString();
+    day = a.day.toString();
+    if (a.month < 10) month = "0" + month;
+    if (a.day < 10) day = "0" + day;
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("users")
+          .child(a.pID)
+          .child("myAppointments")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(month)
+          .child(day)
+          .child(a.hour)
+          .update({"pReady": readyToggle});
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("appointmentCalendar")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(month)
+          .child(day)
+          .child(a.hour)
+          .update({"pReady": readyToggle});
+      if (readyToggle)
+        return ref
+            .child(settings.appName)
+            .child(settings.getServer())
+            .child("appointmentCalendar")
+            .child(a.dID)
+            .child(a.year.toString())
+            .child(month)
+            .child(day)
+            .child(a.hour)
+            .onValue;
+      else
+        return null;
+    } catch (e) {
+      print("Catched:" + e);
+      return null;
+    }
+  }
+
+  Future<bool> startAppointment(Appointment a) async {
+    String month, day;
+    month = a.month.toString();
+    day = a.day.toString();
+    if (a.month < 10) month = "0" + month;
+    if (a.day < 10) day = "0" + day;
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("appointmentCalendar")
+          .child(a.dID)
+          .child(a.year.toString())
+          .child(month)
+          .child(day)
+          .child(a.hour)
+          .update({"dReady": true});
+      return true;
+    } catch (e) {
+      print("Catched:" + e);
+      return false;
+    }
+  }
+
+  Future<bool> finishConversation(String chatID) async {
+    try {
+      await ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("messagePool")
+          .child(chatID)
+          .update({"Status": false});
+      return true;
+    } catch (e) {
+      print("Catched:" + e);
+      return false;
+    }
+  }
+
+  Stream<Event> getChatStatusSnapshot(String chatID) {
+    try {
+      return ref
+          .child(settings.appName)
+          .child(settings.getServer())
+          .child("messagePool")
+          .child(chatID)
+          .child("Status")
           .onValue;
     } catch (e) {
       print("Catched:" + e);

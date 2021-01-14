@@ -47,7 +47,7 @@ Future<bool> appointmentCancelAsking(
               width: 150,
               child: MaterialButton(
                 onPressed: () {
-                  userService.deleteAppointment(aModel).then((r) {
+                  userService.updateAppointmentStatus(aModel, 2).then((r) {
                     if (r)
                       Navigator.pop(context, true);
                     else
@@ -371,29 +371,33 @@ Future<bool> askingDialog(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           actions: <Widget>[
             FlatButton(
-              onPressed: () {
-                Navigator.pop(dcontext, false);
-              },
-              child: Text(
-                "Hayır",
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+                onPressed: () {
+                  Navigator.pop(dcontext, false);
+                },
+                child: ColorFiltered(
+                  colorFilter:
+                      ColorFilter.mode(backgroundColor, BlendMode.difference),
+                  child: Text(
+                    "Hayır",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                    ),
+                  ),
+                )),
             FlatButton(
-              onPressed: () {
-                Navigator.pop(dcontext, true);
-              },
-              child: Text(
-                "Evet",
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+                onPressed: () {
+                  Navigator.pop(dcontext, true);
+                },
+                child: ColorFiltered(
+                  colorFilter:
+                      ColorFilter.mode(backgroundColor, BlendMode.difference),
+                  child: Text(
+                    "Evet",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                    ),
+                  ),
+                )),
           ],
         );
       });

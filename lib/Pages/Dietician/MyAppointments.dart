@@ -18,6 +18,7 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
   CalendarController _calendarController;
   Color myColor = Colors.white;
   DateTime selectedDate = DateTime.now();
+  UserService userService = locator<UserService>();
 
   @override
   void initState() {
@@ -33,7 +34,6 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserService userService = locator<UserService>();
     return Scaffold(
         body: StreamBuilder(
             stream: userService.getMyCalendarSnapshot(),
@@ -158,9 +158,26 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
       return Text("Seçilen günle ilişkili randevu bulunmuyor");
   }
 
+  bool checkAppointment(Appointment a) {
+    DateTime currentTime = DateTime.now();
+    List time;
+    time = a.hour.split(":");
+    if (a.month == currentTime.month && a.day == currentTime.day) {
+      if ((int.tryParse(time[0]) == currentTime.hour &&
+              currentTime.minute < 10) ||
+          (int.tryParse(time[0]) == currentTime.hour - 1 &&
+              currentTime.minute > 50))
+        return true;
+      else
+        return false;
+    } else
+      return false;
+  }
+
   Widget saatler(Map<String, dynamic> a, String hour) {
     Appointment ap = Appointment();
     ap.parseMap(a);
+    ap.hour = hour;
     ap.day = selectedDate.day;
     ap.year = selectedDate.year;
     ap.month = selectedDate.month;
@@ -188,31 +205,74 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  ap.name,
-                  style: TextStyle(
-                      color: Colors.deepPurpleAccent[700],
-                      fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                        Text(
+                          ap.name,
+                          style: TextStyle(
+                              color: Colors.deepPurpleAccent[700],
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ] +
+                      (ap.status == 0
+                          ? ap.pReady
+                              ? [
+                                  Text(
+                                    "  Hazır".toUpperCase(),
+                                    style: TextStyle(color: Colors.green),
+                                  )
+                                ]
+                              : [
+                                  Text(
+                                    "  Hasta Bekleniyor".toUpperCase(),
+                                    style: TextStyle(color: Colors.red),
+                                  )
+                                ]
+                          : ap.status == 1
+                              ? [
+                                  Text(
+                                    "  Randevu Tamamlandı".toUpperCase(),
+                                    style: TextStyle(color: Colors.brown),
+                                  )
+                                ]
+                              : [
+                                  Text(
+                                    "  Randevu iptal edildi".toUpperCase(),
+                                    style: TextStyle(color: Colors.blue),
+                                  )
+                                ]),
                 ),
                 SizedBox(height: 5),
                 Divider(),
-                RaisedButton(
-                  onPressed: () async {
-                    NavigationManager(context)
-                        .setBottomNavIndex(1, reFresh: false);
-                    await locator<UserService>()
-                        .findUserByID(ap.pID)
-                        .then((data) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  Message(ap.pID, data['Name'])));
-                    });
-                  },
-                  child: Icon(
-                    Icons.message_rounded,
-                    color: Colors.deepPurpleAccent[700],
+                Visibility(
+                  visible: checkAppointment(ap) && ap.status == 0,
+                  child: RaisedButton(
+                    onPressed: ap.pReady && ap.status == 0
+                        ? () async {
+                            userService
+                                .startAppointment(ap)
+                                .then((value) async {
+                              if (value) {
+                                NavigationManager(context)
+                                    .setBottomNavIndex(1, reFresh: false);
+                                await locator<UserService>()
+                                    .findUserByID(ap.pID)
+                                    .then((data) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              Message(
+                                                ap.pID,
+                                                data['Name'],
+                                                aModel: ap,
+                                              )));
+                                });
+                              }
+                            });
+                          }
+                        : null,
+                    child: Text("Randevuyu başlat".toUpperCase()),
                   ),
                 ),
               ],

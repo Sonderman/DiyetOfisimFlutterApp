@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Appointment.dart';
+import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Tools/Dialogs.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
@@ -10,10 +13,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Message extends StatefulWidget {
-  //ANCHOR Karşıdak kullanıcının Idsi ve ismi geliyor
+  //ANCHOR Karşıdaki kullanıcının Idsi ve ismi geliyor
   final otherUserID;
   final otherUserName;
-  Message(this.otherUserID, this.otherUserName);
+  final Appointment aModel;
+  Message(this.otherUserID, this.otherUserName, {this.aModel});
 
   @override
   _MessageState createState() => _MessageState();
@@ -21,12 +25,12 @@ class Message extends StatefulWidget {
 
 class _MessageState extends State<Message> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
-  var userService = locator<UserService>();
-  var messageService = locator<MessagingService>();
+  UserService userService = locator<UserService>();
+  MessagingService messageService = locator<MessagingService>();
   List<ChatMessage> messages = [];
   StreamSubscription messageStream;
-  //UserService userService;
-  // MessagingService messageService;
+  StreamSubscription chatActivityStream;
+
   var m = List<ChatMessage>();
   var scrollController = ScrollController();
   String chatID = "temp";
@@ -34,7 +38,7 @@ class _MessageState extends State<Message> {
   String otherUserID;
   String currentUserPhotoUrl;
   var i = 0;
-  bool runFutureOnce = false;
+  bool runFutureOnce = false, isChatActive = true;
   ChatUser user;
 
   @override
@@ -55,30 +59,28 @@ class _MessageState extends State<Message> {
   @override
   void dispose() {
     if (messageStream != null) messageStream.cancel();
+    if (chatActivityStream != null) chatActivityStream.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> initializeMessages() async {
+    void initializeMessages() {
       if (messageStream == null && chatID != "temp") {
-        /*
-        messages =
-            await messageService.getChatPoolMessages(chatID).then((value) {
-          return value.values
-              .map((e) => ChatMessage.fromJson(Map.from(e)))
-              .toList();
-        });*/
-
         messageStream = messageService
             .getChatPoolMessagesSnapshot(chatID)
             .listen((snapshot) {
-          // print("messages: " + snapshot.snapshot.value.toString());
-
           if (snapshot.snapshot.value != null)
             setState(() {
               messages
                   .add(ChatMessage.fromJson(snapshot.snapshot.value as Map));
+            });
+        });
+        chatActivityStream =
+            messageService.getChatStatusSnapshot(chatID).listen((snap) {
+          if (snap.snapshot.value != null)
+            setState(() {
+              isChatActive = snap.snapshot.value;
             });
         });
       }
@@ -86,9 +88,41 @@ class _MessageState extends State<Message> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: MyColors().blueThemeColor,
+        backgroundColor: MyColors().lightGreen,
         title: Text(widget.otherUserName),
         centerTitle: true,
+        actions: [
+          Visibility(
+            visible:
+                userService.userModel.runtimeType == Dietician && isChatActive,
+            child: Center(
+                child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: MaterialButton(
+                onPressed: () {
+                  askingDialog(context, "Eminmisiniz?", Colors.white)
+                      .then((value) {
+                    if (value)
+                      messageService.finishConversation(chatID).then((value) {
+                        if (value && widget.aModel != null)
+                          userService
+                              .updateAppointmentStatus(widget.aModel, 1)
+                              .then((value) {
+                            if (value) {
+                              Navigator.pop(context);
+                            }
+                          });
+                      });
+                  });
+                },
+                child: Text(
+                  "Görüşmeyi Sonlandır",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            )),
+          )
+        ],
       ),
       body: FutureBuilder(
         future: messageService.checkConversation(currentUserID, otherUserID),
@@ -109,6 +143,8 @@ class _MessageState extends State<Message> {
 
             print("ChatID:" + chatID);
             return DashChat(
+              readOnly: !isChatActive,
+              inputDisabled: !isChatActive,
               key: _chatViewKey,
               scrollController: scrollController,
               onSend: (ChatMessage message) {
@@ -132,7 +168,7 @@ class _MessageState extends State<Message> {
               user: user,
               inputDecoration:
                   InputDecoration.collapsed(hintText: "Mesaj gönderin"),
-              dateFormat: DateFormat('yyyy-MMM-dd'),
+              dateFormat: DateFormat('yyyy-MMM-dd', "tr"),
               timeFormat: DateFormat('HH:mm'),
               messages: messages ?? [],
               showUserAvatar: false,

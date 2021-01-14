@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
@@ -5,6 +6,8 @@ import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/AppointmentDetail.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/Dialogs.dart';
+import 'package:diyet_ofisim/Tools/Message.dart';
+import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
@@ -19,6 +22,14 @@ class MyCalendarPage extends StatefulWidget {
 
 class _MyCalendarPageState extends State<MyCalendarPage> {
   UserService userService = locator<UserService>();
+  bool readyToggle = false;
+  StreamSubscription aStream;
+
+  @override
+  void dispose() {
+    if (aStream != null) aStream.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +118,22 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
     );
   }
 
+  bool checkAppointment(Appointment a) {
+    DateTime currentTime = DateTime.now();
+    List time;
+    time = a.hour.split(":");
+    if (a.month == currentTime.month && a.day == currentTime.day) {
+      if ((int.tryParse(time[0]) == currentTime.hour &&
+              currentTime.minute < 10) ||
+          (int.tryParse(time[0]) == currentTime.hour - 1 &&
+              currentTime.minute > 50))
+        return true;
+      else
+        return false;
+    } else
+      return false;
+  }
+
   List<Widget> appointmentItems(List<List<dynamic>> list, int status) {
     List<Widget> widgets = [];
     List<Appointment> alist = [];
@@ -121,6 +148,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
 
     for (int i = 0; i < alist.length; i++) {
       DateTime date = DateTime(alist[i].year, alist[i].month, alist[i].day);
+
       widgets.add(Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -189,7 +217,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
               height: 15,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 InkWell(
                   onTap: () {
@@ -257,11 +285,53 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                   ),
                 ),
                 Visibility(
+                  visible: checkAppointment(alist[i]) && alist[i].status == 0,
+                  child: RaisedButton(
+                    onPressed: () {
+                      userService
+                          .readyForAppointmentToggle(alist[i], !readyToggle)
+                          .then((stream) {
+                        if (aStream == null)
+                          aStream = stream.listen((data) async {
+                            Appointment ap = Appointment();
+                            ap.parseMap(
+                                Map<String, dynamic>.from(data.snapshot.value));
+                            if (ap.dReady == true && ap.pReady == true) {
+                              NavigationManager(context)
+                                  .setBottomNavIndex(1, reFresh: false);
+                              await locator<UserService>()
+                                  .findUserByID(ap.dID)
+                                  .then((data) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            Message(ap.dID, data['Name'])));
+                              });
+                            }
+                          });
+                        setState(() {
+                          readyToggle = !readyToggle;
+                        });
+                      });
+                    },
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      "Hazırım",
+                      style: TextStyle(
+                          color: Colors.deepPurpleAccent.shade100,
+                          fontSize: 15),
+                    ),
+                    color: readyToggle ? Colors.green : Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                  ),
+                ),
+                Visibility(
                   visible: alist[i].status == 0,
                   child: Container(
-                    width: 50,
-                    height: 50,
-                    margin: EdgeInsets.only(right: 0, left: 110, bottom: 20),
+                    width: PageComponents(context).widthSize(5),
+                    height: PageComponents(context).widthSize(5),
                     child: MaterialButton(
                       onPressed: () {
                         appointmentCancelAsking(context, alist[i])
@@ -272,10 +342,12 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                           }
                         });
                       },
-                      child: Text(
-                        "x",
-                        style: TextStyle(
-                            fontSize: 25, color: Colors.redAccent[100]),
+                      child: Center(
+                        child: Text(
+                          "x",
+                          style: TextStyle(
+                              fontSize: 20, color: Colors.redAccent[100]),
+                        ),
                       ),
                     ),
                   ),
