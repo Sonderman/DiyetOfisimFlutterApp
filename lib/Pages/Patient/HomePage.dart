@@ -1,6 +1,4 @@
-import 'package:diyet_ofisim/Pages/Patient/QuestionsPageNew.dart';
-import 'package:diyet_ofisim/Services/Repository.dart';
-import 'package:diyet_ofisim/locator.dart';
+import 'package:diyet_ofisim/Pages/Patient/QuestionsPage.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -46,6 +44,7 @@ class _HomePageState extends State<HomePage> {
                         child: MaterialButton(
                           onPressed: () {
                             //locator<UserService>().createAppointment(null);
+
                             print("Test Butonu:)");
                           },
                           child: Icon(
@@ -104,8 +103,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              QuestionsPageNew()));
+                          builder: (BuildContext context) => QuestionsPage()));
                 });
               },
               child: Hero(

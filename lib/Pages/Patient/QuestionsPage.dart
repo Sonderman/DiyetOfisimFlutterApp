@@ -1,7 +1,12 @@
+import 'package:diyet_ofisim/Models/Patient.dart';
+import 'package:diyet_ofisim/Pages/Components/CustomScroll.dart';
+import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/Inspection.dart';
-import 'package:diyet_ofisim/Tools/NavigationManager.dart';
-import 'package:diyet_ofisim/Tools/PageComponents.dart';
-import 'package:flutter/material.dart';
+import 'package:diyet_ofisim/Pages/Patient/InspectionSummaryPage.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Tools/Classifier.dart';
+import 'package:diyet_ofisim/locator.dart';
+import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 
 class QuestionsPage extends StatefulWidget {
@@ -12,331 +17,497 @@ class QuestionsPage extends StatefulWidget {
 }
 
 class _QuestionsPageState extends State<QuestionsPage> {
-  int currentPageIndex = 0;
-  bool showBackButton = false;
-  NavigationManager _nav;
-  Inspection inspection;
-  bool gender;
-  int answerType = 0;
-  TextEditingController age_controller = TextEditingController();
-  TextEditingController length_controller = TextEditingController();
-  TextEditingController weight_controller = TextEditingController();
+  Classifier classifier = Classifier();
+  Patient usermodel = locator<UserService>().userModel;
+  ScrollController _scrollController = ScrollController();
+  int aktifStep = 0;
+  num boy, kilo, yas, kTansiyon, bTansiyon;
+  Map<String, dynamic> cevap;
+
+  //validator değerlerine göre hata varsa
+  //statelerin işaretini değiştirmek için kullanıcaz
+  bool hata = false;
+  var key0 = GlobalKey<FormFieldState>();
+  var key1 = GlobalKey<FormFieldState>();
+  var key2 = GlobalKey<FormFieldState>();
+  var key3 = GlobalKey<FormFieldState>();
+  var key4 = GlobalKey<FormFieldState>();
+  @override
+  void initState() {
+    cevap = {"Glikoz": 1, "Kolesterol": 1};
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    _nav = NavigationManager(context);
+    sorular();
     return Scaffold(
-        body: Center(
-            child: Container(
-                height: PageComponents(context).heightSize(80),
-                child: PageView.builder(
-                    onPageChanged: (position) {
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text("Lütfen Soruları Yanıtlayın"),
+      ),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(
+                border:
+                    Border.all(width: 5, color: Colors.deepPurpleAccent[100]),
+                borderRadius: BorderRadius.circular(30.0)),
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            width: MediaQuery.of(context).size.width - 80,
+            height: MediaQuery.of(context).size.height - 120,
+
+            //İçinde Stepler olan bi Liste Bekliyor.
+            child: ScrollConfiguration(
+              behavior: NoScrollEffectBehavior(),
+              child: ListView(
+                controller: _scrollController,
+                children: [
+                  Stepper(
+                    physics: ClampingScrollPhysics(),
+                    controlsBuilder: (BuildContext context,
+                        {VoidCallback onStepContinue,
+                        VoidCallback onStepCancel}) {
+                      return Row(children: <Widget>[
+                        Visibility(
+                          visible: aktifStep != 6,
+                          child: TextButton(
+                            onPressed: onStepContinue,
+                            child: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: Colors.deepPurpleAccent.shade100,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Visibility(
+                          visible: aktifStep != 0,
+                          child: TextButton(
+                            onPressed: onStepCancel,
+                            child: Icon(
+                              Icons.keyboard_arrow_up_outlined,
+                              color: Colors.deepPurpleAccent.shade100,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                      ]);
+                    },
+                    steps: sorular(),
+                    type: StepperType.vertical,
+                    currentStep: aktifStep,
+                    onStepContinue: () {
                       setState(() {
-                        currentPageIndex =
-                            _nav.getQuestionPageController().page.round();
-                        currentPageIndex == 0
-                            ? showBackButton = false
-                            : showBackButton = true;
+                        continueButonuKontrolu();
                       });
                     },
-                    physics: NeverScrollableScrollPhysics(),
-                    controller: _nav.getQuestionPageController(),
-                    itemCount: inspection != null
-                        ? inspection.gender
-                            ? questionsAndAnswers.length
-                            : questionsAndAnswers.length + 1
-                        : questionsAndAnswers.length,
-                    itemBuilder: (context, index) {
-                      if (index == 0) return basicInformations(context);
-
-                      return questionCard(
-                          context: context,
-                          questionIndex: index - 1,
-                          type: answerType);
-                    }))));
-  }
-
-  Widget basicInformations(BuildContext context) {
-    // print("yaş: " + age_controller.text);
-    //print("boy: " + length_controller.text);
-    return Card(
-      color: Colors.blueGrey,
-      margin: EdgeInsets.all(PageComponents(context).widthSize(10)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Yaşınız?"),
-                  SizedBox(
-                    width: PageComponents(context).widthSize(5),
+                    onStepCancel: () {
+                      setState(() {
+                        if (aktifStep > 0) {
+                          aktifStep--;
+                        } else {
+                          aktifStep = 0;
+                        }
+                      });
+                    },
                   ),
-                  Container(
-                      width: PageComponents(context).widthSize(10),
-                      child: TextFormField(
-                          textAlign: TextAlign.center,
-                          controller: age_controller,
-                          onChanged: (input) {
-                            if (int.tryParse(input) == 0 ||
-                                int.tryParse(input) > 100)
-                              age_controller.text = null;
-                            setState(() {});
-                          },
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          keyboardType: TextInputType.phone))
-                ],
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Boyunuz?"),
-                  SizedBox(
-                    width: PageComponents(context).widthSize(5),
-                  ),
-                  Container(
-                      width: PageComponents(context).widthSize(10),
-                      child: TextFormField(
-                          textAlign: TextAlign.center,
-                          controller: length_controller,
-                          onChanged: (input) {
-                            if (int.tryParse(input) == 0 ||
-                                int.tryParse(input) > 200)
-                              setState(() {
-                                length_controller.text = "";
-                              });
-                          },
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          keyboardType: TextInputType.phone))
-                ],
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Kilonuz?"),
-                  SizedBox(
-                    width: PageComponents(context).widthSize(5),
-                  ),
-                  Container(
-                      width: PageComponents(context).widthSize(10),
-                      child: TextFormField(
-                          textAlign: TextAlign.center,
-                          controller: weight_controller,
-                          onChanged: (input) {
-                            if (int.tryParse(input) == 0 ||
-                                int.tryParse(input) > 300)
-                              setState(() {
-                                weight_controller.text = "";
-                              });
-                          },
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          keyboardType: TextInputType.number))
-                ],
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text("Cinsiyetiniz nedir?"),
-                    MaterialButton(
-                      onPressed: () {
-                        setState(() {
-                          gender = true;
-                        });
-                      },
-                      color: gender == null
-                          ? Colors.green
-                          : (gender ? Colors.blue : Colors.green),
-                      child: Text("Erkek"),
+                  RaisedButton(
+                    color: Colors.deepPurpleAccent.shade100,
+                    textColor: Colors.white,
+                    padding: const EdgeInsets.all(0.0),
+                    child: Text(
+                      "Kaydet".toUpperCase(),
+                      style: TextStyle(fontFamily: "Genel", fontSize: 17),
                     ),
-                    MaterialButton(
-                      onPressed: () {
-                        setState(() {
-                          gender = false;
-                        });
-                      },
-                      color: gender == null
-                          ? Colors.green
-                          : (gender ? Colors.green : Colors.blue),
-                      child: Text("Kadın"),
-                    )
-                  ]),
-            ),
-          ),
-          MaterialButton(
-            onPressed: () {
-              inspection = Inspection(
-                  age: int.tryParse(age_controller.text),
-                  length: int.tryParse(length_controller.text),
-                  weight: int.tryParse(weight_controller.text),
-                  gender: gender);
-              _nav.getQuestionPageController().nextPage(
-                  duration: Duration(seconds: 1), curve: Curves.bounceOut);
-            },
-            color: Colors.green,
-            child: Text("İleri"),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget questionCard(
-      {@required BuildContext context,
-      @required int questionIndex,
-      @required int type}) {
-    return StatefulBuilder(
-      builder: (context, StateSetter mystate) {
-        return Card(
-          color: Colors.blueGrey,
-          margin: EdgeInsets.all(PageComponents(context).widthSize(10)),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Stack(
-              children: [
-                Visibility(
-                  visible: showBackButton,
-                  child: IconButton(
-                      color: Colors.red,
-                      iconSize: 32,
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        if (answerType == 0)
-                          _nav.getQuestionPageController().previousPage(
-                              duration: Duration(seconds: 1),
-                              curve: Curves.bounceOut);
-                        else
-                          setState(() {
-                            answerType = 0;
-                          });
-                      }),
-                ),
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                          Text(type == 0
-                              ? (questionsAndAnswers[questionIndex] as List)
-                                  .first
-                              : (questionsAndAnswers[questionIndex] as List)
-                                  .last),
-                          SizedBox(
-                            height: PageComponents(context).heightSize(5),
-                          ),
-                        ] +
-                        (type == 0
-                            ? answerParser(questionIndex,
-                                questionsAndAnswers[questionIndex][1])
-                            : getInput()),
+                    onPressed: aktifStep == 6 ? saveButton : null,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0)),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  List<Widget> answerParser(int questionIndex, List<String> answers) {
-    List<Widget> temp = [];
+  List<Step> sorular() {
+    List<Step> stepler = [
+      Step(
+        title: Text(
+          "Yaşınızı Giriniz",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+          ),
+        ),
+        state: stepAyar(0),
+        content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
+          key: key0,
+          validator: (girilenDeger) {
+            if (girilenDeger.isEmpty) {
+              return "Lütfen Bir Değer Giriniz";
+            } else if (!(int.tryParse(girilenDeger) >= 18 &&
+                int.tryParse(girilenDeger) <= 100)) {
+              return "Lütfen 18 ile 100 arasında değer giriniz";
+            } else
+              return null;
+          },
+          onSaved: (girilenDeger) {
+            yas = int.tryParse(girilenDeger);
+          },
+          decoration: InputDecoration(
+            focusColor: Colors.teal,
+            labelText: "Yaşınız",
+            labelStyle: TextStyle(fontSize: 14),
 
-    answers.forEach((element) {
-      temp.add(MaterialButton(
-        onPressed: () {
-          /*
-          answerType = inspection.proceedAnswer(questionIndex,
-              (questionsAndAnswers[questionIndex][1] as List).indexOf(element));
-          if (answerType == 1) {
-            setState(() {});
-          } else if (questionIndex == questionsAndAnswers.length - 1) {
-            //TODO - Bağlanacak
-            print("Son Sayfa");
-          } else {
-            answerType = 0;
-            _nav.getQuestionPageController().nextPage(
-                duration: Duration(seconds: 1), curve: Curves.bounceOut);
-          }
-        */
-        },
-        color: Colors.green,
-        child: Text(element),
-      ));
-    });
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
 
-    return temp;
+            //filled: true,
+          ),
+        ),
+      ),
+      Step(
+        title: Text(
+          "Boyunuzu Giriniz",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+          ),
+        ),
+        state: stepAyar(1),
+        content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
+          key: key1,
+          validator: (girilenDeger) {
+            if (girilenDeger.isEmpty) {
+              return "Lütfen Bir Değer Giriniz";
+            } else if (!(int.tryParse(girilenDeger) >= 150 &&
+                int.tryParse(girilenDeger) <= 240)) {
+              return "Lütfen 150 ile 240 arasında değer giriniz";
+            } else
+              return null;
+          },
+          onSaved: (girilenDeger) {
+            boy = int.tryParse(girilenDeger);
+          },
+          decoration: InputDecoration(
+            labelText: "Boyunuz (cm) ",
+            labelStyle: TextStyle(fontSize: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            //filled: true,
+          ),
+        ),
+      ),
+      Step(
+        title: Text(
+          "Kilonuzu Giriniz",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+            //color: Colors.deepPurpleAccent.shade100,
+          ),
+        ),
+        state: stepAyar(2),
+        content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
+          key: key2,
+          validator: (girilenDeger) {
+            if (girilenDeger.isEmpty) {
+              return "Lütfen Bir Değer Giriniz";
+            } else if (!(int.tryParse(girilenDeger) >= 40 &&
+                int.tryParse(girilenDeger) <= 300)) {
+              return "Lütfen 40 ile 300 arasında değer giriniz";
+            } else
+              return null;
+          },
+          onSaved: (girilenDeger) {
+            kilo = int.tryParse(girilenDeger);
+          },
+          decoration: InputDecoration(
+            labelText: "Kilonuz",
+            labelStyle: TextStyle(fontSize: 14),
+
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            //filled: true,
+          ),
+        ),
+      ),
+      Step(
+        title: Text(
+          "Düşük Tansiyonunuzu Giriniz",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+          ),
+        ),
+        state: stepAyar(3),
+        content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
+          key: key3,
+          validator: (girilenDeger) {
+            if (girilenDeger.isEmpty) {
+              return "Lütfen Bir Değer Giriniz";
+            } else if (!(int.tryParse(girilenDeger) >= 0 &&
+                int.tryParse(girilenDeger) <= 200)) {
+              return "Lütfen 0 ile 200 arasında değer giriniz";
+            } else
+              return null;
+          },
+          onSaved: (girilenDeger) {
+            kTansiyon = int.tryParse(girilenDeger);
+          },
+          decoration: InputDecoration(
+            labelText: "Düşük Tansiyonunuz",
+            labelStyle: TextStyle(fontSize: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+      ),
+      Step(
+        title: Text(
+          "Büyük Tansiyonunuzu Giriniz",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+          ),
+        ),
+        state: stepAyar(4),
+        content: TextFormField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
+          key: key4,
+          validator: (girilenDeger) {
+            if (girilenDeger.isEmpty) {
+              return "Lütfen Bir Değer Giriniz";
+            } else if (!(int.tryParse(girilenDeger) >= 0 &&
+                int.tryParse(girilenDeger) <= 200)) {
+              return "Lütfen 0 ile 200 arasında değer giriniz";
+            } else
+              return null;
+          },
+          onSaved: (girilenDeger) {
+            bTansiyon = int.tryParse(girilenDeger);
+          },
+          decoration: InputDecoration(
+            labelText: "Büyük Tansiyonunuz",
+            labelStyle: TextStyle(fontSize: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+      ),
+      Step(
+        title: Text(
+          "Glikoz Seviyeniz Nedir ?",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+          ),
+        ),
+        state: stepAyar(5),
+        content: Column(
+          children: [
+            RadioListTile(
+                title: Text("Normal"),
+                value: 1,
+                groupValue: cevap["Glikoz"],
+                onChanged: (value) {
+                  setState(() {
+                    cevap["Glikoz"] = value;
+                  });
+                }),
+            SizedBox(
+              width: 10,
+            ),
+            RadioListTile(
+                title: Text("Yüksek"),
+                value: 2,
+                groupValue: cevap["Glikoz"],
+                onChanged: (value) {
+                  setState(() {
+                    cevap["Glikoz"] = value;
+                  });
+                }),
+            SizedBox(
+              width: 10,
+            ),
+            RadioListTile(
+                title: Text("Çok Yüksek"),
+                value: 3,
+                groupValue: cevap["Glikoz"],
+                onChanged: (value) {
+                  setState(() {
+                    cevap["Glikoz"] = value;
+                  });
+                }),
+          ],
+        ),
+      ),
+      Step(
+        title: Text(
+          "Kolesterol Seviyeniz Nasıl ?",
+          style: TextStyle(
+            fontSize: 17,
+            color: Colors.deepPurpleAccent[100],
+          ),
+        ),
+        state: stepAyar(6),
+        content: Column(
+          children: [
+            RadioListTile(
+                title: Text("Normal"),
+                value: 1,
+                groupValue: cevap["Kolesterol"],
+                onChanged: (value) {
+                  setState(() {
+                    cevap["Kolesterol"] = value;
+                  });
+                }),
+            SizedBox(
+              width: 10,
+            ),
+            RadioListTile(
+                title: Text("Yüksek"),
+                value: 2,
+                groupValue: cevap["Kolesterol"],
+                onChanged: (value) {
+                  setState(() {
+                    cevap["Kolesterol"] = value;
+                  });
+                }),
+            SizedBox(
+              width: 10,
+            ),
+            RadioListTile(
+                title: Text("Çok Yüksek"),
+                value: 3,
+                groupValue: cevap["Kolesterol"],
+                onChanged: (value) {
+                  setState(() {
+                    cevap["Kolesterol"] = value;
+                  });
+                }),
+          ],
+        ),
+      ),
+    ];
+    return stepler;
   }
 
-  List<Widget> getInput() {
-    TextEditingController controller = TextEditingController();
-    return [
-      Container(
-          width: PageComponents(context).widthSize(10),
-          child: TextFormField(
-              textAlign: TextAlign.center,
-              controller: controller,
-              onChanged: (input) {
-                if (int.tryParse(input) == 0 || int.tryParse(input) > 200)
-                  setState(() {
-                    controller.text = "";
-                  });
-              },
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              keyboardType: TextInputType.phone)),
-      SizedBox(
-        height: PageComponents(context).heightSize(10),
-      ),
-      MaterialButton(
-        onPressed: () {
-          setState(() {
-            answerType = 0;
-          });
+  void continueButonuKontrolu() {
+    switch (aktifStep) {
+      case 0:
+        if (key0.currentState.validate()) {
+          key0.currentState.save();
+          hata = false;
+          aktifStep++;
+        } else {
+          hata = true;
+        }
+        break;
+      case 1:
+        if (key1.currentState.validate()) {
+          key1.currentState.save();
+          hata = false;
+          aktifStep++;
+        } else {
+          hata = true;
+        }
+        break;
+      case 2:
+        if (key2.currentState.validate()) {
+          key2.currentState.save();
+          hata = false;
+          aktifStep++;
+        } else {
+          hata = true;
+        }
+        break;
+      case 3:
+        if (key3.currentState.validate()) {
+          key3.currentState.save();
+          hata = false;
+          aktifStep++;
+        } else {
+          hata = true;
+        }
+        break;
+      case 4:
+        if (key4.currentState.validate()) {
+          key4.currentState.save();
+          hata = false;
+          aktifStep++;
+        } else {
+          hata = true;
+        }
+        break;
+      default:
+        aktifStep++;
+        if (aktifStep == (usermodel.gender == "Man" ? 6 : 7)) {
+          print("girdi");
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
 
-          _nav.getQuestionPageController().nextPage(
-              duration: Duration(seconds: 1), curve: Curves.bounceOut);
-        },
-        color: Colors.green,
-        child: Text("İleri"),
-      )
-    ];
+        break;
+    }
+  }
+
+  StepState stepAyar(int stepIndex) {
+    if (aktifStep == stepIndex) {
+      if (hata == true) {
+        return StepState.error;
+      } else {
+        return StepState.editing;
+      }
+    }
+    if (aktifStep > stepIndex) {
+      return StepState.complete;
+    } else {
+      return StepState.indexed;
+    }
+  }
+
+  void saveButton() {
+    cevap["Yas"] = yas;
+    cevap["Boy"] = boy;
+    cevap["Kilo"] = kilo;
+    cevap["kTansiyon"] = kTansiyon;
+    cevap["bTansiyon"] = bTansiyon;
+    cevap["Gender"] = usermodel.gender == "Man" ? true : false;
+    cevap["BMI"] = (kilo / ((boy ~/ 10) * (boy ~/ 10))) * 100;
+
+    List r = classifier.classify(cevap);
+    Inspection inspection =
+        Inspection(r[0], r[1], cevap["Gender"], cevap["BMI"]);
+    classifier.closeInterpreter();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => InspectionSummaryPage(
+                  results: inspection.inspect(),
+                )));
   }
 }
