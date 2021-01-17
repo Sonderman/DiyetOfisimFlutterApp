@@ -51,8 +51,8 @@ class AppSettings {
   ];
   //ANCHOR diyetisyen sayfaları burada
   List<Widget> dieticianPages = [
-    ChatPage(),
     MyAppointmentsPage(),
+    ChatPage(),
     DieticianProfilePage()
   ];
 
@@ -82,7 +82,7 @@ class AppSettings {
     "Tüp Bebek ve İnfertilite Tedavisinde Beslenme",
   ];
   List<String> insuranceType = ["Sigortalı Hastalar", "Sigortasız Hastalar"];
-   final List<String> appointmentHours = [
+  final List<String> appointmentHours = [
     "09:00",
     "10:00",
     "11:00",

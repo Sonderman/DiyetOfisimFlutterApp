@@ -1,14 +1,12 @@
 import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
 import 'package:circular_bottom_navigation/tab_item.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
-import 'package:diyet_ofisim/Services/NavigationProvider.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 Widget getNavigatedPage(BuildContext context) {
   //ANCHOR stack de widget varsa o sayfayı döndürür yoksa default veya mevcut indexe göre sayfayı açar
@@ -29,8 +27,7 @@ Widget getNavigatedPage(BuildContext context) {
 Widget bottomNavigationBar(BuildContext context, _rootPageState) {
   NavigationManager navigation = NavigationManager(context);
   int currentPosition = navigation.getBottomNavIndex();
-  var navController = Provider.of<NavigationProvider>(context, listen: false)
-      .getNavController();
+  var navController = navigation.nav.getNavController();
 
   currentPageSetter() {
     //ANCHOR - Burada hem RootPage Hemde içerideki page rebuild olur
@@ -63,7 +60,7 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
     */
     return CircularBottomNavigation(
       [
-        TabItem(Icons.date_range_sharp, "Randevularım",
+        TabItem(Icons.date_range_sharp, "Takvimim",
             Colors.deepPurpleAccent.shade100,
             labelStyle: TextStyle(
               fontWeight: FontWeight.bold,
@@ -151,7 +148,6 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
       barBackgroundColor: Colors.white,
       animationDuration: Duration(milliseconds: 300),
       selectedCallback: (position) {
-        print(position);
         currentPosition = position;
         currentPageSetter();
       },

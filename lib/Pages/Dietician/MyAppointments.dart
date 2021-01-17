@@ -1,8 +1,15 @@
+import 'package:dash_chat/dash_chat.dart';
+import 'package:diyet_ofisim/Models/Appointment.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Tools/Message.dart';
+import 'package:diyet_ofisim/Tools/NavigationManager.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
+import 'package:diyet_ofisim/locator.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MyAppointmentsPage extends StatefulWidget {
-  //const name({Key key}) : super(key: key);
   @override
   _MyAppointmentsState createState() => _MyAppointmentsState();
 }
@@ -10,6 +17,8 @@ class MyAppointmentsPage extends StatefulWidget {
 class _MyAppointmentsState extends State<MyAppointmentsPage> {
   CalendarController _calendarController;
   Color myColor = Colors.white;
+  DateTime selectedDate = DateTime.now();
+  UserService userService = locator<UserService>();
 
   @override
   void initState() {
@@ -26,91 +35,152 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        Container(
-          padding: EdgeInsets.only(top: 30),
-          color: Colors.deepPurpleAccent[100],
-          child: Column(
-            children: [
-              TableCalendar(
-                calendarController: _calendarController,
-                initialCalendarFormat: CalendarFormat.week,
-                startingDayOfWeek: StartingDayOfWeek.monday,
-                formatAnimation: FormatAnimation.slide,
-                headerStyle: HeaderStyle(
-                    centerHeaderTitle: true,
-                    formatButtonVisible: false,
-                    titleTextStyle: TextStyle(
-                      color: Colors.white,
-                      fontFamily: "Kalam",
-                      fontSize: 18,
-                    ),
-                    leftChevronIcon: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.white,
-                      size: 15,
-                    ),
-                    rightChevronIcon: Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.white,
-                      size: 15,
-                    )),
-                calendarStyle: CalendarStyle(
-                  weekendStyle: TextStyle(color: Colors.white),
-                  weekdayStyle: TextStyle(color: Colors.white),
-                ),
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  weekendStyle: TextStyle(color: Colors.white),
-                  weekdayStyle: TextStyle(color: Colors.white),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Expanded(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 3, color: myColor),
-                    color: myColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  //color: Colors.white,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Text("10 Aralık 2020",
-                            style: TextStyle(
-                              color: Colors.grey,
+        body: StreamBuilder(
+            stream: userService.getMyCalendarSnapshot(),
+            builder: (context, AsyncSnapshot<Event> snap) {
+              if (!snap.hasData) {
+                return PageComponents(context)
+                    .loadingOverlay(backgroundColor: Colors.white);
+              } else {
+                Map<String, dynamic> calendar =
+                    Map<String, dynamic>.from(snap.data.snapshot.value);
+
+                return Container(
+                  padding: EdgeInsets.only(top: 30),
+                  color: Colors.deepPurpleAccent[100],
+                  child: Column(
+                    children: [
+                      TableCalendar(
+                        locale: "tr",
+                        calendarController: _calendarController,
+                        initialCalendarFormat: CalendarFormat.week,
+                        startingDayOfWeek: StartingDayOfWeek.monday,
+                        formatAnimation: FormatAnimation.slide,
+                        onDaySelected: (date, _, __) {
+                          setState(() {
+                            selectedDate = date;
+                          });
+                        },
+                        headerStyle: HeaderStyle(
+                            centerHeaderTitle: true,
+                            formatButtonVisible: false,
+                            titleTextStyle: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "Kalam",
+                              fontSize: 18,
+                            ),
+                            leftChevronIcon: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                            rightChevronIcon: Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white,
+                              size: 15,
                             )),
-                        SizedBox(
-                          height: 15,
+                        calendarStyle: CalendarStyle(
+                          weekendStyle: TextStyle(color: Colors.white),
+                          weekdayStyle: TextStyle(color: Colors.white),
                         ),
-                        Column(
-                          children: [
-                            saatler("10.00", "Çiğdem Atak"),
-                            saatler("10.00", "Çiğdem Atak"),
-                            saatler("10.00", "Çiğdem Atak"),
-                            saatler("10.00", "Çiğdem Atak"),
-                            saatler("10.00", "Çiğdem Atak"),
-                          ],
-                        )
-                      ],
-                    ),
+                        daysOfWeekStyle: DaysOfWeekStyle(
+                          weekendStyle: TextStyle(color: Colors.white),
+                          weekdayStyle: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 3, color: myColor),
+                            color: myColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListView(children: [
+                            Text(
+                                selectedDate.day.toString() +
+                                    " " +
+                                    DateFormat("MMMM", "tr")
+                                        .format(selectedDate) +
+                                    " " +
+                                    selectedDate.year.toString(),
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                )),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            appointmentSection(calendar),
+                          ]),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ));
+                );
+              }
+            }));
   }
 
-  Widget saatler(String time, String name) {
+  bool calendarCheck(Map<String, dynamic> map, String month, String day) {
+    if (map == null) return false;
+    if (map.containsKey(selectedDate.year.toString())) {
+      if (map[selectedDate.year.toString()].containsKey(month)) {
+        if (map[selectedDate.year.toString()][month].containsKey(day)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Widget appointmentSection(Map calendar) {
+    String month, day;
+    month = selectedDate.month.toString();
+    day = selectedDate.day.toString();
+    if (selectedDate.month < 10) month = "0" + month;
+    if (selectedDate.day < 10) day = "0" + day;
+    if (calendarCheck(calendar, month, day)) {
+      Map apMap = calendar[selectedDate.year.toString()][month][day];
+      List apList = apMap.values.toList();
+      List apKList = apMap.keys.toList();
+      return Column(
+        children: List.generate(
+            apMap.length,
+            (index) => saatler(
+                Map<String, dynamic>.from(apList[index]), apKList[index])),
+      );
+    } else
+      return Text("Seçilen günle ilişkili randevu bulunmuyor");
+  }
+
+  bool checkAppointment(Appointment a) {
+    DateTime currentTime = DateTime.now();
+    List time;
+    time = a.hour.split(":");
+    if (a.month == currentTime.month && a.day == currentTime.day) {
+      if ((int.tryParse(time[0]) == currentTime.hour &&
+              currentTime.minute < 10) ||
+          (int.tryParse(time[0]) == currentTime.hour - 1 &&
+              currentTime.minute > 50))
+        return true;
+      else
+        return false;
+    } else
+      return false;
+  }
+
+  Widget saatler(Map<String, dynamic> a, String hour) {
+    Appointment ap = Appointment();
+    ap.parseMap(a);
+    ap.hour = hour;
+    ap.day = selectedDate.day;
+    ap.year = selectedDate.year;
+    ap.month = selectedDate.month;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -119,7 +189,7 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
           padding: EdgeInsets.all(20),
           width: MediaQuery.of(context).size.width * 0.2,
           child: Text(
-            time,
+            hour,
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -135,18 +205,74 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                      color: Colors.deepPurpleAccent[700],
-                      fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                        Text(
+                          ap.name,
+                          style: TextStyle(
+                              color: Colors.deepPurpleAccent[700],
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ] +
+                      (ap.status == 0
+                          ? ap.pReady
+                              ? [
+                                  Text(
+                                    "  Hazır".toUpperCase(),
+                                    style: TextStyle(color: Colors.green),
+                                  )
+                                ]
+                              : [
+                                  Text(
+                                    "  Hasta Bekleniyor".toUpperCase(),
+                                    style: TextStyle(color: Colors.red),
+                                  )
+                                ]
+                          : ap.status == 1
+                              ? [
+                                  Text(
+                                    "  Randevu Tamamlandı".toUpperCase(),
+                                    style: TextStyle(color: Colors.brown),
+                                  )
+                                ]
+                              : [
+                                  Text(
+                                    "  Randevu iptal edildi".toUpperCase(),
+                                    style: TextStyle(color: Colors.blue),
+                                  )
+                                ]),
                 ),
                 SizedBox(height: 5),
                 Divider(),
-                Container(
-                  child: Icon(
-                    Icons.message_rounded,
-                    color: Colors.deepPurpleAccent[700],
+                Visibility(
+                  visible: checkAppointment(ap) && ap.status == 0,
+                  child: RaisedButton(
+                    onPressed: ap.pReady && ap.status == 0
+                        ? () async {
+                            userService
+                                .startAppointment(ap)
+                                .then((value) async {
+                              if (value) {
+                                NavigationManager(context)
+                                    .setBottomNavIndex(1, reFresh: false);
+                                await locator<UserService>()
+                                    .findUserByID(ap.pID)
+                                    .then((data) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              Message(
+                                                ap.pID,
+                                                data['Name'],
+                                                aModel: ap,
+                                              )));
+                                });
+                              }
+                            });
+                          }
+                        : null,
+                    child: Text("Randevuyu başlat".toUpperCase()),
                   ),
                 ),
               ],

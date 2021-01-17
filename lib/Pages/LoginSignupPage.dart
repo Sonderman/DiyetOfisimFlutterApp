@@ -507,7 +507,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 */
   Widget loginDesign(BuildContext context) {
-    return Column(
+    return ListView(
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(top: 150.0, bottom: 20.0),
