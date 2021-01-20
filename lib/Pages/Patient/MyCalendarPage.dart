@@ -103,8 +103,8 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
 
   Widget butonlar(String butonText, int pageIndex) {
     return Container(
-      height: 50,
-      width: 130,
+      height: PageComponents(context).widthSize(10),
+      width: PageComponents(context).widthSize(25),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.0),
         color: Colors.deepPurpleAccent.shade100,
@@ -157,8 +157,8 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
         ),
         padding: EdgeInsets.only(top: 10, right: 10, left: 10, bottom: 2),
         margin: EdgeInsets.only(top: 10, right: 30, left: 30, bottom: 10),
-        height: 140,
-        width: MediaQuery.of(context).size.width - 150,
+        height: PageComponents(context).widthSize(30),
+        width: PageComponents(context).widthSize(10),
         child: Column(
           children: [
             Row(
@@ -174,7 +174,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                         color: Colors.deepPurpleAccent[100],
                       ),
                       SizedBox(
-                        width: 15,
+                        width: PageComponents(context).widthSize(1.5),
                       ),
                       Text(
                         alist[i].day.toString() +
@@ -190,7 +190,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                   ),
                 ),
                 SizedBox(
-                  width: 20,
+                  width: PageComponents(context).widthSize(2),
                 ),
                 Container(
                   child: Row(
@@ -202,7 +202,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                         color: Colors.deepPurpleAccent[100],
                       ),
                       SizedBox(
-                        width: 15,
+                        width: PageComponents(context).widthSize(1.5),
                       ),
                       Text(
                         alist[i].hour,
@@ -231,8 +231,8 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                   child: Container(
                     margin: EdgeInsets.only(
                         left: 10, bottom: 5, right: 10, top: 10),
-                    height: 60,
-                    width: 60,
+                    height: PageComponents(context).widthSize(15),
+                    width: PageComponents(context).widthSize(15),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.5),
                     ),

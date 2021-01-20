@@ -50,8 +50,8 @@ class _DieticianListPageState extends State<DieticianListPage> {
                         Navigator.pop(context);
                       },
                       child: Container(
-                        height: 50,
-                        width: 50,
+                        height: PageComponents(context).heightSize(6),
+                        width: PageComponents(context).widthSize(11),
                         child: Icon(
                           Icons.arrow_back_ios_sharp,
                           color: Colors.white,
@@ -136,8 +136,8 @@ class _DieticianListPageState extends State<DieticianListPage> {
       temp.add(Container(
         margin: EdgeInsets.only(top: 5, bottom: 5, left: 12, right: 12),
         padding: EdgeInsets.all(10),
-        height: 135,
-        width: MediaQuery.of(context).size.width - 90,
+        height: PageComponents(context).widthSize(30),
+        width: PageComponents(context).widthSize(30),
         child: Material(
           elevation: 0,
           borderRadius: BorderRadius.circular(10),
@@ -152,9 +152,9 @@ class _DieticianListPageState extends State<DieticianListPage> {
                           )));
                 },
                 child: Container(
-                  margin: EdgeInsets.all(10),
-                  height: 90,
-                  width: 90,
+                  margin: EdgeInsets.all(15),
+                  height: PageComponents(context).heightSize(18),
+                  width: PageComponents(context).widthSize(18),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                   ),

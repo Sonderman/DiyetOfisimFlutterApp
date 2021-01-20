@@ -88,7 +88,8 @@ class _MessageState extends State<Message> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: MyColors().lightGreen,
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Text(widget.otherUserName),
         centerTitle: true,
         actions: [

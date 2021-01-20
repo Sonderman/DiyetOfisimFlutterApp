@@ -1,5 +1,10 @@
+import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Pages/Patient/QuestionsPage.dart';
+import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:flutter/material.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
+
+import '../../locator.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -9,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Patient usermodel = locator<UserService>().userModel;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +23,7 @@ class _HomePageState extends State<HomePage> {
           image: new DecorationImage(
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(0.3), BlendMode.dstATop),
+                Colors.white.withOpacity(0.25), BlendMode.dstATop),
             image: AssetImage(
               'assets/photo/mor1.jpg',
             ),
@@ -35,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 20, top: 20),
-                        height: 50,
+                        height: PageComponents(context).widthSize(10),
                         child: Image.asset("assets/icons/logo1.png",
                             color: Colors.deepPurpleAccent[100]),
                       ),
@@ -56,29 +62,30 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   SizedBox(
-                    height: 160,
+                    height: PageComponents(context).heightSize(5),
                   ),
                   Container(
-                    alignment: Alignment.topLeft,
                     margin: EdgeInsets.only(left: 20, top: 20),
                     child: Text(
-                      "Merhaba",
+                      "Merhaba" + "  " + usermodel.name + ",",
                       style: TextStyle(
-                          color: Colors.deepPurpleAccent[100],
-                          fontFamily: "Genel",
-                          fontSize: 33,
-                          fontWeight: FontWeight.w900),
+                        color: Colors.deepPurpleAccent[100],
+                        fontFamily: "Jom",
+                        fontSize: 70,
+                      ),
                       textAlign: TextAlign.left,
                     ),
                   ),
                   Container(
-                    alignment: Alignment.topLeft,
-                    margin: EdgeInsets.only(left: 20, top: 10),
+                    margin: EdgeInsets.only(left: 20),
                     child: Text(
-                      "Diyet  Ofisim'e  Hoşgeldiniz \nSize  Nasıl  Yardımcı  Olabiliriz ?",
+                      "Diyet  Ofisim'e  Hoşgeldin \nSana  Nasıl  Yardımcı\nOlabiliriz ?",
                       style: TextStyle(
-                        fontFamily: "Genel",
-                        fontSize: 20,
+                        fontFamily: "Jom",
+                        fontSize: 50,
+                        wordSpacing: -0.5,
+                        color: Colors.black,
+                        //fontWeight: FontWeight.w900,
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -87,13 +94,18 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(
-              height: 235,
+              height: PageComponents(context).heightSize(27),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, bottom: 2),
+              padding: const EdgeInsets.only(left: 22, bottom: 0),
               child: Text(
-                "Diyetisyeniniz ile Evinizden Görüşün",
-                style: TextStyle(color: Colors.black38, fontSize: 20),
+                "Diyetisyeniniz  ile  Evinizden  Görüşün",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 30,
+                  fontFamily: "Jom",
+                  backgroundColor: Colors.white30,
+                ),
               ),
             ),
             InkWell(
@@ -109,24 +121,31 @@ class _HomePageState extends State<HomePage> {
               child: Hero(
                 tag: 1,
                 child: Container(
-                  height: 130,
-                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  height: PageComponents(context).heightSize(15),
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Material(
-                    color: Colors.deepPurpleAccent[100],
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    elevation: 3,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
                           "Sizi Diyetisyeninize Yönlendirmemiz \nİçin Lütfen Bir Kaç Soruyu \nYanıtlayın . . .",
                           style: TextStyle(
-                              fontFamily: "Genel",
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                              fontFamily: "Jom",
+                              fontSize: 35,
+                              color: Colors.black54),
                         ),
                         Container(
+                          height: PageComponents(context).heightSize(50),
+                          width: PageComponents(context).widthSize(15),
+                          child: Icon(
+                            Icons.arrow_right_alt_rounded,
+                            size: 50,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        /*Container(
                           height: 100,
                           width: 100,
                           decoration: BoxDecoration(
@@ -141,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                               bottomRight: Radius.circular(10),
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

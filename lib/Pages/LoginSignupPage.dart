@@ -201,7 +201,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               height: PageComponents(context).heightSize(4),
             ),
             SizedBox(
-              height: 45,
+              height: PageComponents(context).widthSize(10),
               width: PageComponents(context).widthSize(35),
               child: RaisedButton(
                 elevation: 8,
@@ -511,21 +511,25 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(top: 150.0, bottom: 20.0),
-          height: 140,
+          height: PageComponents(context).heightSize(15),
           child: Image.asset(
             "assets/icons/logo1.png",
             color: Colors.white70,
           ),
         ),
-        Text(
-          "Diyet Ofisim",
-          style: TextStyle(
-              color: Colors.white70,
-              fontSize: 35.0,
-              fontWeight: FontWeight.bold,
-              fontFamily: "Kalam"),
+        Center(
+          child: Text(
+            "Diyet Ofisim",
+            style: TextStyle(
+                color: Colors.white70,
+                fontSize: 35.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Kalam"),
+          ),
         ),
-        SizedBox(height: 30.0),
+        SizedBox(
+          height: PageComponents(context).heightSize(3),
+        ),
         TextField(
           style: TextStyle(color: Colors.white),
           cursorWidth: 3,
@@ -554,7 +558,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             fillColor: Colors.white.withOpacity(0.18),
           ),
         ),
-        SizedBox(height: 10.0),
+        SizedBox(height: PageComponents(context).heightSize(1.5)),
         TextField(
           style: TextStyle(color: Colors.white),
           cursorWidth: 3,
@@ -584,11 +588,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
           obscureText: true,
         ),
-        SizedBox(height: 30.0),
         SizedBox(
-          height: 45,
-          width: double.infinity,
-          child: RaisedButton(
+          height: PageComponents(context).heightSize(3),
+        ),
+        Container(
+          height:PageComponents(context).widthSize(10),
+          width: PageComponents(context).widthSize(4),
+          child: MaterialButton(
             color: Colors.white,
             textColor: Colors.deepPurpleAccent[100],
             padding: const EdgeInsets.all(10.0),
@@ -603,7 +609,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 borderRadius: BorderRadius.circular(30.0)),
           ),
         ),
-        Spacer(),
+        SizedBox(
+         height: PageComponents(context).heightSize(20),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -620,8 +628,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             ),
             Container(
               color: Colors.deepPurpleAccent[200].withOpacity(0.8),
-              width: 2.0,
-              height: 20.0,
+              width: PageComponents(context).widthSize(0.4),
+              height: PageComponents(context).heightSize(2.5),
             ),
             FlatButton(
               textColor: Colors.deepPurpleAccent[200].withOpacity(0.8),
@@ -644,7 +652,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget signUpDesign() {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      height: double.infinity,
+      height:   PageComponents(context).heightSize(4),
       decoration: BoxDecoration(
         gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -686,7 +694,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                height: 50,
+                 height: PageComponents(context).widthSize(10),
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
                   style: TextStyle(color: Colors.white),
@@ -706,10 +714,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 ),
               ),
               SizedBox(
-                width: 25,
+                  width: PageComponents(context).widthSize(4)
               ),
               Container(
-                height: 50,
+                height: PageComponents(context).widthSize(10),
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
                   style: TextStyle(color: Colors.white),
@@ -889,7 +897,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
           */
           SizedBox(
-            height: 25,
+            height:PageComponents(context).heightSize(5),
           ),
           SizedBox(
             width: double.infinity,
@@ -926,7 +934,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   borderRadius: BorderRadius.circular(30.0)),
             ),
           ),
-          Spacer(),
+           SizedBox(
+            height:PageComponents(context).heightSize(3.29),
+          ),
           FlatButton(
             textColor: Colors.deepPurpleAccent[200].withOpacity(0.8),
             child: Text("I have an Account !".toUpperCase()),

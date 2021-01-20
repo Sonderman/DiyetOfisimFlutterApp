@@ -107,8 +107,8 @@ class _ProfileEditState extends State<ProfileEdit> {
               bottom: 0,
               right: 0,
               child: Container(
-                height: 50,
-                width: 50,
+                 height:PageComponents(context).widthSize(10),
+                width:PageComponents(context).widthSize(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(
@@ -200,8 +200,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.BOTTOM,
                     timeInSecForIosWeb: 2,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.green[300],
                     textColor: Colors.white,
+                      
                     fontSize: 18.0);
                 NavigationManager(context).popPage();
               }

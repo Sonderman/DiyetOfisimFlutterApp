@@ -141,6 +141,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
 
   List<Step> sorular() {
     List<Step> stepler = [
+//  YAS  //
       Step(
         title: Text(
           "Yaşınızı Giriniz",
@@ -179,6 +180,8 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ),
         ),
       ),
+
+      //  BOY  //
       Step(
         title: Text(
           "Boyunuzu Giriniz",
@@ -214,6 +217,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ),
         ),
       ),
+      //  KİLO   //
       Step(
         title: Text(
           "Kilonuzu Giriniz",
@@ -251,6 +255,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ),
         ),
       ),
+      //  DÜŞÜK TANSİYON  //
       Step(
         title: Text(
           "Düşük Tansiyonunuzu Giriniz",
@@ -267,9 +272,6 @@ class _QuestionsPageState extends State<QuestionsPage> {
           validator: (girilenDeger) {
             if (girilenDeger.isEmpty) {
               return "Lütfen Bir Değer Giriniz";
-            } else if (!(int.tryParse(girilenDeger) >= 0 &&
-                int.tryParse(girilenDeger) <= 200)) {
-              return "Lütfen 0 ile 200 arasında değer giriniz";
             } else
               return null;
           },
@@ -285,6 +287,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ),
         ),
       ),
+      //  YÜKSEK TANSİYON  //
       Step(
         title: Text(
           "Büyük Tansiyonunuzu Giriniz",
@@ -301,9 +304,6 @@ class _QuestionsPageState extends State<QuestionsPage> {
           validator: (girilenDeger) {
             if (girilenDeger.isEmpty) {
               return "Lütfen Bir Değer Giriniz";
-            } else if (!(int.tryParse(girilenDeger) >= 0 &&
-                int.tryParse(girilenDeger) <= 200)) {
-              return "Lütfen 0 ile 200 arasında değer giriniz";
             } else
               return null;
           },
@@ -319,6 +319,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ),
         ),
       ),
+      //  GLİKOZ DEĞERİ  //
       Step(
         title: Text(
           "Glikoz Seviyeniz Nedir ?",
@@ -366,9 +367,10 @@ class _QuestionsPageState extends State<QuestionsPage> {
           ],
         ),
       ),
+      //  KOLESTOREL DEĞERİ //
       Step(
         title: Text(
-          "Kolesterol Seviyeniz Nasıl ?",
+          "Kolesterol Seviyeniz Nedir ?",
           style: TextStyle(
             fontSize: 17,
             color: Colors.deepPurpleAccent[100],
@@ -508,6 +510,8 @@ class _QuestionsPageState extends State<QuestionsPage> {
         MaterialPageRoute(
             builder: (BuildContext context) => InspectionSummaryPage(
                   results: inspection.inspect(),
+                  bmi: inspection.bodyMassIndex,
+                  kgRange: inspection.kgRange,
                 )));
   }
 }

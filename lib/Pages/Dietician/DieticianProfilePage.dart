@@ -6,11 +6,14 @@ import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/Dialogs.dart';
+import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+
+import 'DieticianProfileEdit.dart';
 
 class DieticianProfilePage extends StatefulWidget {
   final String userID;
@@ -141,7 +144,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                             Container(
                               margin: EdgeInsets.only(top: 15, bottom: 5),
                               child: Text(
-                                usermodel.name,
+                                usermodel.name +"  "+ usermodel.surname,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -149,7 +152,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                               ),
                             ),
                             Text(
-                              "değişcek",
+                              "Diyetisyen",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
@@ -183,6 +186,23 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                                   dModel: usermodel,
                                                 )));
                                   });
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                              ),
+                            ),
+                            Visibility(
+                              visible: usermodel.id ==
+                                  locator<UserService>().userModel.id,
+                              child: MaterialButton(
+                                elevation: 4,
+                                color: Colors.white,
+                                textColor: Colors.deepPurpleAccent.shade100,
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text("Profilimi Düzenle"),
+                                onPressed: () {
+                                  NavigationManager(context)
+                                      .pushPage(DieticianProfileEdit());
                                 },
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),

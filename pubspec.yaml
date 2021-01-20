@@ -54,6 +54,16 @@ flutter:
     - family: Kalam
       fonts:
         - asset: assets\fonts\Kalam\Kalam-Regular.ttf
+    - family: Chela
+      fonts:
+        - asset: assets\fonts\Chela\ChelaOne-Regular.ttf
+    - family: Jom
+      fonts:
+        - asset: assets\fonts\Jom\Jomhuria-Regular.ttf
+    - family: Kavon
+      fonts:
+        - asset: assets\fonts\Kavon\Kavoon-Regular.ttf
+
 
   assets:
     - assets/images/
