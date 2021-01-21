@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: PageComponents(context).heightSize(27),
             ),
-            Padding(
+            /*Padding(
               padding: const EdgeInsets.only(left: 22, bottom: 0),
               child: Text(
                 "Diyetisyeniniz  ile  Evinizden  Görüşün",
@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.white30,
                 ),
               ),
-            ),
+            ),*/
             InkWell(
               onTap: () {
                 setState(() {

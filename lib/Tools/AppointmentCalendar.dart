@@ -34,7 +34,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
           DateTime.now(),
           locale: "tr",
           initialSelectedDate: DateTime.now(),
-          selectionColor: Colors.green,
+          selectionColor: Colors.green[300],
           selectedTextColor: Colors.white,
           daysCount: 60,
           onDateChange: (date) {
@@ -106,7 +106,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
       },
       child: Card(
         margin: EdgeInsets.all(15),
-        color: selectedHour == hour ? Colors.green : Colors.blue,
+        color: selectedHour == hour ? Colors.green[300] : Colors.blue[400],
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(

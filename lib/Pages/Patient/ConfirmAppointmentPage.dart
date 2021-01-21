@@ -3,6 +3,7 @@ import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
             children: [
               randevuDetayi(),
               SizedBox(
-                height: 50,
+                height: PageComponents(context).heightSize(6),
               ),
               TextFormField(
                 controller: nameC,
@@ -84,7 +85,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: PageComponents(context).heightSize(3),
               ),
               TextFormField(
                 controller: surnameC,
@@ -103,7 +104,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: PageComponents(context).heightSize(3),
               ),
               TextFormField(
                 controller: emailC,
@@ -123,7 +124,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                 ),
               ),
               SizedBox(
-                height: 30,
+                height: PageComponents(context).heightSize(3),
               ),
               TextFormField(
                 controller: extraC,
@@ -145,7 +146,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                     labelText: "Diyetisyeniniz için ek bilgi (zorunlu değil)"),
               ),
               SizedBox(
-                height: 40,
+                height: PageComponents(context).heightSize(5),
               ),
               Center(
                 child: Container(
@@ -201,30 +202,32 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           border: Border.all(width: 2, color: Colors.deepPurpleAccent[100])),
-      width: MediaQuery.of(context).size.width,
-      height: 170,
+      width: PageComponents(context).widthSize(17),
+      height: PageComponents(context).heightSize(22),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                margin: EdgeInsets.only(left: 20),
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: FadeInImage(
-                  image: ExtendedNetworkImageProvider(
-                      widget.dModel.profilePhotoUrl),
-                  placeholder:
-                      ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
-                  fit: BoxFit.contain,
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Container(
+                  height: PageComponents(context).heightSize(8),
+                  width: PageComponents(context).widthSize(15),
+                  decoration: new BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    //shape: BoxShape.circle,
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: ExtendedNetworkImageProvider(
+                          widget.dModel.profilePhotoUrl,
+                          cache: true),
+                    ),
+                  ),
                 ),
               ),
               SizedBox(
-                width: 25,
+                width: PageComponents(context).widthSize(5),
               ),
               Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
@@ -241,17 +244,17 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
             children: [
               Container(
                 margin: EdgeInsets.only(left: 10),
-                height: 60,
-                width: 60,
+                height: PageComponents(context).heightSize(5),
+                width: PageComponents(context).widthSize(5),
                 child: Icon(Icons.date_range),
               ),
               SizedBox(
-                width: 25,
+                width: PageComponents(context).widthSize(3),
               ),
               Container(
-                margin: EdgeInsets.only(top: 5, bottom: 5),
+                margin: EdgeInsets.only(top: 5, bottom: 2),
                 child: Text(
-                  "Randevu Tarihi :" +
+                  "Randevu Tarihi :   " +
                       widget.day.toString() +
                       " " +
                       DateFormat("MMM", "tr").format(date) +

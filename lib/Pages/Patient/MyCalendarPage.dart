@@ -40,7 +40,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
         title: Text(
           "Randevularım",
           style: TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.black, fontSize: 25),
+              fontWeight: FontWeight.bold, color: Colors.black, fontSize: 24),
         ),
       ),
       body: DefaultTabController(
@@ -214,7 +214,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
               ],
             ),
             SizedBox(
-              height: 15,
+              height: PageComponents(context).heightSize(1.8),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -228,35 +228,37 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                               )));
                     });
                   },
-                  child: Container(
-                    margin: EdgeInsets.only(
-                        left: 10, bottom: 5, right: 10, top: 10),
-                    height: PageComponents(context).widthSize(15),
-                    width: PageComponents(context).widthSize(15),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.5),
-                    ),
-                    child: ClipOval(
-                      child: FadeInImage(
-                        image: ExtendedNetworkImageProvider(
-                            dlist[i].profilePhotoUrl),
-                        placeholder: ExtendedAssetImageProvider(
-                            "assets/photo/nutri.jpg"),
-                        fit: BoxFit.contain,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Container(
+                      height: PageComponents(context).heightSize(10),
+                      width: PageComponents(context).heightSize(10),
+                      decoration: new BoxDecoration(
+                        //borderRadius: BorderRadius.circular(15),
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: ExtendedNetworkImageProvider(
+                              dlist[i].profilePhotoUrl,
+                              cache: true),
+                        ),
                       ),
                     ),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 10, top: 10),
+                  margin: EdgeInsets.only(left: 15, top: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        dlist[i].name,
-                        style: TextStyle(fontSize: 15),
+                        dlist[i].name + " " + dlist[i].surname,
+                        style: TextStyle(fontSize: 17),
                         textAlign: TextAlign.center,
+                      ),
+                      SizedBox(
+                        height: PageComponents(context).widthSize(2),
                       ),
                       RaisedButton(
                         onPressed: () {
@@ -270,7 +272,8 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                             if (re != null) setState(() {});
                           });
                         },
-                        padding: const EdgeInsets.all(4.0),
+                        elevation: 1,
+                        padding: const EdgeInsets.all(5.0),
                         child: Text(
                           "Randevu Detayları",
                           style: TextStyle(
@@ -322,7 +325,7 @@ class _MyCalendarPageState extends State<MyCalendarPage> {
                           color: Colors.deepPurpleAccent.shade100,
                           fontSize: 15),
                     ),
-                    color: readyToggle ? Colors.green : Colors.white,
+                    color: readyToggle ? Colors.green[300] : Colors.white,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
                   ),

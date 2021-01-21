@@ -40,7 +40,7 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   border: Border.all(
                       width: 2, color: Colors.deepPurpleAccent[100])),
-              height: PageComponents(context).heightSize(30),
+              height: PageComponents(context).heightSize(20),
               width: PageComponents(context).widthSize(100),
               child: Column(
                 children: [
@@ -55,8 +55,8 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
                   Container(
                     margin: EdgeInsets.only(top: 5, bottom: 5),
                     child: Text(
-                      "Kilo Aralığınız  : " + "${widget.kgRange}",
-                      style: TextStyle(fontSize: 20),
+                      "Kilo Aralığınız  : " + widget.kgRange,
+                      style: TextStyle(fontSize: 20, color: Colors.blue[400]),
                     ),
                   ),
                 ],
@@ -71,7 +71,7 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
               children: [
                 if (widget.results.contains(Diseases.anoreksiya))
                   Text(
-                    "Anoreksiya Risk Grubundasınız !",
+                    "Anoreksi (Yeme Bozukluğu) Risk\n             Grubundasınız !",
                     style: TextStyle(color: Colors.redAccent, fontSize: 23),
                   ),
                 if (widget.results.contains(Diseases.obezite))
@@ -81,15 +81,15 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
                   Text("Diyabet Hastalığı Risk Grubundasınız !",
                       style: TextStyle(color: Colors.redAccent, fontSize: 23)),
                 if (widget.results.contains(Diseases.kalp_Damar))
-                  Text("Kalp-Damar Hasalığı Risk Grubundasınız !",
+                  Text("Kalp-Damar Hastalığı Risk Grubundasınız !",
                       style: TextStyle(color: Colors.redAccent, fontSize: 23))
                 else
                   Row(
                     children: [
-                      Icon(Icons.check, color: Colors.green[300], size: 20),
+                      Icon(Icons.check, color: Colors.green[300], size: 35),
                       Text("Herhangi bir hastalık riskiniz bulunmamaktadır",
                           style: TextStyle(
-                              color: Colors.green[300], fontSize: 20)),
+                              color: Colors.green[300], fontSize: 19)),
                     ],
                   ),
               ],
@@ -127,5 +127,9 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
         ],
       ),
     );
+  }
+
+  String kiloAraligi(String kgRange) {
+    return kgRange;
   }
 }

@@ -85,7 +85,8 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: MyColors().lightGreen,
+          color: Color(0xffdfdeff),
+          border: Border.all(color: MyColors().greyTextColor,width: 0.3)
         ),
         child: Row(
           children: <Widget>[
@@ -95,7 +96,8 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
                 height: heightSize(7),
                 width: widthSize(14),
                 decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
+                  //borderRadius: BorderRadius.circular(10),
+                 shape: BoxShape.circle,
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image:
@@ -108,6 +110,7 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
               width: widthSize(3),
             ),
             Expanded(
+              
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,16 +119,18 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
                   Text(
                     widget.name,
                     style: TextStyle(
-                      fontFamily: "Zona",
-                      fontSize: heightSize(2.5),
-                      color: MyColors().darkblueText,
+                      fontFamily: "Kavom",
+                      fontSize: heightSize(2),
+                     
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                   Divider(
                     endIndent: 15,
                     height: 15,
-                    color: MyColors().darkblueText,
-                    thickness: 1,
+                    
+                    color: MyColors().blackOpacityContainer,
+                    thickness: 2,
                   ),
                   Text(
                     widget.comment,
@@ -133,9 +138,9 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
                     overflow: TextOverflow.ellipsis,
                     softWrap: true,
                     style: TextStyle(
-                      fontFamily: "ZonaLight",
-                      fontSize: heightSize(2),
-                      color: MyColors().darkblueText,
+                      fontFamily: "Kavom",
+                      fontSize: heightSize(1.7),
+                      
                     ),
                   ),
                 ],

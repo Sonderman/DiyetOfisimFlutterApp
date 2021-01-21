@@ -2,6 +2,7 @@ import 'package:dash_chat/dash_chat.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Tools/Dialogs.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:extended_image/extended_image.dart';
 import "package:flutter/material.dart";
 
@@ -75,34 +76,30 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
 
   Widget diyetisyeniniz() {
     return Container(
-      height: 70,
-      width: 500,
-      margin: EdgeInsets.only(left: 25, top: 15),
+      height: PageComponents(context).heightSize(12),
+      width: PageComponents(context).widthSize(100),
+      margin: EdgeInsets.only(left: 5, top: 15, bottom: 10),
       child: Row(
         children: [
           Container(
-            //color: Colors.amber,
-            height: 60,
-            width: 60,
-            child: ClipOval(
-              child: FadeInImage(
-                image:
-                    ExtendedNetworkImageProvider(widget.dModel.profilePhotoUrl),
-                placeholder:
-                    ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
-                fit: BoxFit.contain,
+            width: PageComponents(context).widthSize(25),
+            decoration: new BoxDecoration(
+              //borderRadius: BorderRadius.circular(0),
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: ExtendedNetworkImageProvider(
+                    widget.dModel.profilePhotoUrl,
+                    cache: true),
               ),
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
             ),
           ),
           SizedBox(
-            width: 20,
+            width: PageComponents(context).widthSize(5),
           ),
           Text(
-            widget.dModel.name,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            widget.dModel.name + " " + widget.dModel.surname,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -142,7 +139,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
       child: Container(
         clipBehavior: Clip.none,
         color: Colors.white,
-        margin: EdgeInsets.only(top: 150),
+        margin: EdgeInsets.only(top: 100),
         height: 42,
         width: MediaQuery.of(context).size.width - 15,
         child: RaisedButton.icon(

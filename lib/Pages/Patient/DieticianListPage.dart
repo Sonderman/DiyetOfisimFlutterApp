@@ -67,23 +67,23 @@ class _DieticianListPageState extends State<DieticianListPage> {
                       ),
                     ),
                     SizedBox(
-                      width: 70,
+                         width: PageComponents(context).heightSize(8),
                     ),
                     Container(
                       child: Text(
                         "Diyetisyenler",
                         style: TextStyle(
-                            fontSize: 25,
-                            fontFamily: "Kalam",
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold),
+                            fontSize: 45,
+                            fontFamily: "Jom",
+                            color: Colors.black,
+                            ),
                       ),
                     )
                   ],
                 ),
                 Center(
                   child: Container(
-                      width: MediaQuery.of(context).size.width / 2 + 200,
+                          width: PageComponents(context).widthSize(92),
                       child: TextField(
                         decoration: InputDecoration(
                           suffixIcon: Icon(
@@ -151,7 +151,23 @@ class _DieticianListPageState extends State<DieticianListPage> {
                             userID: model.id,
                           )));
                 },
-                child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Container(
+                    height: PageComponents(context).heightSize(11),
+                    width: PageComponents(context).widthSize(20),
+                    decoration: new BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      //shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: ExtendedNetworkImageProvider(model.profilePhotoUrl,
+                            cache: true),
+                      ),
+                    ),
+                  ),
+                ),
+                /*Container(
                   margin: EdgeInsets.all(15),
                   height: PageComponents(context).heightSize(18),
                   width: PageComponents(context).widthSize(18),
@@ -164,10 +180,10 @@ class _DieticianListPageState extends State<DieticianListPage> {
                         ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
                     fit: BoxFit.contain,
                   ),
-                ),
+                ),*/
               ),
               SizedBox(
-                width: 10,
+                   width: PageComponents(context).widthSize(5),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,11 +209,11 @@ class _DieticianListPageState extends State<DieticianListPage> {
                         color: Colors.grey),
                   ),
                   SizedBox(
-                    height: 10,
+                        height: PageComponents(context).heightSize(2),
                   ),
                   SizedBox(
-                    height: 30,
-                    width: 180,
+                        height: PageComponents(context).heightSize(3.8),
+                        width: PageComponents(context).widthSize(30),
                     child: MaterialButton(
                       elevation: 4,
                       color: Colors.white,

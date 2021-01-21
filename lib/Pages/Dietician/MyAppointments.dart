@@ -66,54 +66,67 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                             formatButtonVisible: false,
                             titleTextStyle: TextStyle(
                               color: Colors.white,
-                              fontFamily: "Kalam",
-                              fontSize: 18,
+                              fontFamily: "Jom",
+                              fontSize: 50,
                             ),
                             leftChevronIcon: Icon(
                               Icons.arrow_back_ios,
                               color: Colors.white,
-                              size: 15,
+                              size: 25,
                             ),
                             rightChevronIcon: Icon(
                               Icons.arrow_forward_ios,
                               color: Colors.white,
-                              size: 15,
+                              size: 25,
                             )),
                         calendarStyle: CalendarStyle(
-                          weekendStyle: TextStyle(color: Colors.white),
-                          weekdayStyle: TextStyle(color: Colors.white),
-                        ),
+                            weekendStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                            weekdayStyle: TextStyle(color: Colors.white),
+                            selectedColor: Colors.purple[800],
+                            todayColor: Color(0xffdfdeff),
+                            todayStyle: TextStyle(color: Colors.purple[800])),
                         daysOfWeekStyle: DaysOfWeekStyle(
-                          weekendStyle: TextStyle(color: Colors.white),
-                          weekdayStyle: TextStyle(color: Colors.white),
+                          weekendStyle: TextStyle(
+                              color: Colors.purple[800],
+                              fontSize: 20,
+                              fontFamily: "Kavom",
+                              fontWeight: FontWeight.bold),
+                          weekdayStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: "Kavom",
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                       SizedBox(
-                        height: 15,
+                        height: PageComponents(context).widthSize(2),
                       ),
                       Expanded(
                         child: Container(
                           height: MediaQuery.of(context).size.height,
                           width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.all(20),
+                          padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            border: Border.all(width: 3, color: myColor),
+                            border: Border.all(width: 5, color: myColor),
                             color: myColor,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: ListView(children: [
-                            Text(
-                                selectedDate.day.toString() +
-                                    " " +
-                                    DateFormat("MMMM", "tr")
-                                        .format(selectedDate) +
-                                    " " +
-                                    selectedDate.year.toString(),
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                )),
+                            Center(
+                              child: Text(
+                                  selectedDate.day.toString() +
+                                      " " +
+                                      DateFormat("MMMM", "tr")
+                                          .format(selectedDate) +
+                                      " " +
+                                      selectedDate.year.toString(),
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 17)),
+                            ),
                             SizedBox(
-                              height: 15,
+                              height: PageComponents(context).widthSize(3),
                             ),
                             appointmentSection(calendar),
                           ]),
@@ -148,14 +161,18 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
       Map apMap = calendar[selectedDate.year.toString()][month][day];
       List apList = apMap.values.toList();
       List apKList = apMap.keys.toList();
-      return Column(
-        children: List.generate(
-            apMap.length,
-            (index) => saatler(
-                Map<String, dynamic>.from(apList[index]), apKList[index])),
+      return Center(
+        child: Column(
+          children: List.generate(
+              apMap.length,
+              (index) => saatler(
+                    Map<String, dynamic>.from(apList[index]),
+                    apKList[index],
+                  )),
+        ),
       );
     } else
-      return Text("Seçilen günle ilişkili randevu bulunmuyor");
+      return Center(child: Text("Seçilen günle ilişkili randevu bulunmuyor"));
   }
 
   bool checkAppointment(Appointment a) {
@@ -182,68 +199,68 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
     ap.year = selectedDate.year;
     ap.month = selectedDate.month;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      //crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          margin: EdgeInsets.only(top: 45),
-          padding: EdgeInsets.all(20),
-          width: MediaQuery.of(context).size.width * 0.2,
-          child: Text(
-            hour,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+        Center(
+          child: Container(
+            margin: EdgeInsets.all(10),
+            padding: EdgeInsets.all(30),
+            width: PageComponents(context).widthSize(25),
+            height: PageComponents(context).widthSize(19),
+            child: Text(
+              hour,
+              style: TextStyle(
+                  color: Colors.purple[800],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20),
+              textAlign: TextAlign.right,
             ),
-            textAlign: TextAlign.right,
           ),
         ),
         Expanded(
           child: Container(
-            margin: EdgeInsets.all(20),
-            padding: EdgeInsets.all(20),
-            color: Color(0xffdfdeff),
+            width: PageComponents(context).widthSize(25),
+            height: PageComponents(context).widthSize(19),
+            margin: EdgeInsets.all(10),
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.grey[50]),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                        Text(
-                          ap.name,
-                          style: TextStyle(
-                              color: Colors.deepPurpleAccent[700],
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ] +
-                      (ap.status == 0
-                          ? ap.pReady
-                              ? [
-                                  Text(
-                                    "  Hazır".toUpperCase(),
-                                    style: TextStyle(color: Colors.green),
-                                  )
-                                ]
-                              : [
-                                  Text(
-                                    "  Hasta Bekleniyor".toUpperCase(),
-                                    style: TextStyle(color: Colors.red),
-                                  )
-                                ]
-                          : ap.status == 1
-                              ? [
-                                  Text(
-                                    "  Randevu Tamamlandı".toUpperCase(),
-                                    style: TextStyle(color: Colors.brown),
-                                  )
-                                ]
-                              : [
-                                  Text(
-                                    "  Randevu iptal edildi".toUpperCase(),
-                                    style: TextStyle(color: Colors.blue),
-                                  )
-                                ]),
-                ),
-                SizedBox(height: 5),
-                Divider(),
+                Column(children: [
+                  Text(
+                    ap.name + "  " + ap.surname,
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  SizedBox(
+                    height: PageComponents(context).widthSize(3),
+                  ),
+                  (ap.status == 0
+                      ? ap.pReady
+                          ? Text(
+                              "  Hazır".toUpperCase(),
+                              style: TextStyle(
+                                  color: Colors.yellow[600], fontSize: 15),
+                            )
+                          : Text(
+                              "  Hasta Bekleniyor".toUpperCase(),
+                              style:
+                                  TextStyle(color: Colors.green, fontSize: 15),
+                            )
+                      : ap.status == 1
+                          ? Text(
+                              "  Randevu Tamamlandı".toUpperCase(),
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 15),
+                            )
+                          : Text(
+                              "  Randevu iptal edildi".toUpperCase(),
+                              style: TextStyle(color: Colors.red, fontSize: 15),
+                            )),
+                ]),
                 Visibility(
                   visible: checkAppointment(ap) && ap.status == 0,
                   child: RaisedButton(

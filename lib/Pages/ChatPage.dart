@@ -28,6 +28,8 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("Görüşmeler", style: TextStyle(fontSize: 24),),
+      backgroundColor: Colors.transparent,elevation: 0,),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -52,17 +54,7 @@ class _ChatPageState extends State<ChatPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            "Görüşmeler",
-            style: TextStyle(
-              fontFamily: "Zona",
-              fontSize: heightSize(3),
-              color: MyColors().loginGreyColor,
-            ),
-          ),
-          SizedBox(
-            height: heightSize(3),
-          ),
+         
           Expanded(
             child: StreamBuilder(
               stream:

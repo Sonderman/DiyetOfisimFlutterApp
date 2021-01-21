@@ -1,5 +1,6 @@
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Tools/AppointmentCalendar.dart';
+import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import "package:flutter/material.dart";
 import 'package:diyet_ofisim/Pages/Patient/ConfirmAppointmentPage.dart';
 
@@ -45,8 +46,8 @@ class _AppointmentCalendarPageState extends State<AppointmentCalendarPage> {
               },
             ),
             Container(
-              height: 40,
-              width: MediaQuery.of(context).size.width / 2 - 20,
+              height: PageComponents(context).heightSize(5),
+              width: PageComponents(context).heightSize(30),
               child: RaisedButton(
                 onPressed: () {
                   setState(() {

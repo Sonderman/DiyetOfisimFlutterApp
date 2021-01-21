@@ -500,10 +500,11 @@ class _QuestionsPageState extends State<QuestionsPage> {
     cevap["bTansiyon"] = bTansiyon;
     cevap["Gender"] = usermodel.gender == "Man" ? true : false;
     cevap["BMI"] = (kilo / ((boy ~/ 10) * (boy ~/ 10))) * 100;
+    String kgRange = "";
 
     List r = classifier.classify(cevap);
     Inspection inspection =
-        Inspection(r[0], r[1], cevap["Gender"], cevap["BMI"]);
+        Inspection(r[0], r[1], cevap["Gender"], cevap["BMI"], kgRange);
     classifier.closeInterpreter();
     Navigator.push(
         context,

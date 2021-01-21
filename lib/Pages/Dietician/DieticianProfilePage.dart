@@ -59,7 +59,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
           : AppBar(
               title: Text(
                 "Profilim",
-                style: TextStyle(fontSize: 25),
+                style: TextStyle(fontSize: 24),
               ),
               //centerTitle: true,
               backgroundColor: Colors.transparent,
@@ -144,7 +144,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                             Container(
                               margin: EdgeInsets.only(top: 15, bottom: 5),
                               child: Text(
-                                usermodel.name +"  "+ usermodel.surname,
+                                usermodel.name + "  " + usermodel.surname,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -553,7 +553,9 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
               style: TextStyle(
                 fontSize: 20,
               )),
-          Divider(),
+          SizedBox(
+            height: PageComponents(context).heightSize(2),
+          ),
           FutureBuilder(
               future: userService.getComments(usermodel.id),
               builder:
