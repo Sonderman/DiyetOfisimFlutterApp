@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
             colorFilter: ColorFilter.mode(
                 Colors.white.withOpacity(0.25), BlendMode.dstATop),
             image: AssetImage(
-              'assets/photo/mor1.jpg',
+              'assets/photo/diyetisyen.png',
             ),
           ),
         ),
@@ -125,6 +125,7 @@ class _HomePageState extends State<HomePage> {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Material(
                     color: Colors.white,
+                    elevation: 5,
                     borderRadius: BorderRadius.circular(20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,

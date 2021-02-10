@@ -7,6 +7,7 @@ import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ConfirmAppointmentPage extends StatefulWidget {
   final Dietician dModel;
@@ -179,6 +180,14 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                         if (value) {
                           print("Randevu Oluşturuldu");
                           Navigator.popUntil(context, (route) => route.isFirst);
+                          Fluttertoast.showToast(
+                              msg: "Randevunuz Başarıyla Oluşturuldu.",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 3,
+                              backgroundColor: Colors.green,
+                              textColor: Colors.white,
+                              fontSize: 18.0);
                         } else
                           print("Hata!!");
                       });

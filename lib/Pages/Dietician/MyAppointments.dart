@@ -42,8 +42,11 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                 return PageComponents(context)
                     .loadingOverlay(backgroundColor: Colors.white);
               } else {
-                Map<String, dynamic> calendar =
-                    Map<String, dynamic>.from(snap.data.snapshot.value);
+                Map<String, dynamic> calendar;
+                if (snap.data.snapshot.value != null) {
+                  calendar =
+                      Map<String, dynamic>.from(snap.data.snapshot.value);
+                }
 
                 return Container(
                   padding: EdgeInsets.only(top: 30),
@@ -157,7 +160,7 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
     day = selectedDate.day.toString();
     if (selectedDate.month < 10) month = "0" + month;
     if (selectedDate.day < 10) day = "0" + day;
-    if (calendarCheck(calendar, month, day)) {
+    if (calendar != null && calendarCheck(calendar, month, day)) {
       Map apMap = calendar[selectedDate.year.toString()][month][day];
       List apList = apMap.values.toList();
       List apKList = apMap.keys.toList();
