@@ -1,17 +1,28 @@
 class Appointment {
-  String dID;
-  String pID;
-  int year;
-  int month;
-  int day;
-  String hour;
-  int status;
-  String extra;
-  String name;
-  String surname;
-  String email;
-  bool pReady;
-  bool dReady;
+  late String dID;
+  late String pID;
+  late DateTime date;
+  late int status;
+  late String extra;
+  late String name;
+  late String surname;
+  late String email;
+  late bool pReady;
+  late bool dReady;
+
+  Appointment();
+
+  Appointment.predefined(
+      {required this.dID,
+      required this.pID,
+      required this.date,
+      required this.status,
+      required this.extra,
+      required this.name,
+      required this.surname,
+      required this.email,
+      required this.pReady,
+      required this.dReady});
 
   Map<String, dynamic> toMap() {
     return {
@@ -23,7 +34,8 @@ class Appointment {
       'Surname': surname,
       'Email': email,
       'pReady': pReady,
-      'dReady': dReady
+      'dReady': dReady,
+      'date': date.millisecondsSinceEpoch
     };
   }
 
@@ -37,5 +49,6 @@ class Appointment {
     email = map["Email"] ?? "NoEmail";
     pReady = map["pReady"] ?? false;
     dReady = map["dReady"] ?? false;
+    date = DateTime.fromMillisecondsSinceEpoch(map["date"] as int);
   }
 }

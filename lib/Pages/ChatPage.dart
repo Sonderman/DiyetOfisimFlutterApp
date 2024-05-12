@@ -1,17 +1,18 @@
-import 'package:dash_chat/dash_chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyet_ofisim/Pages/Components/CustomScroll.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/Message.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+
   @override
-  _ChatPageState createState() => _ChatPageState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
@@ -28,10 +29,16 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Görüşmeler", style: TextStyle(fontSize: 24),),
-      backgroundColor: Colors.transparent,elevation: 0,),
+      appBar: AppBar(
+        title: const Text(
+          "Görüşmeler",
+          style: TextStyle(fontSize: 24),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: <Widget>[
             SizedBox(
@@ -54,37 +61,33 @@ class _ChatPageState extends State<ChatPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-         
           Expanded(
             child: StreamBuilder(
               stream:
                   messageService.getUserChatsSnapshot(userService.userModel.id),
-              builder: (context, AsyncSnapshot<Event> snapshot) {
+              builder: (context,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                 if (!snapshot.hasData) {
                   return PageComponents(context)
                       .loadingOverlay(backgroundColor: Colors.white);
-                } else if (snapshot.data.snapshot.value == null) {
-                  return Center(
+                } else if (snapshot.data == null) {
+                  return const Center(
                     child: Text("Henüz Görüşme Yapmadınız."),
                   );
                 } else {
-                  List items =
-                      (snapshot.data.snapshot.value as Map).values.toList();
-                  List chatIds =
-                      (snapshot.data.snapshot.value as Map).keys.toList();
-                  /*
-                  var temp = (snapshot.data.snapshot.value as Map)
-                      .map<String, dynamic>(
-                          (key, value) => MapEntry(key, value));
-                  */
-
-                  int itemLength = (snapshot.data.snapshot.value as Map).length;
+                  int itemLength = snapshot.data!.size;
+                  List<Map<String, dynamic>> items = [];
+                  List<String> chatIds = [];
+                  for (var e in snapshot.data!.docs) {
+                    chatIds.add(e.id);
+                    items.add(e.data());
+                  }
 
                   return ScrollConfiguration(
                     behavior: NoScrollEffectBehavior(),
                     child: ListView.separated(
                         separatorBuilder: (BuildContext context, int index) =>
-                            Divider(
+                            const Divider(
                               height: 50,
                             ),
                         itemCount: itemLength,
@@ -94,12 +97,11 @@ class _ChatPageState extends State<ChatPage> {
 
                           return FutureBuilder(
                               future: userService.findUserByID(otherUserID),
-                              builder: (context, snapshot) {
-                                switch (snapshot.connectionState) {
+                              builder: (context, snap) {
+                                switch (snap.connectionState) {
                                   case ConnectionState.done:
-                                    String url =
-                                        snapshot.data['ProfilePhotoUrl'];
-                                    String userName = snapshot.data['Name'];
+                                    String url = snap.data!['ProfilePhotoUrl'];
+                                    String userName = snap.data!['Name'];
 
                                     return InkWell(
                                       onTap: () {
@@ -108,19 +110,23 @@ class _ChatPageState extends State<ChatPage> {
                                             MaterialPageRoute(
                                                 builder:
                                                     (BuildContext context) =>
-                                                        Message(otherUserID,
-                                                            userName)));
+                                                        Message(
+                                                            otherUserID:
+                                                                otherUserID,
+                                                            otherUserName:
+                                                                userName)));
                                       },
                                       child: StreamBuilder(
                                           stream: messageService
                                               .getChatPoolSnapshot(chatID),
                                           builder: (_,
-                                              AsyncSnapshot<Event>
+                                              AsyncSnapshot<
+                                                      DocumentSnapshot<
+                                                          Map<String, dynamic>>>
                                                   lastMessageSnap) {
                                             if (lastMessageSnap.hasData) {
                                               Map lastMessagemap =
-                                                  lastMessageSnap
-                                                      .data.snapshot.value;
+                                                  lastMessageSnap.data!.data()!;
 
                                               String message =
                                                   lastMessagemap["message"];
@@ -157,7 +163,7 @@ class _ChatPageState extends State<ChatPage> {
                                                             .start,
                                                     children: <Widget>[
                                                       Text(
-                                                        "$userName",
+                                                        userName,
                                                         style: TextStyle(
                                                           fontFamily: "Zona",
                                                           fontSize:
@@ -186,7 +192,7 @@ class _ChatPageState extends State<ChatPage> {
                                                       ),
                                                     ],
                                                   ),
-                                                  Spacer(),
+                                                  const Spacer(),
                                                   Text(
                                                     formattedTime,
                                                     style: TextStyle(
@@ -199,13 +205,14 @@ class _ChatPageState extends State<ChatPage> {
                                                   )
                                                 ],
                                               );
-                                            } else
-                                              return Text("null");
+                                            } else {
+                                              return const Text("null");
+                                            }
                                           }),
                                     );
-                                    break;
+
                                   case ConnectionState.none:
-                                    return Center(child: Text("Hata"));
+                                    return const Center(child: Text("Hata"));
                                   case ConnectionState.waiting:
                                     return PageComponents(context)
                                         .loadingCustomOverlay(
@@ -213,7 +220,7 @@ class _ChatPageState extends State<ChatPage> {
                                                 MyColors().blueThemeColor,
                                             spinSize: 40);
                                   default:
-                                    return Center(
+                                    return const Center(
                                         child: Text("Beklenmedik durum"));
                                 }
                               });

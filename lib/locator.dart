@@ -13,7 +13,6 @@ void setupLocator() {
   locator.registerSingleton<StorageWorks>(StorageWorks());
   locator.registerSingleton<UserService>(UserService());
   locator.registerSingleton<MessagingService>(MessagingService());
-  locator.registerSingleton<LoginRegisterService>(LoginRegisterService());
 }
 
 //Locator kullanacağın zaman

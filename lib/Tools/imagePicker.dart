@@ -1,29 +1,16 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:diyet_ofisim/Tools/ImageEditor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-Future<Uint8List> getImageFromCamera(BuildContext context) async {
-  final picker = ImagePicker();
-  final image = await picker.getImage(source: ImageSource.camera);
-  if (image != null)
-    return Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => ImageEditorPage(
-                  image: File(image.path),
-                  forCreateEvent: false,
-                ))).then((value) => value);
-  else
-    return null;
-}
+Future<Uint8List?> pickImage(
+    {required BuildContext context, required ImageSource source}) async {
+  final ImagePicker picker = ImagePicker();
 
-// ANCHOR galeriden foto almaya yarar
-Future<Uint8List> getImageFromGallery(BuildContext context) async {
-  final picker = ImagePicker();
-  final image = await picker.getImage(source: ImageSource.gallery);
-  if (image != null)
+  final XFile? image = await picker.pickImage(source: source);
+
+  if (image != null && context.mounted) {
     return Navigator.push(
         context,
         MaterialPageRoute(
@@ -31,6 +18,7 @@ Future<Uint8List> getImageFromGallery(BuildContext context) async {
                   image: File(image.path),
                   forCreateEvent: false,
                 ))).then((value) => value);
-  else
+  } else {
     return null;
+  }
 }

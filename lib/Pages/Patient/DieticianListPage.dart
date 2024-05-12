@@ -11,10 +11,10 @@ import "package:flutter/material.dart";
 class DieticianListPage extends StatefulWidget {
   final List<Diseases> results;
 
-  const DieticianListPage({Key key, this.results}) : super(key: key);
+  const DieticianListPage({super.key, required this.results});
 
   @override
-  _DieticianListPageState createState() => _DieticianListPageState();
+  State<DieticianListPage> createState() => _DieticianListPageState();
 }
 
 class _DieticianListPageState extends State<DieticianListPage> {
@@ -29,8 +29,8 @@ class _DieticianListPageState extends State<DieticianListPage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.grey[350],
-                  Colors.grey[200],
+                  Colors.grey[350]!,
+                  Colors.grey[200]!,
                   Colors.white,
                   /* Colors.deepPurple[200],
                 Colors.deepPurple[50],
@@ -52,47 +52,46 @@ class _DieticianListPageState extends State<DieticianListPage> {
                       child: Container(
                         height: PageComponents(context).heightSize(6),
                         width: PageComponents(context).widthSize(11),
-                        child: Icon(
-                          Icons.arrow_back_ios_sharp,
-                          color: Colors.white,
-                          size: 30,
-                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color:
                               Colors.deepPurpleAccent.shade100.withOpacity(0.7),
                         ),
-                        margin: EdgeInsets.all(20),
+                        margin: const EdgeInsets.all(20),
                         alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.arrow_back_ios_sharp,
+                          color: Colors.white,
+                          size: 30,
+                        ),
                       ),
                     ),
                     SizedBox(
-                         width: PageComponents(context).heightSize(8),
+                      width: PageComponents(context).heightSize(8),
                     ),
-                    Container(
-                      child: Text(
-                        "Diyetisyenler",
-                        style: TextStyle(
-                            fontSize: 45,
-                            fontFamily: "Jom",
-                            color: Colors.black,
-                            ),
+                    const Text(
+                      "Diyetisyenler",
+                      style: TextStyle(
+                        fontSize: 45,
+                        fontFamily: "Jom",
+                        color: Colors.black,
                       ),
                     )
                   ],
                 ),
                 Center(
-                  child: Container(
-                          width: PageComponents(context).widthSize(92),
+                  child: SizedBox(
+                      width: PageComponents(context).widthSize(92),
                       child: TextField(
                         decoration: InputDecoration(
-                          suffixIcon: Icon(
+                          suffixIcon: const Icon(
                             Icons.search,
                           ),
                           contentPadding:
                               const EdgeInsets.only(top: 10, left: 30),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent),
+                            borderSide:
+                                const BorderSide(color: Colors.transparent),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -101,7 +100,7 @@ class _DieticianListPageState extends State<DieticianListPage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           hintText: "Diyetisyen Adı Arayınız",
-                          hintStyle: TextStyle(
+                          hintStyle: const TextStyle(
                               fontFamily: "Genel",
                               fontWeight: FontWeight.w200,
                               color: Colors.black26),
@@ -119,10 +118,11 @@ class _DieticianListPageState extends State<DieticianListPage> {
                         return ListView(
                           children: searchList(snapshot.data),
                         );
-                      } else
+                      } else {
                         return Center(
                             child:
                                 PageComponents(context).loadingCustomOverlay());
+                      }
                     },
                   ),
                 ),
@@ -132,10 +132,10 @@ class _DieticianListPageState extends State<DieticianListPage> {
 
   List<Widget> searchList(List<Dietician> dmodels) {
     List<Widget> temp = [];
-    dmodels.forEach((model) {
+    for (var model in dmodels) {
       temp.add(Container(
-        margin: EdgeInsets.only(top: 5, bottom: 5, left: 12, right: 12),
-        padding: EdgeInsets.all(10),
+        margin: const EdgeInsets.only(top: 5, bottom: 5, left: 12, right: 12),
+        padding: const EdgeInsets.all(10),
         height: PageComponents(context).widthSize(30),
         width: PageComponents(context).widthSize(30),
         child: Material(
@@ -156,12 +156,13 @@ class _DieticianListPageState extends State<DieticianListPage> {
                   child: Container(
                     height: PageComponents(context).heightSize(11),
                     width: PageComponents(context).widthSize(20),
-                    decoration: new BoxDecoration(
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       //shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: ExtendedNetworkImageProvider(model.profilePhotoUrl,
+                        image: ExtendedNetworkImageProvider(
+                            model.profilePhotoUrl,
                             cache: true),
                       ),
                     ),
@@ -183,25 +184,25 @@ class _DieticianListPageState extends State<DieticianListPage> {
                 ),*/
               ),
               SizedBox(
-                   width: PageComponents(context).widthSize(5),
+                width: PageComponents(context).widthSize(5),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       top: 15,
                       bottom: 10,
                     ),
                     child: Text(
-                      model.name + " " + model.surname,
-                      style: TextStyle(
+                      "${model.name} ${model.surname}",
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
                     ),
                   ),
-                  Text(
+                  const Text(
                     "Diyetisyen",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -209,33 +210,33 @@ class _DieticianListPageState extends State<DieticianListPage> {
                         color: Colors.grey),
                   ),
                   SizedBox(
-                        height: PageComponents(context).heightSize(2),
+                    height: PageComponents(context).heightSize(2),
                   ),
                   SizedBox(
-                        height: PageComponents(context).heightSize(3.8),
-                        width: PageComponents(context).widthSize(30),
+                    height: PageComponents(context).heightSize(3.8),
+                    width: PageComponents(context).widthSize(30),
                     child: MaterialButton(
                       elevation: 4,
                       color: Colors.white,
                       textColor: Colors.deepPurpleAccent.shade100,
                       padding: const EdgeInsets.all(3.0),
-                      child: Text(
-                        "Randevu Al",
-                        style: TextStyle(fontSize: 14),
-                      ),
                       onPressed: () {
                         userService
                             .getAppointmentCalendar(model.id)
                             .then((map) {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => AppointmentCalendarPage(
-                                    calendar: map,
+                                    calendar: map!,
                                     dModel: model,
                                   )));
                         });
                       },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(3.0)),
+                      child: const Text(
+                        "Randevu Al",
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ),
                 ],
@@ -244,7 +245,7 @@ class _DieticianListPageState extends State<DieticianListPage> {
           ),
         ),
       ));
-    });
+    }
     return temp;
   }
 }

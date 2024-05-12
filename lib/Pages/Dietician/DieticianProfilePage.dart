@@ -1,6 +1,6 @@
 import 'package:diyet_ofisim/Models/Dietician.dart';
-import 'package:diyet_ofisim/Pages/Components/CommentsPageDetails.dart';
-import 'package:diyet_ofisim/Pages/LoginSignupPage.dart';
+import 'package:diyet_ofisim/Pages/Components/commentsPageDetails.dart';
+import 'package:diyet_ofisim/Pages/loginSignupPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/AppointmentCalendarPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
@@ -11,43 +11,42 @@ import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'DieticianProfileEdit.dart';
 
 class DieticianProfilePage extends StatefulWidget {
-  final String userID;
-  DieticianProfilePage({Key key, this.userID}) : super(key: key);
+  final String? userID;
+
+  const DieticianProfilePage({super.key, this.userID});
 
   @override
-  _DieticianProfilePageState createState() => _DieticianProfilePageState();
+  State<DieticianProfilePage> createState() => _DieticianProfilePageState();
 }
 
 class _DieticianProfilePageState extends State<DieticianProfilePage>
     with SingleTickerProviderStateMixin {
   bool loading = false, canEdit = false;
-  TabController tabController;
-  Dietician usermodel;
-  UserService userService;
+  late TabController tabController;
+  late Dietician usermodel;
+  late UserService userService;
 
   @override
   void initState() {
     tabController = TabController(length: 4, vsync: this);
     userService = locator<UserService>();
-    if (widget.userID == null) {
-      usermodel = userService.userModel;
-      canEdit = true;
-    } else {
-      loading = true;
-      locator<UserService>().findUserByID(widget.userID).then((userdata) {
-        usermodel = Dietician(id: widget.userID);
-        usermodel.parseMap(userdata);
+    loading = true;
+    if (widget.userID != null) {
+      locator<UserService>().findUserByID(widget.userID!).then((userdata) {
+        usermodel = Dietician(id: widget.userID!);
+        usermodel.parseMap(userdata!);
 
         setState(() {
           loading = false;
         });
       });
     }
+
     super.initState();
   }
 
@@ -57,7 +56,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       appBar: widget.userID != null
           ? null
           : AppBar(
-              title: Text(
+              title: const Text(
                 "Profilim",
                 style: TextStyle(fontSize: 24),
               ),
@@ -68,14 +67,14 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                 IconButton(
                     color: Colors.deepPurpleAccent[100],
                     iconSize: 30,
-                    icon: Icon(Icons.exit_to_app_outlined),
+                    icon: const Icon(Icons.exit_to_app_outlined),
                     onPressed: () {
                       locator<AuthService>().signOut();
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  LoginSignupPage()));
+                                  const LoginSignupPage()));
                     })
               ],
             ),
@@ -99,9 +98,9 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                         color:
                             Colors.deepPurpleAccent.shade100.withOpacity(0.7),
                       ),
-                      margin: EdgeInsets.all(20),
+                      margin: const EdgeInsets.all(20),
                       alignment: Alignment.center,
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back_ios_sharp,
                         color: Colors.white,
                         size: 30,
@@ -109,60 +108,60 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 //Diyetisyen Profile İmage And Name
 
                 Material(
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
-                    margin: EdgeInsets.all(15),
-                    padding: EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(5),
                     height: 150,
                     width: MediaQuery.of(context).size.width,
                     child: Row(
                       children: [
-                        Container(
+                        SizedBox(
                           height: 100,
                           width: 100,
                           child: ClipOval(
                             child: FadeInImage(
                               image: ExtendedNetworkImageProvider(
                                   usermodel.profilePhotoUrl),
-                              placeholder: ExtendedAssetImageProvider(
+                              placeholder: const ExtendedAssetImageProvider(
                                   "assets/photo/nutri.jpg"),
                               fit: BoxFit.contain,
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 15,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              margin: EdgeInsets.only(top: 15, bottom: 5),
+                              margin: const EdgeInsets.only(top: 15, bottom: 5),
                               child: Text(
-                                usermodel.name + "  " + usermodel.surname,
-                                style: TextStyle(
+                                "${usermodel.name}  ${usermodel.surname}",
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
                                 ),
                               ),
                             ),
-                            Text(
+                            const Text(
                               "Diyetisyen",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
                                   color: Colors.grey),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             star(),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Visibility(
@@ -173,7 +172,6 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                 color: Colors.white,
                                 textColor: Colors.deepPurpleAccent.shade100,
                                 padding: const EdgeInsets.all(5.0),
-                                child: Text("Randevu Al"),
                                 onPressed: () {
                                   userService
                                       .getAppointmentCalendar(usermodel.id)
@@ -182,13 +180,14 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 AppointmentCalendarPage(
-                                                  calendar: map,
+                                                  calendar: map!,
                                                   dModel: usermodel,
                                                 )));
                                   });
                                 },
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),
+                                child: const Text("Randevu Al"),
                               ),
                             ),
                             Visibility(
@@ -199,13 +198,13 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                 color: Colors.white,
                                 textColor: Colors.deepPurpleAccent.shade100,
                                 padding: const EdgeInsets.all(5.0),
-                                child: Text("Profilimi Düzenle"),
                                 onPressed: () {
                                   NavigationManager(context)
-                                      .pushPage(DieticianProfileEdit());
+                                      .pushPage(const DieticianProfileEdit());
                                 },
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),
+                                child: const Text("Profilimi Düzenle"),
                               ),
                             ),
                           ],
@@ -344,31 +343,30 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
   Widget butonBar() {
     return Center(
       child: Container(
-        clipBehavior: Clip.none,
-        color: Colors.white,
-        margin: EdgeInsets.all(6.0),
-        height: 42,
-        width: MediaQuery.of(context).size.width - 15,
-        child: RaisedButton.icon(
-          elevation: 6,
-          textColor: Colors.white,
-          color: Colors.deepPurpleAccent[100],
-          padding: const EdgeInsets.all(6.0),
-          icon: Icon(Icons.date_range),
-          label: Text("RANDEVU AL"),
-          onPressed: () {
-            userService.getAppointmentCalendar(usermodel.id).then((map) {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => AppointmentCalendarPage(
-                        calendar: map,
-                        dModel: usermodel,
-                      )));
-            });
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-        ),
-      ),
+          clipBehavior: Clip.none,
+          color: Colors.white,
+          margin: const EdgeInsets.all(6.0),
+          height: 42,
+          width: MediaQuery.of(context).size.width - 15,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              userService.getAppointmentCalendar(usermodel.id).then((map) {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AppointmentCalendarPage(
+                          calendar: map!,
+                          dModel: usermodel,
+                        )));
+              });
+            },
+            icon: const Icon(Icons.date_range),
+            label: const Text("RANDEVU AL"),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(6.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0)),
+              elevation: 6.0, // Adjust as needed
+            ),
+          )),
     );
   }
 
@@ -376,7 +374,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: ListView(
-        children: [
+        children: const [
           Text("Hakkında",
               style: TextStyle(
                 fontSize: 20,
@@ -447,11 +445,11 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: ListView(
         children: <Widget>[
-              Text("Hizmetler",
+              const Text("Hizmetler",
                   style: TextStyle(
                     fontSize: 20,
                   )),
-              Divider(),
+              const Divider(),
             ] +
             usermodel.treatments
                 .map((e) => Padding(
@@ -474,12 +472,12 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: ListView(
         children: [
-          Text("Özgeçmiş",
+          const Text("Özgeçmiş",
               style: TextStyle(
                 fontSize: 20,
               )),
-          Divider(),
-          Row(
+          const Divider(),
+          const Row(
             children: [
               Icon(
                 Icons.person,
@@ -492,17 +490,17 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
               Text("Hakkında"),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Text(
             usermodel.about,
             maxLines: 20,
             textAlign: TextAlign.justify,
-            style: TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey),
           ),
-          Divider(),
-          Row(
+          const Divider(),
+          const Row(
             children: [
               Icon(
                 Icons.school_rounded,
@@ -515,12 +513,12 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
               Text("Okullar/Eğitimler"),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
-          Text(usermodel.education, style: TextStyle(color: Colors.grey)),
-          Divider(),
-          Row(
+          Text(usermodel.education, style: const TextStyle(color: Colors.grey)),
+          const Divider(),
+          const Row(
             children: [
               Icon(
                 Icons.school,
@@ -533,10 +531,11 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
               Text("Deneyimler"),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
-          Text(usermodel.experiences, style: TextStyle(color: Colors.grey)),
+          Text(usermodel.experiences,
+              style: const TextStyle(color: Colors.grey)),
         ],
       ),
     );
@@ -549,7 +548,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: ListView(
         children: [
-          Text("Görüşler",
+          const Text("Görüşler",
               style: TextStyle(
                 fontSize: 20,
               )),
@@ -561,22 +560,24 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
               builder:
                   (BuildContext context, AsyncSnapshot<List<Map>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.data.length == 0) {
-                    return Center(child: Text("Henüz yorum yapılmadı"));
-                  } else
+                  if (snapshot.data!.isEmpty) {
+                    return const Center(child: Text("Henüz yorum yapılmadı"));
+                  } else {
                     return ListView.separated(
                         //physics: ClampingScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: snapshot.data.length,
+                        itemCount: snapshot.data!.length,
                         separatorBuilder: (ctx, index) => SizedBox(
                             height: PageComponents(context).heightSize(3)),
                         itemBuilder: (BuildContext context, int index) {
                           return ProfileListItem(
-                              jsonData: snapshot.data[index]);
+                              jsonData: snapshot.data![index]);
                         });
-                } else
+                  }
+                } else {
                   return PageComponents(context)
                       .loadingOverlay(backgroundColor: Colors.white);
+                }
               }),
           SizedBox(
             height: PageComponents(context).heightSize(5),
@@ -592,7 +593,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                       Expanded(
                         flex: 3,
                         child: Padding(
-                            padding: EdgeInsets.fromLTRB(5, 3, 5, 1),
+                            padding: const EdgeInsets.fromLTRB(5, 3, 5, 1),
                             child: TextField(
                               style: TextStyle(
                                 fontFamily: "ZonaLight",
@@ -614,7 +615,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                       PageComponents(context).heightSize(2),
                                   color: MyColors().darkblueText,
                                 ),
-                                errorStyle: TextStyle(
+                                errorStyle: const TextStyle(
                                   color: Colors.red,
                                 ),
                                 fillColor: MyColors().blueThemeColor,
@@ -623,15 +624,15 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                         color: MyColors().blueThemeColor)),
                                 counterText: '',
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(4)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(4)),
                                   borderSide: BorderSide(
                                       width: 1,
                                       color: MyColors().blueThemeColor),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(4)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(4)),
                                   borderSide: BorderSide(
                                       width: 1,
                                       color: MyColors().blueThemeColor),
@@ -641,27 +642,27 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                       ),
                       Padding(
                           padding: const EdgeInsets.fromLTRB(5, 3, 5, 1),
-                          child: FlatButton(
+                          child: TextButton(
                             onPressed: () async {
-                              //ANCHOR  Yorum gönderme backend işlemleri
+                              // Yorum gönderme backend işlemleri
                               if (commentController.text != "") {
                                 await userService
                                     .sendComment(
                                         usermodel.id, commentController.text)
                                     .then((value) {
-                                  if (value)
-                                    print("Yorum yapıldı");
-                                  else
-                                    print("Yorum yapılırken hata!!");
+                                  if (value) {
+                                    if (kDebugMode) {
+                                      print("Yorum yapıldı");
+                                    }
+                                  } else {
+                                    if (kDebugMode) {
+                                      print("Yorum yapılırken hata!!");
+                                    }
+                                  }
                                 });
                                 setState(() {
                                   commentController.text = '';
                                 });
-
-                                /* nestedScrollController.jumpTo(
-                                  nestedScrollController
-                                          .position.maxScrollExtent
-                                      );*/
                               }
                             },
                             child: Text(
@@ -688,7 +689,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
   }
 
   Widget forwardArrowIcon() {
-    return Icon(
+    return const Icon(
       Icons.arrow_forward_ios,
       color: Colors.grey,
       size: 15,
@@ -696,7 +697,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
   }
 
   Widget sizedBox() {
-    return SizedBox(
+    return const SizedBox(
       width: 15,
     );
   }
@@ -713,7 +714,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
         indicatorWeight: 4,
         indicatorColor: Colors.white,
         controller: tabController,
-        tabs: [
+        tabs: const [
           Tab(
             child: Text(
               "Hakkında",
@@ -748,21 +749,22 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          title: Text("Hakkımda:"),
+          title: const Text("Hakkımda:"),
           trailing: Visibility(
             visible: canEdit,
             child: IconButton(
               onPressed: () {
                 updateUserAboutDialog(context).then((value) {
-                  if (value != null) if (value) {
+                  if (value) {
                     setState(() {
                       print("Kaydedildi");
                     });
-                  } else
+                  } else {
                     print("İptal edildi");
+                  }
                 });
               },
-              icon: Icon(Icons.mode_edit),
+              icon: const Icon(Icons.mode_edit),
             ),
           ),
         ),
@@ -778,21 +780,22 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
             ListTile(
-              title: Text("Tedavi edilen hastalıklar:"),
+              title: const Text("Tedavi edilen hastalıklar:"),
               trailing: Visibility(
                 visible: canEdit,
                 child: IconButton(
                   onPressed: () {
                     updateUserTreatmentsDialog(context).then((value) {
-                      if (value != null) if (value) {
+                      if (value) {
                         setState(() {
                           print("Kaydedildi");
                         });
-                      } else
+                      } else {
                         print("İptal edildi");
+                      }
                     });
                   },
-                  icon: Icon(Icons.mode_edit),
+                  icon: const Icon(Icons.mode_edit),
                 ),
               ),
             )
@@ -816,22 +819,24 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
               builder:
                   (BuildContext context, AsyncSnapshot<List<Map>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.data.length == 0) {
-                    return Center(child: Text("Henüz yorum yapılmadı"));
-                  } else
+                  if (snapshot.data!.isEmpty) {
+                    return const Center(child: Text("Henüz yorum yapılmadı"));
+                  } else {
                     return ListView.separated(
                         //physics: ClampingScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: snapshot.data.length,
+                        itemCount: snapshot.data!.length,
                         separatorBuilder: (ctx, index) => SizedBox(
                             height: PageComponents(context).heightSize(3)),
                         itemBuilder: (BuildContext context, int index) {
                           return ProfileListItem(
-                              jsonData: snapshot.data[index]);
+                              jsonData: snapshot.data![index]);
                         });
-                } else
+                  }
+                } else {
                   return PageComponents(context)
                       .loadingOverlay(backgroundColor: Colors.white);
+                }
               }),
         ),
         SizedBox(
@@ -848,7 +853,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                     Expanded(
                       flex: 3,
                       child: Padding(
-                          padding: EdgeInsets.fromLTRB(5, 3, 5, 1),
+                          padding: const EdgeInsets.fromLTRB(5, 3, 5, 1),
                           child: TextField(
                             style: TextStyle(
                               fontFamily: "ZonaLight",
@@ -869,7 +874,7 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                                 fontSize: PageComponents(context).heightSize(2),
                                 color: MyColors().darkblueText,
                               ),
-                              errorStyle: TextStyle(
+                              errorStyle: const TextStyle(
                                 color: Colors.red,
                               ),
                               fillColor: MyColors().blueThemeColor,
@@ -879,13 +884,13 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                               counterText: '',
                               focusedBorder: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(4)),
+                                    const BorderRadius.all(Radius.circular(4)),
                                 borderSide: BorderSide(
                                     width: 1, color: MyColors().blueThemeColor),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(4)),
+                                    const BorderRadius.all(Radius.circular(4)),
                                 borderSide: BorderSide(
                                     width: 1, color: MyColors().blueThemeColor),
                               ),
@@ -894,27 +899,27 @@ class _DieticianProfilePageState extends State<DieticianProfilePage>
                     ),
                     Padding(
                         padding: const EdgeInsets.fromLTRB(5, 3, 5, 1),
-                        child: FlatButton(
+                        child: TextButton(
                           onPressed: () async {
-                            //ANCHOR  Yorum gönderme backend işlemleri
+                            // Yorum gönderme backend işlemleri
                             if (commentController.text != "") {
                               await userService
                                   .sendComment(
                                       usermodel.id, commentController.text)
                                   .then((value) {
-                                if (value)
-                                  print("Yorum yapıldı");
-                                else
-                                  print("Yorum yapılırken hata!!");
+                                if (value) {
+                                  if (kDebugMode) {
+                                    print("Yorum yapıldı");
+                                  }
+                                } else {
+                                  if (kDebugMode) {
+                                    print("Yorum yapılırken hata!!");
+                                  }
+                                }
                               });
                               setState(() {
                                 commentController.text = '';
                               });
-
-                              /* nestedScrollController.jumpTo(
-                                  nestedScrollController
-                                          .position.maxScrollExtent
-                                      );*/
                             }
                           },
                           child: Text(

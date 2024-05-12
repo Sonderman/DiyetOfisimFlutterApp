@@ -3,23 +3,25 @@ import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 
 class FirstTimeProfileUpdatePage extends StatefulWidget {
   final rootPageState;
-  FirstTimeProfileUpdatePage({Key key, this.rootPageState}) : super(key: key);
+
+  const FirstTimeProfileUpdatePage({super.key, this.rootPageState});
 
   @override
-  _FirstTimeProfileUpdatePageState createState() =>
+  State<FirstTimeProfileUpdatePage> createState() =>
       _FirstTimeProfileUpdatePageState();
 }
 
 class _FirstTimeProfileUpdatePageState
     extends State<FirstTimeProfileUpdatePage> {
   TextEditingController aboutTextCon = TextEditingController();
-  List diseases;
-  List insuranceType;
+  List? diseases;
+  List? insuranceType;
 
   TextEditingController educationTextCon = TextEditingController();
   TextEditingController experiencesTextCon = TextEditingController();
@@ -29,7 +31,7 @@ class _FirstTimeProfileUpdatePageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Prolinizi Tamamlayınız",
           style: TextStyle(fontSize: 20),
         ),
@@ -52,14 +54,15 @@ class _FirstTimeProfileUpdatePageState
                       maxLines: 10,
                       minLines: 1,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 5),
+                        contentPadding: const EdgeInsets.only(bottom: 5),
                         labelText: "Hakkımda",
                         labelStyle: TextStyle(
                             color: Colors.deepPurpleAccent[100], fontSize: 30),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         hintText:
                             "Hakkınızda Yazmanız Gereken Bilgileri Yazınız",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ),
                     SizedBox(
@@ -72,14 +75,15 @@ class _FirstTimeProfileUpdatePageState
                       maxLines: 5,
                       minLines: 1,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 5),
+                        contentPadding: const EdgeInsets.only(bottom: 5),
                         labelText: "Okullar / Eğitim",
                         labelStyle: TextStyle(
                             color: Colors.deepPurpleAccent[100], fontSize: 30),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         hintText:
                             "Mezun Olduğunuz Üniversiteyi ve Okulları Yazınız",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ),
                     SizedBox(
@@ -92,13 +96,14 @@ class _FirstTimeProfileUpdatePageState
                       maxLines: 10,
                       minLines: 1,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 5),
+                        contentPadding: const EdgeInsets.only(bottom: 5),
                         labelText: "Deneyimler",
                         labelStyle: TextStyle(
                             color: Colors.deepPurpleAccent[100], fontSize: 30),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         hintText: "Çalıştığınız Kurum ve Hastaneleri Yazınız",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ),
                     SizedBox(
@@ -107,11 +112,13 @@ class _FirstTimeProfileUpdatePageState
 
                     MultiSelectFormField(
                       chipBackGroundColor: Colors.green,
-                      chipLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                      chipLabelStyle:
+                          const TextStyle(fontWeight: FontWeight.bold),
+                      dialogTextStyle:
+                          const TextStyle(fontWeight: FontWeight.bold),
                       checkBoxActiveColor: Colors.deepPurpleAccent[100],
                       checkBoxCheckColor: Colors.white,
-                      dialogShapeBorder: RoundedRectangleBorder(
+                      dialogShapeBorder: const RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.all(Radius.circular(12.0))),
                       title: Text(
@@ -124,7 +131,7 @@ class _FirstTimeProfileUpdatePageState
                       valueField: 'value',
                       okButtonLabel: 'TAMAM',
                       cancelButtonLabel: 'İPTAL',
-                      hintWidget: Text(
+                      hintWidget: const Text(
                           'Lütfen bir veya daha fazla hastalık seçiniz',
                           style: TextStyle(color: Colors.grey)),
                       onSaved: (value) {
@@ -139,11 +146,13 @@ class _FirstTimeProfileUpdatePageState
                     ),
                     MultiSelectFormField(
                       chipBackGroundColor: Colors.green,
-                      chipLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                      chipLabelStyle:
+                          const TextStyle(fontWeight: FontWeight.bold),
+                      dialogTextStyle:
+                          const TextStyle(fontWeight: FontWeight.bold),
                       checkBoxActiveColor: Colors.deepPurpleAccent[100],
                       checkBoxCheckColor: Colors.white,
-                      dialogShapeBorder: RoundedRectangleBorder(
+                      dialogShapeBorder: const RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.all(Radius.circular(12.0))),
                       title: Text(
@@ -156,7 +165,7 @@ class _FirstTimeProfileUpdatePageState
                       valueField: 'value',
                       okButtonLabel: 'TAMAM',
                       cancelButtonLabel: 'İPTAL',
-                      hintWidget: Text(
+                      hintWidget: const Text(
                           'Lütfen hangi hasta tipi ile görüşebileceğinizi seçiniz',
                           style: TextStyle(color: Colors.grey)),
                       onSaved: (value) {
@@ -176,8 +185,8 @@ class _FirstTimeProfileUpdatePageState
                     ),
                     MaterialButton(
                       color: Colors.deepPurpleAccent[100],
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 70, vertical: 10),
                       onPressed: () {
                         var user =
                             locator<UserService>().userModel as Dietician;
@@ -185,32 +194,38 @@ class _FirstTimeProfileUpdatePageState
                           isLoading = true;
                         });
                         user.about = aboutTextCon.text;
-                        user.treatments = diseases;
-                        user.insuranceTypes = insuranceType;
+                        user.treatments = diseases!;
+                        user.insuranceTypes = insuranceType!;
                         user.education = educationTextCon.text;
                         user.experiences = experiencesTextCon.text;
                         locator<UserService>()
                             .updateUserProfile()
                             .then((value) {
-                          if (!value)
+                          if (!value) {
                             setState(() {
                               isLoading = false;
                             });
-                          else
+                          } else {
                             locator<UserService>()
                                 .insertNewDietician()
                                 .then((value) {
-                              if (value)
+                              if (value) {
                                 widget.rootPageState.setState(() {
-                                  print("FirstTimeProfile Update Başarılı");
+                                  if (kDebugMode) {
+                                    print("FirstTimeProfile Update Başarılı");
+                                  }
                                 });
-                              else
-                                print("Diyetisyen eklenirken hata!!");
+                              } else {
+                                if (kDebugMode) {
+                                  print("Diyetisyen eklenirken hata!!");
+                                }
+                              }
                             });
+                          }
                         });
                       },
                       textColor: Colors.white,
-                      child: Text(
+                      child: const Text(
                         "Kaydet",
                         style: TextStyle(fontSize: 18),
                       ),
@@ -225,26 +240,26 @@ class _FirstTimeProfileUpdatePageState
   List<Map> dataParser() {
     List<Map> temp = [];
     num i = 0;
-    AppSettings().diseases.forEach((e) {
+    for (var e in AppSettings().diseases) {
       temp.add({
         "title": e,
         "value": i,
       });
       i++;
-    });
+    }
     return temp;
   }
 
   List<Map> insurance() {
     List<Map> temp = [];
     num i = 0;
-    AppSettings().insuranceType.forEach((e) {
+    for (var e in AppSettings().insuranceType) {
       temp.add({
         "title": e,
         "value": i,
       });
       i++;
-    });
+    }
     return temp;
   }
 }

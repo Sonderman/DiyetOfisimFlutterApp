@@ -6,35 +6,30 @@ class ImageViewer extends StatefulWidget {
   final String tag, url;
   final File image;
 
-  const ImageViewer({Key key, this.tag, this.image, this.url})
-      : super(key: key);
-
+  const ImageViewer(
+      {super.key, required this.tag, required this.image, required this.url});
   @override
-  _ImageViewerState createState() => _ImageViewerState();
+  State<ImageViewer> createState() => _ImageViewerState();
 }
 
 class _ImageViewerState extends State<ImageViewer> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          automaticallyImplyLeading: true,
-        ),
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Colors.black,
-        body: Container(
-          child: Center(
-            child: Hero(
-                tag: widget.tag,
-                child: ExtendedImage.network(
-                  widget.url,
-                  cache: true,
-                  fit: BoxFit.contain,
-                  mode: ExtendedImageMode.gesture,
-                )),
-          ),
-        ),
+        automaticallyImplyLeading: true,
+      ),
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Hero(
+            tag: widget.tag,
+            child: ExtendedImage.network(
+              widget.url,
+              cache: true,
+              fit: BoxFit.contain,
+              mode: ExtendedImageMode.gesture,
+            )),
       ),
     );
   }

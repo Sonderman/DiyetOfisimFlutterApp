@@ -1,9 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class Classifier {
-  final _diyabetModel = 'diyabet.tflite';
-  final _kalpModel = 'kalpdamar.tflite';
-  Interpreter _interpreterDiyabet, _interpreterKalp;
+  final _diyabetModel = 'assets/diyabet.tflite';
+  final _kalpModel = 'assets/kalpdamar.tflite';
+  late Interpreter _interpreterDiyabet, _interpreterKalp;
 
   Classifier() {
     _loadModel();
@@ -17,15 +18,19 @@ class Classifier {
   }
 
   List<int> classify(Map answers) {
-    var outputDiyabet = List<double>(1).reshape([1, 1]);
-    var outputKalp = List<double>(1).reshape([1, 1]);
+    var outputDiyabet = List.filled(2, 0).reshape([1, 1]);
+    var outputKalp = List.filled(2, 0).reshape([1, 1]);
     List<List<double>> inputDiyabet = answerConverter(answers, true);
     List<List<double>> inputKalp = answerConverter(answers, false);
     _interpreterDiyabet.run(inputDiyabet, outputDiyabet);
     _interpreterKalp.run(inputKalp, outputKalp);
 
-    print("Diyabet:" + (outputDiyabet[0][0] as double).round().toString());
-    print("Kalp:" + (outputKalp[0][0] as double).round().toString());
+    if (kDebugMode) {
+      print("Diyabet:${(outputDiyabet[0][0] as double).round()}");
+    }
+    if (kDebugMode) {
+      print("Kalp:${(outputKalp[0][0] as double).round()}");
+    }
     return [
       (outputDiyabet[0][0] as double).round(),
       (outputKalp[0][0] as double).round()
@@ -48,8 +53,12 @@ class Classifier {
         gender = answers["Gender"] ? 2 : 1,
         bMI = answers["BMI"];
 
-    print(answers);
-    print("BMI:" + bMI.toString());
+    if (kDebugMode) {
+      print(answers);
+    }
+    if (kDebugMode) {
+      print("BMI:$bMI");
+    }
     if (isDiyabet) {
       return [
         [

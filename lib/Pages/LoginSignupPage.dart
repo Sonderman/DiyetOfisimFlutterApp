@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart' as imgsrc;
 import 'package:diyet_ofisim/Pages/RootPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
@@ -11,36 +13,38 @@ import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 
 class LoginSignupPage extends StatefulWidget {
+  const LoginSignupPage({super.key});
+
   @override
-  _LoginSignupPageState createState() => _LoginSignupPageState();
+  State<LoginSignupPage> createState() => _LoginSignupPageState();
 }
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
   //ANCHOR login
-  String userId;
+  String? userId;
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
-  String errorText;
+  String? errorText;
   bool _loginSignUpToggle = true;
-  bool _loading = false;
   bool _forgotPasswordToggle = false;
   bool visiblePassword = true;
   bool showLogin = false;
   String sendPasswordMailText = "Giriş Yap";
   UserService userService = locator<UserService>();
-  PageController _pageController;
+  late PageController _pageController;
 
   //ANCHOR SignUp
   TextEditingController mailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController password2Controller = TextEditingController();
-  Uint8List _image;
+  Uint8List? _image;
   final picker = imgsrc.ImagePicker();
   bool loading = false;
-  String _name, _surname, _country, _birthday;
-  bool _gender, _isDietisian = false;
+  String? _name, _surname, _country, _birthday;
+  bool? _gender, _isDietisian = false;
   bool showPassword = true;
 
   @override
@@ -60,7 +64,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         padding: const EdgeInsets.all(16.0),
         height: double.infinity,
@@ -69,9 +73,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.deepPurpleAccent[200],
-              Colors.deepPurpleAccent[100],
-              Colors.deepPurple[50],
+              Colors.deepPurpleAccent[200]!,
+              Colors.deepPurpleAccent[100]!,
+              Colors.deepPurple[50]!,
             ],
           ),
         ),
@@ -139,29 +143,27 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 _forgotPasswordToggle = !_forgotPasswordToggle;
               });
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios,
               size: 30,
               color: Colors.white,
             )),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 150, horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 150, horizontal: 30),
         child: Column(
           children: [
-            Container(
-              child: Text(
-                "Forgot Password",
-                style: TextStyle(
-                    color: Colors.white70, fontSize: 48, fontFamily: "Kalam"),
-              ),
+            const Text(
+              "Forgot Password",
+              style: TextStyle(
+                  color: Colors.white70, fontSize: 48, fontFamily: "Kalam"),
             ),
             SizedBox(
               height: PageComponents(context).heightSize(5),
             ),
             Container(
-              margin: EdgeInsets.all(18),
-              child: Text(
+              margin: const EdgeInsets.all(18),
+              child: const Text(
                 "Lütfen Şifre Sıfırlama Talebiniz İçin E-Mail Adresinizi Giriniz ..",
                 style: TextStyle(
                   color: Colors.white,
@@ -170,7 +172,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               ),
             ),
             TextField(
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               cursorWidth: 3,
               cursorColor: Colors.deepPurpleAccent,
               controller: email,
@@ -187,7 +189,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                       color: Colors.deepPurpleAccent[100],
                     )),
                 hintText: "enter your email",
-                hintStyle: TextStyle(
+                hintStyle: const TextStyle(
                   color: Colors.white,
                 ),
                 border: OutlineInputBorder(
@@ -203,22 +205,25 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             SizedBox(
               height: PageComponents(context).widthSize(10),
               width: PageComponents(context).widthSize(35),
-              child: RaisedButton(
-                elevation: 8,
-                color: Colors.white,
-                textColor: Colors.deepPurpleAccent[100],
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Submit".toUpperCase(),
-                  style: TextStyle(fontFamily: "Genel", fontSize: 15),
-                ),
+              child: ElevatedButton(
+                // elevation: 8,
+                // color: Colors.white,
+                // textColor: Colors.deepPurpleAccent[100],
+                // padding: const EdgeInsets.all(10.0),
                 onPressed: () {
                   setState(() {
                     // forgetPassword();
                   });
                 },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
+                // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                // elevation: 8,
+                // color: Colors.white,
+                // textColor: Colors.deepPurpleAccent[100],
+                // padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "Submit".toUpperCase(),
+                  style: const TextStyle(fontFamily: "Genel", fontSize: 15),
+                ),
               ),
             ),
           ],
@@ -510,14 +515,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return ListView(
       children: <Widget>[
         Container(
-          margin: const EdgeInsets.only(top: 150.0, bottom: 20.0),
+          margin: const EdgeInsets.only(top: 20, bottom: 20.0),
           height: PageComponents(context).heightSize(15),
           child: Image.asset(
             "assets/icons/logo1.png",
             color: Colors.white70,
           ),
         ),
-        Center(
+        const Center(
           child: Text(
             "Diyet Ofisim",
             style: TextStyle(
@@ -531,7 +536,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           height: PageComponents(context).heightSize(3),
         ),
         TextField(
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           cursorWidth: 3,
           cursorColor: Colors.deepPurpleAccent,
           controller: email,
@@ -547,8 +552,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   Icons.person,
                   color: Colors.deepPurpleAccent[100],
                 )),
-            hintText: "enter your email",
-            hintStyle: TextStyle(
+            hintText: "Enter your email",
+            hintStyle: const TextStyle(
               color: Colors.white,
             ),
             border: OutlineInputBorder(
@@ -560,7 +565,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         ),
         SizedBox(height: PageComponents(context).heightSize(1.5)),
         TextField(
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           cursorWidth: 3,
           cursorColor: Colors.deepPurpleAccent,
           controller: password,
@@ -576,8 +581,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   Icons.lock,
                   color: Colors.deepPurpleAccent[100],
                 )),
-            hintText: "enter your password",
-            hintStyle: TextStyle(
+            hintText: "Enter your password",
+            hintStyle: const TextStyle(
               color: Colors.white,
             ),
             border: OutlineInputBorder(
@@ -591,60 +596,68 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         SizedBox(
           height: PageComponents(context).heightSize(3),
         ),
-        Container(
+        SizedBox(
           height: PageComponents(context).widthSize(10),
           width: PageComponents(context).widthSize(4),
           child: MaterialButton(
             color: Colors.white,
             textColor: Colors.deepPurpleAccent[100],
             padding: const EdgeInsets.all(10.0),
-            child: Text(
-              "Login".toUpperCase(),
-              style: TextStyle(fontFamily: "Genel", fontSize: 15),
-            ),
             onPressed: () {
               loginButton(context);
             },
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0)),
+            child: Text(
+              "Login".toUpperCase(),
+              style: const TextStyle(fontFamily: "Genel", fontSize: 15),
+            ),
           ),
         ),
         SizedBox(
           height: PageComponents(context).heightSize(20),
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            FlatButton(
-              textColor: Colors.deepPurpleAccent[200].withOpacity(0.8),
-              child: Text(
-                "Create Account".toUpperCase(),
+            SizedBox(
+              width: PageComponents(context).widthSize(45),
+              height: PageComponents(context).widthSize(15),
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _loginSignUpToggle = !_loginSignUpToggle;
+                  });
+                },
+                child: Center(
+                  child: Text(
+                    "Create Account".toUpperCase(),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-              onPressed: () {
-                setState(() {
-                  _loginSignUpToggle = !_loginSignUpToggle;
-                });
-              },
             ),
-            Container(
-              color: Colors.deepPurpleAccent[200].withOpacity(0.8),
-              width: PageComponents(context).widthSize(0.4),
-              height: PageComponents(context).heightSize(2.5),
-            ),
-            FlatButton(
-              textColor: Colors.deepPurpleAccent[200].withOpacity(0.8),
-              child: Text(
-                "Forgot Password".toUpperCase(),
+            const Spacer(),
+            SizedBox(
+              width: PageComponents(context).widthSize(45),
+              height: PageComponents(context).widthSize(15),
+              child: ElevatedButton(
+                child: Center(
+                  child: Text(
+                    "Forgot Password".toUpperCase(),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _forgotPasswordToggle = !_forgotPasswordToggle;
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  _forgotPasswordToggle = !_forgotPasswordToggle;
-                });
-              },
             ),
           ],
         ),
-        SizedBox(height: 10.0),
+        const SizedBox(height: 10.0),
       ],
     );
   }
@@ -658,23 +671,23 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.deepPurpleAccent[200],
-              Colors.deepPurpleAccent[100],
-              Colors.deepPurple[50],
+              Colors.deepPurpleAccent[200]!,
+              Colors.deepPurpleAccent[100]!,
+              Colors.deepPurple[50]!,
             ]),
       ),
       child: Column(
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-              padding: EdgeInsets.only(right: 5),
+              padding: const EdgeInsets.only(right: 5),
               height: 50,
               child: Image.asset(
                 "assets/icons/logo1.png",
                 color: Colors.white70,
               ),
             ),
-            Text(
+            const Text(
               "Diyet Ofisim",
               style: TextStyle(
                   color: Colors.white70,
@@ -693,18 +706,18 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
+              SizedBox(
                 height: PageComponents(context).widthSize(10),
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   cursorWidth: 3,
                   cursorColor: Colors.deepPurpleAccent,
                   onChanged: (name) => _name = name,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(top: 0, left: 20),
                     hintText: "Name *",
-                    hintStyle: TextStyle(color: Colors.white),
+                    hintStyle: const TextStyle(color: Colors.white),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30.0),
                         borderSide: BorderSide.none),
@@ -714,18 +727,18 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 ),
               ),
               SizedBox(width: PageComponents(context).widthSize(4)),
-              Container(
+              SizedBox(
                 height: PageComponents(context).widthSize(10),
                 width: PageComponents(context).widthSize(40),
                 child: TextField(
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   cursorWidth: 3,
                   cursorColor: Colors.deepPurpleAccent,
                   onChanged: (surname) => _surname = surname,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                     hintText: "Surname *",
-                    hintStyle: TextStyle(color: Colors.white),
+                    hintStyle: const TextStyle(color: Colors.white),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30.0),
                         borderSide: BorderSide.none),
@@ -740,14 +753,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             height: PageComponents(context).heightSize(3),
           ),
           TextField(
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
             cursorWidth: 3,
             cursorColor: Colors.deepPurpleAccent,
             controller: mailController,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.only(top: 10, left: 20),
               hintText: "Email *",
-              hintStyle: TextStyle(color: Colors.white),
+              hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none),
@@ -760,14 +773,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
           TextField(
             obscureText: true,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
             cursorWidth: 3,
             cursorColor: Colors.deepPurpleAccent,
             controller: passwordController,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.only(top: 10, left: 20),
               hintText: "Password *",
-              hintStyle: TextStyle(color: Colors.white),
+              hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none),
@@ -780,14 +793,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
           TextField(
             obscureText: true,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
             cursorWidth: 3,
             cursorColor: Colors.deepPurpleAccent,
             controller: password2Controller,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.only(top: 10, left: 20),
               hintText: "Password Again *",
-              hintStyle: TextStyle(color: Colors.white),
+              hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none),
@@ -899,50 +912,45 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           ),
           SizedBox(
             width: double.infinity,
-            child: RaisedButton(
-              color: Colors.white,
-              textColor: Colors.deepPurpleAccent[200].withOpacity(0.8),
-              padding: const EdgeInsets.all(15.0),
-              child: Text("CREATE ACCOUNT".toUpperCase()),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(15.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
               onPressed: () {
                 //ANCHOR veri kontrolleri burda
-                if (_image != null &&
-                    _name != null &&
-                    _surname != null &&
-                    mailController.text != null &&
-                    passwordController.text != null &&
-                    passwordController.text == password2Controller.text &&
-                    _gender != null) {
+                if (passwordController.text == password2Controller.text) {
                   setState(() {
                     loading = true;
                   });
                   signUp();
                 } else {
                   Fluttertoast.showToast(
-                      msg: "Lütfen Girdileri Kontrol Ediniz!",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 3,
-                      backgroundColor: Colors.deepPurpleAccent,
-                      textColor: Colors.white,
-                      fontSize: 15.0);
+                    msg: "Lütfen Girdileri Kontrol Ediniz!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 3,
+                    backgroundColor: Colors.deepPurpleAccent,
+                    textColor: Colors.white,
+                    fontSize: 15.0,
+                  );
                 }
               },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0)),
+              child: Text("CREATE ACCOUNT".toUpperCase()),
             ),
           ),
           SizedBox(
             height: PageComponents(context).heightSize(3.29),
           ),
-          FlatButton(
-            textColor: Colors.deepPurpleAccent[200].withOpacity(0.8),
-            child: Text("I have an Account !".toUpperCase()),
+          TextButton(
             onPressed: () {
               setState(() {
                 _loginSignUpToggle = !_loginSignUpToggle;
               });
             },
+            child: Text("I have an Account !".toUpperCase()),
           ),
         ],
       ),
@@ -956,18 +964,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   void signUp() async {
     //ANCHOR Veritabanına kaydetmek için
     List<String> datalist = [
-      _name,
-      _surname,
+      _name!,
+      _surname!,
       mailController.text,
-      _gender ? "Man" : "Woman",
-      _isDietisian ? "Y" : "N",
-      generateNickName(_name)
+      _gender! ? "Man" : "Woman",
+      _isDietisian! ? "Y" : "N",
+      generateNickName(_name!)
     ];
-    print(datalist);
+    if (kDebugMode) {
+      print(datalist);
+    }
     try {
-      await locator<LoginRegisterService>()
+      await locator<UserService>()
           .registerUser(
-              mailController.text, passwordController.text, datalist, _image)
+              mailController.text, passwordController.text, datalist, _image!)
           .then((userID) {
         if (userID != null) {
           Fluttertoast.showToast(
@@ -985,23 +995,30 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         } else {
           setState(() {
             loading = false;
-            print("Sign Up Failed!");
+            if (kDebugMode) {
+              print("Sign Up Failed!");
+            }
           });
         }
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       setState(() {
         loading = false;
-        print("Sign Up Failed!");
+        if (kDebugMode) {
+          print("Sign Up Failed!");
+        }
       });
     }
   }
 
-  // ANCHOR kameradan foto almaya yarar
-  Future<Uint8List> _getImageFromCamera() async {
-    final image = await picker.getImage(source: imgsrc.ImageSource.camera);
-    if (image != null)
+  //  foto almaya yarar
+  Future<Uint8List?> _getImage({required ImageSource source}) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null) {
       return Navigator.push(
           context,
           MaterialPageRoute(
@@ -1009,23 +1026,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     image: File(image.path),
                     forCreateEvent: false,
                   ))).then((value) => value);
-    else
+    } else {
       return null;
-  }
-
-// ANCHOR galeriden foto almaya yarar
-  Future<Uint8List> _getImageFromGallery() async {
-    final image = await picker.getImage(source: imgsrc.ImageSource.gallery);
-    if (image != null)
-      return Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => ImageEditorPage(
-                    image: File(image.path),
-                    forCreateEvent: false,
-                  ))).then((value) => value);
-    else
-      return null;
+    }
   }
 
   Future<void> _showChoiceDialog(BuildContext context) {
@@ -1045,26 +1048,26 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               child: ListBody(
                 children: <Widget>[
                   GestureDetector(
-                      child: Text(
+                      child: const Text(
                         'Galeri',
                       ),
                       onTap: () {
-                        _getImageFromGallery().then((value) {
+                        _getImage(source: ImageSource.gallery).then((value) {
                           setState(() {
                             _image = value;
                             Navigator.pop(context);
                           });
                         });
                       }),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.all(8.0),
                   ),
                   GestureDetector(
-                      child: Text(
+                      child: const Text(
                         'Kamera',
                       ),
                       onTap: () {
-                        _getImageFromCamera().then((value) {
+                        _getImage(source: ImageSource.camera).then((value) {
                           setState(() {
                             _image = value;
                             Navigator.pop(context);
@@ -1102,7 +1105,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender
+                  ? _gender!
                       ? menColor()
                       : Colors.deepPurpleAccent[300]
                   : Colors.deepPurpleAccent[300],
@@ -1131,11 +1134,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender
+                  ? _gender!
                       ? Colors.deepPurpleAccent[300]
                       : womenColor()
                   : Colors.deepPurpleAccent[300],
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(15),
               ),
             ),
@@ -1169,10 +1172,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             width: widthSize(42),
             height: heightSize(5),
             decoration: BoxDecoration(
-              color: _isDietisian
+              color: _isDietisian!
                   ? Colors.deepPurpleAccent[300]
                   : Colors.green[200],
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(15),
               ),
             ),
@@ -1197,11 +1200,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           child: Container(
             width: widthSize(42),
             height: heightSize(5),
-            decoration: new BoxDecoration(
-              color: _isDietisian
+            decoration: BoxDecoration(
+              color: _isDietisian!
                   ? Colors.green[200]
                   : Colors.deepPurpleAccent[300],
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(15),
               ),
             ),
@@ -1226,7 +1229,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       onTap: () {
         _showChoiceDialog(context);
       },
-      child: Container(
+      child: SizedBox(
         width: widthSize(27),
         height: widthSize(27),
         child: CircleAvatar(
@@ -1240,7 +1243,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 )
               : ClipOval(
                   child: Image.memory(
-                    _image,
+                    _image!,
                     width: widthSize(30),
                     height: widthSize(30),
                     fit: BoxFit.cover,
@@ -1254,42 +1257,31 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Future<void> loginButton(BuildContext context) async {
     var auth = locator<AuthService>();
     userId = await auth.signIn(email.text, password.text);
-    if (userId == null) {
-      setState(() => _loading = false);
-      Fluttertoast.showToast(
-          msg: "Şifre veya Eposta yanlış!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 18.0);
-    } else {
-      //if (await auth.isEmailVerified()) {
-
-      userService.userInitializer(userId).whenComplete(() async {
+    //if (await auth.isEmailVerified()) {
+    if (userId != null) {
+      userService.userInitializer(userId!).whenComplete(() async {
         // await userService
         //     .updateSingleInfo("LastLoggedIn", "timeStamp")
         //    .whenComplete(() {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (BuildContext context) => RootPage()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) => const RootPage()));
         // });
       });
-      /*
-      } else {
-        setState(() => _loading = false);
-        auth.signOut();
-        Fluttertoast.showToast(
-            msg: "Lütfen Mailinizi doğrulayın!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 18.0);
-      }*/
-
     }
+
+    /*
+    } else {
+      setState(() => _loading = false);
+      auth.signOut();
+      Fluttertoast.showToast(
+          msg: "Lütfen Mailinizi doğrulayın!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 3,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 18.0);
+    }*/
   }
 
   void forgetPassword() {
@@ -1304,7 +1296,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     var auth = locator<AuthService>().getUserUid();
     //ANCHOR release yaparken açılacak
     //auth.sendPasswordResetEmail(email.text);
-    debugPrint("şifre sıfırlama maili gönderildi");
+    if (kDebugMode) {
+      print("şifre sıfırlama maili gönderildi");
+    }
   }
 
   void rememberPass() {

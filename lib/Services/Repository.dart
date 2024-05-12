@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:typed_data';
-import 'package:dash_chat/dash_chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
@@ -8,12 +8,19 @@ import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Firebase.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
-class LoginRegisterService {
+///UserService*****************************************************************************************************
+class UserService {
+  dynamic userModel;
   final DatabaseWorks _database = locator<DatabaseWorks>();
   final StorageWorks _storage = locator<StorageWorks>();
-  Future<String> registerUser(String eposta, String password,
+
+  Future<bool> userInitializer(String userID) async {
+    return await userModelSync(userID);
+  }
+
+  Future<String?> registerUser(String eposta, String password,
       List<String> datalist, Uint8List image) async {
     Map<String, dynamic> data = {
       "Name": datalist[0],
@@ -24,9 +31,10 @@ class LoginRegisterService {
       "isDietisian": datalist[4],
       "NickName": datalist[5],
       "ProfilePhotoUrl": "",
-      "RegisteredAt": ServerValue.timestamp,
+      "RegisteredAt": FieldValue.serverTimestamp(),
       "isFirstTime": true
     };
+
     try {
       AuthService auth = locator<AuthService>();
       return await auth.signUp(eposta, password).then((userId) async {
@@ -36,39 +44,32 @@ class LoginRegisterService {
           await _database.newUser(data).then((value) async {
             if (value) await _storage.updateProfilePhoto(userId, image);
           });
+        }
 
-          //auth.sendEmailVerification();
-          return userId;
-        } else
-          return null;
+        //auth.sendEmailVerification();
+        return userId;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
     }
-  }
-}
-
-///UserService*****************************************************************************************************
-class UserService {
-  var userModel;
-  final DatabaseWorks _database = locator<DatabaseWorks>();
-  final StorageWorks _storage = locator<StorageWorks>();
-
-  Future<bool> userInitializer(String userID) async {
-    if (userID == null) return false;
-    return await userModelSync(userID);
   }
 
   Future<bool> userModelSync(String userID) async {
     try {
       return await findUserByID(userID).then((map) {
-        if (map['isDietisian'] == "Y") {
-          print("User: Diyetisyen");
+        if (map != null && map['isDietisian'] == "Y") {
+          if (kDebugMode) {
+            print("User: Diyetisyen");
+          }
           userModel = Dietician(id: userID);
           userModel.parseMap(map);
         } else {
-          print("User: Hasta");
+          if (kDebugMode) {
+            print("User: Hasta");
+          }
           userModel = Patient(id: userID);
           userModel.parseMap(map);
         }
@@ -76,19 +77,22 @@ class UserService {
         return true;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
-  Future<Map<String, dynamic>> findUserByID(String userID) {
-    return _database.findUserbyID(userID);
+  Future<Map<String, dynamic>?> findUserByID(String userID) async {
+    return await _database.findUserbyID(userID);
   }
 
   Future<bool> updateUserProfile(
-      {Uint8List image, bool isUpdatingTreatments = false}) async {
-    if (userModel.runtimeType == Dietician)
+      {Uint8List? image, bool isUpdatingTreatments = false}) async {
+    if (userModel.runtimeType == Dietician) {
       userModel.firstTimeProfileCreation = false;
+    }
     Map<String, dynamic> userData = userModel.toMap();
 
     if (image != null) {
@@ -119,7 +123,7 @@ class UserService {
     return await _database.findDieticianbyResults(results);
   }
 
-  Future<Map<String, dynamic>> getAppointmentCalendar(String dID) async {
+  Future<Map<String, dynamic>?> getAppointmentCalendar(String dID) async {
     return await _database.getAppointmentCalendar(dID);
   }
 
@@ -136,12 +140,12 @@ class UserService {
     return await _database.updateAppointmentStatus(aModel);
   }
 
-  Stream<Event> getMyCalendarSnapshot() {
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? getMyCalendarSnapshot() {
     return _database.getMyCalendarSnapshot(userModel.id);
   }
 
-  Future<Stream<Event>> readyForAppointmentToggle(
-      Appointment a, bool readyToggle) async {
+  Future<Stream<DocumentSnapshot<Map<String, dynamic>>>?>
+      readyForAppointmentToggle(Appointment a, bool readyToggle) async {
     return await _database.readyForAppointmentToggle(a, readyToggle);
   }
 
@@ -171,16 +175,19 @@ class MessagingService {
     return firebaseDatabaseWorks.getMessagesSnapshot(chatID);
   }
 
-  */
+  
   //NOTE - Gereksiz Olabilir
   Future<Map<String, dynamic>> getChatPoolMessages(String chatID) async {
     return await firebaseDatabaseWorks.getChatPoolMessages(chatID);
-  }
+  }*/
 
   Future<String> sendMessage(String chatID, ChatMessage message,
       String currentUserID, String otherUserID) async {
     return await firebaseDatabaseWorks.sendMessage(
-        message, chatID, currentUserID, otherUserID);
+        message: message,
+        chatID: chatID,
+        currentUser: currentUserID,
+        otherUserID: otherUserID);
   }
 
   Future<String> checkConversation(
@@ -189,15 +196,18 @@ class MessagingService {
         currentUserID, otherUserID);
   }
 
-  Stream<Event> getChatPoolMessagesSnapshot(String chatID) {
-    return firebaseDatabaseWorks.getChatPoolMessagesSnapshot(chatID);
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatPoolMessagesSnapshot(
+      String chatID) {
+    return firebaseDatabaseWorks.getMessagesSnapshot(chatID);
   }
 
-  Stream<Event> getChatPoolSnapshot(String chatID) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getChatPoolSnapshot(
+      String chatID) {
     return firebaseDatabaseWorks.getChatPoolSnapshot(chatID);
   }
 
-  Stream<Event> getUserChatsSnapshot(String currentUser) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsSnapshot(
+      String currentUser) {
     return firebaseDatabaseWorks.getUserChatsSnapshots(currentUser);
   }
 
@@ -205,7 +215,8 @@ class MessagingService {
     return await firebaseDatabaseWorks.finishConversation(chatID);
   }
 
-  Stream<Event> getChatStatusSnapshot(String chatID) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatStatusSnapshot(
+      String chatID) {
     return firebaseDatabaseWorks.getChatStatusSnapshot(chatID);
   }
 }

@@ -101,7 +101,7 @@ class Inspection {
   void kalpDamar() {
     if (isCardiovascular == 1) {
       print("Kalp Damar Hastalıkları Beslenmesi");
-      result.add(Diseases.kalp_Damar);
+      result.add(Diseases.kalpDamar);
     }
   }
 }

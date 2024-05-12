@@ -3,26 +3,26 @@ import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ProfileListItem extends StatefulWidget {
-  final Map jsonData;
+  final Map? jsonData;
 
-  const ProfileListItem({Key key, this.jsonData}) : super(key: key);
-
+  const ProfileListItem({super.key, this.jsonData});
   @override
-  _ProfileListItemState createState() => _ProfileListItemState();
+  State<ProfileListItem> createState() => _ProfileListItemState();
 }
 
 class _ProfileListItemState extends State<ProfileListItem> {
-  Map get data => widget.jsonData;
+  Map? get data => widget.jsonData;
 
   @override
   Widget build(BuildContext context) {
     var userService = locator<UserService>();
     return FutureBuilder(
       //ANCHOR Her bir list itemi için kullanıcı bilgisi getirir
-      future: userService.findUserByID(data['CommentOwnerID']),
+      future: userService.findUserByID(data!['CommentOwnerID']),
       builder: (BuildContext context, AsyncSnapshot user) {
         if (user.connectionState == ConnectionState.done) {
           return buildItem(user.data);
@@ -38,7 +38,7 @@ class _ProfileListItemState extends State<ProfileListItem> {
     return _ProfileListItemInternal(
       image: user['ProfilePhotoUrl'],
       name: user['Name'] + " " + user['Surname'],
-      comment: data['Comment'],
+      comment: data!['Comment'],
     );
   }
 }
@@ -49,10 +49,11 @@ class _ProfileListItemInternal extends StatefulWidget {
   final String image;
   final String comment;
 
-  _ProfileListItemInternal({this.name, this.image, this.comment});
+  const _ProfileListItemInternal(
+      {required this.name, required this.image, required this.comment});
 
   @override
-  _ProfileListItemInternalState createState() =>
+  State<_ProfileListItemInternal> createState() =>
       _ProfileListItemInternalState();
 }
 
@@ -75,19 +76,20 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
     _height = isOpen ? 400 : 200;
     return GestureDetector(
       onTap: () {
-        print("Item is open? $isOpen ${DateTime.now()}");
+        if (kDebugMode) {
+          print("Item is open? $isOpen ${DateTime.now()}");
+        }
         setState(() {
           isOpen = !isOpen;
         });
       },
       child: Container(
 //        height: _height,
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Color(0xffdfdeff),
-          border: Border.all(color: MyColors().greyTextColor,width: 0.3)
-        ),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            color: const Color(0xffdfdeff),
+            border: Border.all(color: MyColors().greyTextColor, width: 0.3)),
         child: Row(
           children: <Widget>[
             Padding(
@@ -95,9 +97,9 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
               child: Container(
                 height: heightSize(7),
                 width: widthSize(14),
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   //borderRadius: BorderRadius.circular(10),
-                 shape: BoxShape.circle,
+                  shape: BoxShape.circle,
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image:
@@ -110,7 +112,6 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
               width: widthSize(3),
             ),
             Expanded(
-              
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,16 +120,13 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
                   Text(
                     widget.name,
                     style: TextStyle(
-                      fontFamily: "Kavom",
-                      fontSize: heightSize(2),
-                     
-                      fontWeight: FontWeight.bold
-                    ),
+                        fontFamily: "Kavom",
+                        fontSize: heightSize(2),
+                        fontWeight: FontWeight.bold),
                   ),
                   Divider(
                     endIndent: 15,
                     height: 15,
-                    
                     color: MyColors().blackOpacityContainer,
                     thickness: 2,
                   ),
@@ -140,7 +138,6 @@ class _ProfileListItemInternalState extends State<_ProfileListItemInternal> {
                     style: TextStyle(
                       fontFamily: "Kavom",
                       fontSize: heightSize(1.7),
-                      
                     ),
                   ),
                 ],

@@ -1,5 +1,5 @@
 import 'package:diyet_ofisim/Models/Patient.dart';
-import 'package:diyet_ofisim/Pages/LoginSignupPage.dart';
+import 'package:diyet_ofisim/Pages/loginSignupPage.dart';
 import 'package:diyet_ofisim/Pages/Patient/profileEdit.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
@@ -10,14 +10,13 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 class PatientProfilePage extends StatefulWidget {
-  PatientProfilePage({Key key}) : super(key: key);
-
+  const PatientProfilePage({super.key});
   @override
-  _PatientProfilePageState createState() => _PatientProfilePageState();
+  State<PatientProfilePage> createState() => _PatientProfilePageState();
 }
 
 class _PatientProfilePageState extends State<PatientProfilePage> {
-  Color renk = Colors.deepPurpleAccent[100];
+  Color renk = Colors.deepPurpleAccent[100]!;
   Patient usermodel = locator<UserService>().userModel;
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,9 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
       child: Column(
         children: [
           info(),
-          SizedBox(height:PageComponents(context).widthSize(1.5),), //20
+          SizedBox(
+            height: PageComponents(context).widthSize(1.5),
+          ), //20
           ProfileMenuItem(
             iconName: Icon(Icons.assignment_sharp, color: renk),
             title: "Şartlar ve Koşullar",
@@ -55,7 +56,8 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => LoginSignupPage()));
+                      builder: (BuildContext context) =>
+                          const LoginSignupPage()));
             },
           ),
         ],
@@ -65,7 +67,7 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
 
   Widget info() {
     return Stack(
-      overflow: Overflow.visible,
+      clipBehavior: Clip.none,
       children: <Widget>[
         Positioned(
           child: ClipPath(
@@ -82,7 +84,7 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                margin: EdgeInsets.only(top: 25), //10
+                margin: const EdgeInsets.only(top: 25), //10
                 height: PageComponents(context).widthSize(30),
 
                 decoration: BoxDecoration(
@@ -96,25 +98,25 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
                   child: FadeInImage(
                     image:
                         ExtendedNetworkImageProvider(usermodel.profilePhotoUrl),
-                    placeholder:
-                        ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
+                    placeholder: const ExtendedAssetImageProvider(
+                        "assets/photo/nutri.jpg"),
                     fit: BoxFit.contain,
                   ),
                 ),
               ),
 
               Text(
-                usermodel.name + " " + usermodel.surname,
-                style: TextStyle(
+                "${usermodel.name} ${usermodel.surname}",
+                style: const TextStyle(
                   fontSize: 20.5,
                   fontFamily: "Genel", // 22
                   color: Colors.black87,
                 ),
               ),
-              SizedBox(height: 10), //5
+              const SizedBox(height: 10), //5
               Text(
-               usermodel.email,
-                style: TextStyle(
+                usermodel.email,
+                style: const TextStyle(
                     fontWeight: FontWeight.w400,
                     color: Color(0xFF8492A2),
                     fontSize: 14.5),
@@ -133,7 +135,7 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
       elevation: 0,
 
       //centerTitle: true,
-      title: Text(
+      title: const Text(
         "Profilim",
         style: TextStyle(
           color: Colors.white,
@@ -142,19 +144,19 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
         ),
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           onPressed: () {
-            NavigationManager(context).pushPage(ProfileEdit());
+            NavigationManager(context).pushPage(const ProfileEdit());
           },
-          child: Text(
+          child: const Text(
             "Edit",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 16, //16
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-        ),
+        )
       ],
     );
   }
@@ -180,41 +182,42 @@ class MyCustomClipper extends CustomClipper<Path> {
 }
 
 class ProfileMenuItem extends StatefulWidget {
-  const ProfileMenuItem({
-    Key key,
-    this.iconName,
-    this.title,
-    this.press,
-  }) : super(key: key);
   final String title;
   final Function press;
   final Icon iconName;
 
+  const ProfileMenuItem({
+    super.key,
+    required this.iconName,
+    required this.title,
+    required this.press,
+  });
+
   @override
-  _ProfileMenuItemState createState() => _ProfileMenuItemState();
+  State<ProfileMenuItem> createState() => _ProfileMenuItemState();
 }
 
 class _ProfileMenuItemState extends State<ProfileMenuItem> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: widget.press,
+      onTap: widget.press(),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: SafeArea(
           child: Row(
             children: <Widget>[
               widget.iconName,
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Text(
                 widget.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16, //16
                   color: Color(0xFF8492A2),
                 ),
               ),
-              Spacer(),
-              Icon(
+              const Spacer(),
+              const Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
                 color: Color(0xFF8492A2),

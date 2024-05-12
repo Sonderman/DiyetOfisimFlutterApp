@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 class NavigationProvider with ChangeNotifier {
   int _bottomNavIndex = locator<AppSettings>().defaultNavIndex;
 
-  CircularBottomNavigationController _navigationController =
+  final CircularBottomNavigationController _navigationController =
       CircularBottomNavigationController(0);
 
-  PageController _questionPageController = PageController(
+  final PageController _questionPageController = PageController(
     initialPage: 0,
   );
 
-  List<Widget> _pageStack = [];
+  final List<Widget> _pageStack = [];
 
   void resetControllerIndex() {
     _navigationController.value = AppSettings().defaultNavIndex;

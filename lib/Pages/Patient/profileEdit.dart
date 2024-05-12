@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ProfileEdit extends StatefulWidget {
+  const ProfileEdit({super.key});
+
   @override
-  _ProfileEditState createState() => _ProfileEditState();
+  State<ProfileEdit> createState() => _ProfileEditState();
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
@@ -20,14 +22,14 @@ class _ProfileEditState extends State<ProfileEdit> {
   TextEditingController surnameController = TextEditingController();
   TextEditingController passController = TextEditingController();
   TextEditingController pass2Controller = TextEditingController();
-  Uint8List image;
+  Uint8List? image;
   bool isobs = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profilini Düzenle"),
+        title: const Text("Profilini Düzenle"),
         //centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -40,7 +42,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     return Column(
       children: [
         imageEdit(),
-        SizedBox(
+        const SizedBox(
           height: 35,
         ),
         buildTextField(nameController, " Name", usermodel.name, false),
@@ -58,7 +60,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           "**********",
           true,
         ),
-        SizedBox(
+        const SizedBox(
           height: 70,
         ),
         saveBackButtons(),
@@ -76,13 +78,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ? FadeInImage(
                     image:
                         ExtendedNetworkImageProvider(usermodel.profilePhotoUrl),
-                    placeholder:
-                        ExtendedAssetImageProvider("assets/photo/nutri.jpg"),
+                    placeholder: const ExtendedAssetImageProvider(
+                        "assets/photo/nutri.jpg"),
                     height: PageComponents(context).widthSize(30),
                     fit: BoxFit.contain,
                   )
                 : Image.memory(
-                    image,
+                    image!,
                     height: PageComponents(context).widthSize(30),
                     fit: BoxFit.contain,
                   ),
@@ -107,12 +109,12 @@ class _ProfileEditState extends State<ProfileEdit> {
               bottom: 0,
               right: 0,
               child: Container(
-                 height:PageComponents(context).widthSize(10),
-                width:PageComponents(context).widthSize(10),
+                height: PageComponents(context).widthSize(10),
+                width: PageComponents(context).widthSize(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(
-                        width: 3, color: Colors.deepPurpleAccent[100]),
+                        width: 3, color: Colors.deepPurpleAccent[100]!),
                     color: Colors.white),
                 child: InkWell(
                   onTap: () {
@@ -137,8 +139,8 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   Widget buildTextField(
     TextEditingController controller,
-    String _labelText,
-    String _hintText,
+    String labelText,
+    String hintText,
     bool isPasswordField,
   ) {
     return Padding(
@@ -149,7 +151,7 @@ class _ProfileEditState extends State<ProfileEdit> {
         decoration: InputDecoration(
           suffixIcon: isPasswordField
               ? IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.remove_red_eye,
                     color: Colors.grey,
                   ),
@@ -160,13 +162,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                   },
                 )
               : null,
-          contentPadding: EdgeInsets.only(bottom: 5),
-          labelText: _labelText,
+          contentPadding: const EdgeInsets.only(bottom: 5),
+          labelText: labelText,
           labelStyle:
               TextStyle(color: Colors.deepPurpleAccent[100], fontSize: 20),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          hintText: _hintText,
-          hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 18),
         ),
       ),
     );
@@ -176,18 +178,25 @@ class _ProfileEditState extends State<ProfileEdit> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        OutlineButton(
-          padding: EdgeInsets.symmetric(horizontal: 50),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        OutlinedButton(
           onPressed: () {
             NavigationManager(context).popPage();
           },
-          child: Text("GERİ DÖN",
-              style: TextStyle(
-                  fontSize: 14, letterSpacing: 2.2, color: Colors.black54)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+          ),
+          child: const Text(
+            "GERİ DÖN",
+            style: TextStyle(
+              fontSize: 14,
+              letterSpacing: 2.2,
+              color: Colors.black54,
+            ),
+          ),
         ),
-        RaisedButton(
+        ElevatedButton(
           onPressed: () {
             usermodel.name = nameController.text;
             usermodel.surname = surnameController.text;
@@ -196,27 +205,31 @@ class _ProfileEditState extends State<ProfileEdit> {
                 .then((value) {
               if (value) {
                 Fluttertoast.showToast(
-                    msg: "Bilgileriniz Başarıyla Güncellendi.",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 2,
-                    backgroundColor: Colors.green[300],
-                    textColor: Colors.white,
-                      
-                    fontSize: 18.0);
+                  msg: "Bilgileriniz Başarıyla Güncellendi.",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 2,
+                  backgroundColor: Colors.green[300],
+                  textColor: Colors.white,
+                  fontSize: 18.0,
+                );
                 NavigationManager(context).popPage();
               }
             });
           },
-          color: Colors.deepPurpleAccent[100],
-          padding: EdgeInsets.symmetric(horizontal: 50),
-          elevation: 2,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Text(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            elevation: 2.0,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+          ),
+          child: const Text(
             "KAYDET",
             style: TextStyle(
-                fontSize: 14, letterSpacing: 2.2, color: Colors.white),
+              fontSize: 14,
+              letterSpacing: 2.2,
+              color: Colors.white,
+            ),
           ),
         )
       ],

@@ -1,36 +1,40 @@
 import 'dart:async';
 import 'package:diyet_ofisim/Pages/RootPage.dart';
-import 'package:diyet_ofisim/Pages/LoginSignupPage.dart';
+import 'package:diyet_ofisim/Pages/loginSignupPage.dart';
 import 'package:diyet_ofisim/Services/AuthService.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/locator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({Key key}) : super(key: key);
+  const SplashScreen({super.key});
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
   authChecking(BuildContext context) {
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       locator<AuthService>().getUserUid().then((userID) {
         if (userID != null) {
-          print("UserID:" + userID);
+          if (kDebugMode) {
+            print("UserID:$userID");
+          }
           locator<UserService>().userInitializer(userID).then((value) {
-            if (value)
+            if (value) {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => RootPage()));
+                      builder: (BuildContext context) => const RootPage()));
+            }
           });
         } else {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) => LoginSignupPage()));
+                  builder: (BuildContext context) => const LoginSignupPage()));
         }
       });
     });
@@ -61,12 +65,17 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 */
-
   @override
+  void initState() {
+    authChecking(context);
+    super.initState();
+  }
+
+  /* @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    authChecking(context);
-    /*
+
+    
     checkUpdate().then((value) {
       print(value);
       if (!value)
@@ -97,8 +106,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                     )));
     });
-  */
-  }
+  
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -110,12 +119,12 @@ class _SplashScreenState extends State<SplashScreen> {
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
             colors: [
-              Colors.deepPurpleAccent[200],
-              Colors.deepPurpleAccent[100],
-              Colors.deepPurple[50],
+              Colors.deepPurpleAccent[200]!,
+              Colors.deepPurpleAccent[100]!,
+              Colors.deepPurple[50]!,
             ]),
       ),
-      child: Column(
+      child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text("Diyet Ofisim",

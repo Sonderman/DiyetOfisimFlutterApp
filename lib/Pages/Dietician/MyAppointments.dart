@@ -1,71 +1,64 @@
-import 'package:dash_chat/dash_chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/Message.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MyAppointmentsPage extends StatefulWidget {
+  const MyAppointmentsPage({super.key});
+
   @override
-  _MyAppointmentsState createState() => _MyAppointmentsState();
+  State<MyAppointmentsPage> createState() => _MyAppointmentsState();
 }
 
 class _MyAppointmentsState extends State<MyAppointmentsPage> {
-  CalendarController _calendarController;
   Color myColor = Colors.white;
   DateTime selectedDate = DateTime.now();
   UserService userService = locator<UserService>();
-
-  @override
-  void initState() {
-    super.initState();
-    _calendarController = CalendarController();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _calendarController.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: StreamBuilder(
             stream: userService.getMyCalendarSnapshot(),
-            builder: (context, AsyncSnapshot<Event> snap) {
+            builder: (context,
+                AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snap) {
               if (!snap.hasData) {
                 return PageComponents(context)
                     .loadingOverlay(backgroundColor: Colors.white);
               } else {
-                Map<String, dynamic> calendar;
-                if (snap.data.snapshot.value != null) {
-                  calendar =
-                      Map<String, dynamic>.from(snap.data.snapshot.value);
+                late Map<String, dynamic> calendar;
+                if (snap.data!.data() != null) {
+                  calendar = snap.data!.data()!;
                 }
 
                 return Container(
-                  padding: EdgeInsets.only(top: 30),
+                  padding: const EdgeInsets.only(top: 30),
                   color: Colors.deepPurpleAccent[100],
                   child: Column(
                     children: [
                       TableCalendar(
+                        focusedDay: DateTime.now(),
+                        firstDay: DateTime(DateTime.now().year - 1),
+                        lastDay: DateTime(DateTime.now().year + 1),
                         locale: "tr",
-                        calendarController: _calendarController,
-                        initialCalendarFormat: CalendarFormat.week,
+                        calendarFormat: CalendarFormat.week,
                         startingDayOfWeek: StartingDayOfWeek.monday,
-                        formatAnimation: FormatAnimation.slide,
-                        onDaySelected: (date, _, __) {
+                        onDaySelected: (
+                          selected,
+                          focused,
+                        ) {
                           setState(() {
-                            selectedDate = date;
+                            selectedDate = selected;
                           });
                         },
-                        headerStyle: HeaderStyle(
-                            centerHeaderTitle: true,
+                        headerStyle: const HeaderStyle(
+                            titleCentered: true,
                             formatButtonVisible: false,
                             titleTextStyle: TextStyle(
                               color: Colors.white,
@@ -83,20 +76,18 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                               size: 25,
                             )),
                         calendarStyle: CalendarStyle(
-                            weekendStyle: TextStyle(
+                            weekendTextStyle: const TextStyle(
                               color: Colors.white,
                             ),
-                            weekdayStyle: TextStyle(color: Colors.white),
-                            selectedColor: Colors.purple[800],
-                            todayColor: Color(0xffdfdeff),
-                            todayStyle: TextStyle(color: Colors.purple[800])),
+                            todayTextStyle:
+                                TextStyle(color: Colors.purple[800])),
                         daysOfWeekStyle: DaysOfWeekStyle(
                           weekendStyle: TextStyle(
                               color: Colors.purple[800],
                               fontSize: 20,
                               fontFamily: "Kavom",
                               fontWeight: FontWeight.bold),
-                          weekdayStyle: TextStyle(
+                          weekdayStyle: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                               fontFamily: "Kavom",
@@ -110,7 +101,7 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                         child: Container(
                           height: MediaQuery.of(context).size.height,
                           width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             border: Border.all(width: 5, color: myColor),
                             color: myColor,
@@ -119,13 +110,8 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                           child: ListView(children: [
                             Center(
                               child: Text(
-                                  selectedDate.day.toString() +
-                                      " " +
-                                      DateFormat("MMMM", "tr")
-                                          .format(selectedDate) +
-                                      " " +
-                                      selectedDate.year.toString(),
-                                  style: TextStyle(
+                                  "${"${selectedDate.day} ${DateFormat("MMMM", "tr").format(selectedDate)}"} ${selectedDate.year}",
+                                  style: const TextStyle(
                                       color: Colors.grey, fontSize: 17)),
                             ),
                             SizedBox(
@@ -143,7 +129,6 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
   }
 
   bool calendarCheck(Map<String, dynamic> map, String month, String day) {
-    if (map == null) return false;
     if (map.containsKey(selectedDate.year.toString())) {
       if (map[selectedDate.year.toString()].containsKey(month)) {
         if (map[selectedDate.year.toString()][month].containsKey(day)) {
@@ -154,13 +139,13 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
     return false;
   }
 
-  Widget appointmentSection(Map calendar) {
+  Widget appointmentSection(Map<String, dynamic> calendar) {
     String month, day;
     month = selectedDate.month.toString();
     day = selectedDate.day.toString();
-    if (selectedDate.month < 10) month = "0" + month;
-    if (selectedDate.day < 10) day = "0" + day;
-    if (calendar != null && calendarCheck(calendar, month, day)) {
+    if (selectedDate.month < 10) month = "0$month";
+    if (selectedDate.day < 10) day = "0$day";
+    if (calendarCheck(calendar, month, day)) {
       Map apMap = calendar[selectedDate.year.toString()][month][day];
       List apList = apMap.values.toList();
       List apKList = apMap.keys.toList();
@@ -174,41 +159,40 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                   )),
         ),
       );
-    } else
-      return Center(child: Text("Seçilen günle ilişkili randevu bulunmuyor"));
+    } else {
+      return const Center(
+          child: Text("Seçilen günle ilişkili randevu bulunmuyor"));
+    }
   }
 
   bool checkAppointment(Appointment a) {
     DateTime currentTime = DateTime.now();
-    List time;
-    time = a.hour.split(":");
-    if (a.month == currentTime.month && a.day == currentTime.day) {
-      if ((int.tryParse(time[0]) == currentTime.hour &&
-              currentTime.minute < 10) ||
-          (int.tryParse(time[0]) == currentTime.hour - 1 &&
-              currentTime.minute > 50))
+
+    if (a.date.month == currentTime.month && a.date.day == currentTime.day) {
+      if (((a.date.hour) == currentTime.hour && currentTime.minute < 10) ||
+          ((a.date.hour) == currentTime.hour - 1 && currentTime.minute > 50)) {
         return true;
-      else
+      } else {
         return false;
-    } else
+      }
+    } else {
       return false;
+    }
   }
 
   Widget saatler(Map<String, dynamic> a, String hour) {
     Appointment ap = Appointment();
     ap.parseMap(a);
-    ap.hour = hour;
-    ap.day = selectedDate.day;
-    ap.year = selectedDate.year;
-    ap.month = selectedDate.month;
+    ap.date = selectedDate;
+
     return Row(
       //crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Center(
           child: Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.all(30),
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(30),
             width: PageComponents(context).widthSize(25),
             height: PageComponents(context).widthSize(19),
             child: Text(
@@ -225,8 +209,8 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
           child: Container(
             width: PageComponents(context).widthSize(25),
             height: PageComponents(context).widthSize(19),
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.all(15),
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.grey[50]),
@@ -235,8 +219,8 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
               children: [
                 Column(children: [
                   Text(
-                    ap.name + "  " + ap.surname,
-                    style: TextStyle(fontSize: 17),
+                    "${ap.name}  ${ap.surname}",
+                    style: const TextStyle(fontSize: 17),
                   ),
                   SizedBox(
                     height: PageComponents(context).widthSize(3),
@@ -250,49 +234,56 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
                             )
                           : Text(
                               "  Hasta Bekleniyor".toUpperCase(),
-                              style:
-                                  TextStyle(color: Colors.green, fontSize: 15),
+                              style: const TextStyle(
+                                  color: Colors.green, fontSize: 15),
                             )
                       : ap.status == 1
                           ? Text(
                               "  Randevu Tamamlandı".toUpperCase(),
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 15),
+                              style: const TextStyle(
+                                  color: Colors.blue, fontSize: 15),
                             )
                           : Text(
                               "  Randevu iptal edildi".toUpperCase(),
-                              style: TextStyle(color: Colors.red, fontSize: 15),
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 15),
                             )),
                 ]),
                 Visibility(
                   visible: checkAppointment(ap) && ap.status == 0,
-                  child: RaisedButton(
+                  child: ElevatedButton(
                     onPressed: ap.pReady && ap.status == 0
                         ? () async {
-                            userService
+                            await userService
                                 .startAppointment(ap)
                                 .then((value) async {
                               if (value) {
                                 NavigationManager(context)
                                     .setBottomNavIndex(1, reFresh: false);
-                                await locator<UserService>()
-                                    .findUserByID(ap.pID)
-                                    .then((data) {
+                                final userData = await locator<UserService>()
+                                    .findUserByID(ap.pID);
+                                if (context.mounted) {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              Message(
-                                                ap.pID,
-                                                data['Name'],
-                                                aModel: ap,
-                                              )));
-                                });
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Message(
+                                        otherUserID: ap.pID,
+                                        otherUserName: userData!['Name'],
+                                        aModel: ap,
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             });
                           }
                         : null,
-                    child: Text("Randevuyu başlat".toUpperCase()),
+                    style: ElevatedButton.styleFrom(
+                        // Add your preferred styles here (optional)
+                        ),
+                    child: Text(
+                      "Randevuyu başlat".toUpperCase(),
+                    ),
                   ),
                 ),
               ],

@@ -44,10 +44,10 @@ class PageComponents {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: ClipRRect(
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(20),
         ),
-        child: Container(
+        child: SizedBox(
           height: heightSize(70),
           child: Image.asset("assets/images/underConstruction.jpg"),
         ),

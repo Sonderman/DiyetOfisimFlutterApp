@@ -1,9 +1,9 @@
-import 'package:diyet_ofisim/Pages/ChatPage.dart';
+import 'package:diyet_ofisim/Pages/chatPage.dart';
 import 'package:diyet_ofisim/Pages/Dietician/DieticianProfilePage.dart';
-import 'package:diyet_ofisim/Pages/Dietician/MyAppointments.dart';
+import 'package:diyet_ofisim/Pages/Dietician/myAppointments.dart';
 import 'package:diyet_ofisim/Pages/Patient/PatientProfilePage.dart';
 import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
-import 'package:diyet_ofisim/Pages/Patient/MyCalendarPage.dart';
+import 'package:diyet_ofisim/Pages/Patient/myCalendarPage.dart';
 import 'package:flutter/material.dart';
 
 enum Diseases {
@@ -18,7 +18,7 @@ enum Diseases {
   gut,
   hasimato,
   hipertansiyon,
-  kalp_Damar,
+  kalpDamar,
   kiloAlma,
   kiloVerme,
   menopoz,
@@ -38,22 +38,22 @@ class AppSettings {
   //final String _server = "Release";
   final String _server = "Development";
 
-  var odemeType;
+  // var odemeType;
   //final String _server = "OpenTest";
   String getServer() => _server;
 
   //ANCHOR hasta sayfaları burada
   List<Widget> patientPages = [
-    HomePage(),
-    MyCalendarPage(),
-    ChatPage(),
-    PatientProfilePage(),
+    const HomePage(),
+    const MyCalendarPage(),
+    const ChatPage(),
+    const PatientProfilePage(),
   ];
   //ANCHOR diyetisyen sayfaları burada
   List<Widget> dieticianPages = [
-    MyAppointmentsPage(),
-    ChatPage(),
-    DieticianProfilePage()
+    const MyAppointmentsPage(),
+    const ChatPage(),
+    const DieticianProfilePage()
   ];
 
   List<String> diseases = [

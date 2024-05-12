@@ -1,8 +1,8 @@
 import 'package:circular_bottom_navigation/circular_bottom_navigation.dart';
 import 'package:circular_bottom_navigation/tab_item.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
+import 'package:diyet_ofisim/Pages/Patient/HomePage.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
-import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/NavigationManager.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
@@ -10,33 +10,27 @@ import 'package:flutter/material.dart';
 
 Widget getNavigatedPage(BuildContext context) {
   //ANCHOR stack de widget varsa o sayfayı döndürür yoksa default veya mevcut indexe göre sayfayı açar
-  if (NavigationManager(context).getLastPage() != null) {
-    return NavigationManager(context).getLastPage();
+  if (NavigationManager(context).getLastPage() == null) {
+    NavigationManager(context).pushPage(const HomePage());
+    return NavigationManager(context).getLastPage()!;
   } else {
-    UserService userService = locator<UserService>();
-
-    if (userService.userModel.runtimeType == Dietician)
-      return AppSettings()
-          .dieticianPages[NavigationManager(context).getBottomNavIndex()];
-    else
-      return AppSettings()
-          .patientPages[NavigationManager(context).getBottomNavIndex()];
+    return NavigationManager(context).getLastPage()!;
   }
 }
 
-Widget bottomNavigationBar(BuildContext context, _rootPageState) {
+Widget bottomNavigationBar(BuildContext context, rootPageState) {
   NavigationManager navigation = NavigationManager(context);
   int currentPosition = navigation.getBottomNavIndex();
   var navController = navigation.nav.getNavController();
 
   currentPageSetter() {
     //ANCHOR - Burada hem RootPage Hemde içerideki page rebuild olur
-    _rootPageState.setState(() {
+    rootPageState.setState(() {
       navigation.setBottomNavIndex(currentPosition);
     });
   }
 
-  if (locator<UserService>().userModel.runtimeType == Dietician)
+  if (locator<UserService>().userModel.runtimeType == Dietician) {
     /*return FancyBottomNavigation(
       initialSelection: currentPosition,
       inactiveIconColor: MyColors().purpleContainer,
@@ -82,13 +76,13 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
       controller: navController,
       barHeight: PageComponents(context).heightSize(6),
       barBackgroundColor: Colors.white,
-      animationDuration: Duration(milliseconds: 300),
+      animationDuration: const Duration(milliseconds: 300),
       selectedCallback: (position) {
-        currentPosition = position;
+        currentPosition = position!;
         currentPageSetter();
       },
     );
-  else
+  } else {
     /* return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
@@ -146,10 +140,11 @@ Widget bottomNavigationBar(BuildContext context, _rootPageState) {
       controller: navController,
       barHeight: PageComponents(context).heightSize(6),
       barBackgroundColor: Colors.white,
-      animationDuration: Duration(milliseconds: 300),
+      animationDuration: const Duration(milliseconds: 300),
       selectedCallback: (position) {
-        currentPosition = position;
+        currentPosition = position!;
         currentPageSetter();
       },
     );
+  }
 }

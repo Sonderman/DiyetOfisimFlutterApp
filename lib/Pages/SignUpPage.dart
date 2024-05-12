@@ -1,34 +1,33 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:diyet_ofisim/Pages/Components/CustomScroll.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
-import 'package:diyet_ofisim/Tools/ImageEditor.dart';
+import 'package:diyet_ofisim/Tools/imagePicker.dart';
 import 'package:diyet_ofisim/Tools/loading.dart';
 import 'package:diyet_ofisim/assets/Colors.dart';
 import 'package:diyet_ofisim/locator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart' as imgsrc;
+import 'package:image_picker/image_picker.dart';
 
 class SignUpPage extends StatefulWidget {
   final PageController pageController;
 
-  SignUpPage(this.pageController);
+  const SignUpPage(this.pageController, {super.key});
 
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
   TextEditingController mailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController password2Controller = TextEditingController();
-  Uint8List _image;
-  final picker = imgsrc.ImagePicker();
+  Uint8List? _image;
   bool loading = false;
-  String _name, _surname, _country, _birthday;
-  bool _gender, _isDietisian = false;
+  String? _name, _surname, _country, _birthday;
+  bool? _gender, _isDietisian = false;
   bool showPassword = true;
 
   double heightSize(double value) {
@@ -41,40 +40,10 @@ class _SignUpPageState extends State<SignUpPage> {
     return MediaQuery.of(context).size.width * value;
   }
 
-  // ANCHOR kameradan foto almaya yarar
-  Future<Uint8List> _getImageFromCamera() async {
-    final image = await picker.getImage(source: imgsrc.ImageSource.camera);
-    if (image != null)
-      return Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => ImageEditorPage(
-                    image: File(image.path),
-                    forCreateEvent: false,
-                  ))).then((value) => value);
-    else
-      return null;
-  }
-
-// ANCHOR galeriden foto almaya yarar
-  Future<Uint8List> _getImageFromGallery() async {
-    final image = await picker.getImage(source: imgsrc.ImageSource.gallery);
-    if (image != null)
-      return Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => ImageEditorPage(
-                    image: File(image.path),
-                    forCreateEvent: false,
-                  ))).then((value) => value);
-    else
-      return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return loading
-        ? Loading()
+        ? const Loading()
         : LayoutBuilder(builder: (context, constraints) {
             return Scaffold(
               body: Padding(
@@ -141,26 +110,28 @@ class _SignUpPageState extends State<SignUpPage> {
               child: ListBody(
                 children: <Widget>[
                   GestureDetector(
-                      child: Text(
+                      child: const Text(
                         'Galeri',
                       ),
                       onTap: () {
-                        _getImageFromGallery().then((value) {
+                        pickImage(context: context, source: ImageSource.gallery)
+                            .then((value) {
                           setState(() {
                             _image = value;
                             Navigator.pop(context);
                           });
                         });
                       }),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.all(8.0),
                   ),
                   GestureDetector(
-                      child: Text(
+                      child: const Text(
                         'Kamera',
                       ),
                       onTap: () {
-                        _getImageFromCamera().then((value) {
+                        pickImage(context: context, source: ImageSource.camera)
+                            .then((value) {
                           setState(() {
                             _image = value;
                             Navigator.pop(context);
@@ -181,18 +152,20 @@ class _SignUpPageState extends State<SignUpPage> {
   void signUp() async {
     //ANCHOR Veritabanına kaydetmek için
     List<String> datalist = [
-      _name,
-      _surname,
+      _name!,
+      _surname!,
       mailController.text,
-      _gender ? "Man" : "Woman",
-      _isDietisian ? "Y" : "N",
-      generateNickName(_name)
+      _gender! ? "Man" : "Woman",
+      _isDietisian! ? "Y" : "N",
+      generateNickName(_name!)
     ];
-    print(datalist);
+    if (kDebugMode) {
+      print(datalist);
+    }
     try {
-      await locator<LoginRegisterService>()
+      await locator<UserService>()
           .registerUser(
-              mailController.text, passwordController.text, datalist, _image)
+              mailController.text, passwordController.text, datalist, _image!)
           .then((userID) {
         if (userID != null) {
           Fluttertoast.showToast(
@@ -205,20 +178,27 @@ class _SignUpPageState extends State<SignUpPage> {
               textColor: Colors.white,
               fontSize: 18.0);
           widget.pageController.previousPage(
-              duration: Duration(seconds: 1), curve: Curves.easeInOutCubic);
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeInOutCubic);
         } else {
           setState(() {
             loading = false;
-            print("Sign Up Failed!");
+            if (kDebugMode) {
+              print("Sign Up Failed!");
+            }
           });
         }
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
 
       setState(() {
         loading = false;
-        print("Sign Up Failed!");
+        if (kDebugMode) {
+          print("Sign Up Failed!");
+        }
       });
     }
   }
@@ -228,7 +208,7 @@ class _SignUpPageState extends State<SignUpPage> {
       onTap: () {
         _showChoiceDialog(context);
       },
-      child: Container(
+      child: SizedBox(
         width: widthSize(30),
         height: widthSize(30),
         /*
@@ -246,7 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 )
               : ClipOval(
                   child: Image.memory(
-                    _image,
+                    _image!,
                     width: widthSize(30),
                     height: widthSize(30),
                     fit: BoxFit.cover,
@@ -261,7 +241,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Container(
+        SizedBox(
           height: heightSize(8),
           width: widthSize(40),
           child: TextFormField(
@@ -289,7 +269,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           ),
         ),
-        Container(
+        SizedBox(
           height: heightSize(8),
           width: widthSize(40),
           child: TextFormField(
@@ -363,16 +343,19 @@ class _SignUpPageState extends State<SignUpPage> {
               color: MyColors().loginGreyColor,
             ),
             alignLabelWithHint: true,
-            suffixIcon: FlatButton(
-              child:
-                  Icon(showPassword ? Icons.visibility : Icons.visibility_off),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+            suffixIcon: TextButton(
               onPressed: () {
                 setState(() {
                   showPassword = !showPassword;
                 });
               },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero, // Remove unnecessary padding
+              ),
+              child: Icon(
+                showPassword ? Icons.visibility : Icons.visibility_off,
+                color: Colors.black, // Adjust color as needed
+              ),
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: MyColors().loginGreyColor),
@@ -402,16 +385,19 @@ class _SignUpPageState extends State<SignUpPage> {
               color: MyColors().loginGreyColor,
             ),
             alignLabelWithHint: true,
-            suffixIcon: FlatButton(
-              child:
-                  Icon(showPassword ? Icons.visibility : Icons.visibility_off),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+            suffixIcon: TextButton(
               onPressed: () {
                 setState(() {
                   showPassword = !showPassword;
                 });
               },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero, // Remove unnecessary padding
+              ),
+              child: Icon(
+                showPassword ? Icons.visibility : Icons.visibility_off,
+                color: Colors.black, // Adjust color as needed
+              ),
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: MyColors().loginGreyColor),
@@ -471,9 +457,9 @@ class _SignUpPageState extends State<SignUpPage> {
         Container(
           width: widthSize(43),
           height: heightSize(8),
-          decoration: new BoxDecoration(
+          decoration: BoxDecoration(
             color: MyColors().yellowContainer,
-            borderRadius: new BorderRadius.all(
+            borderRadius: const BorderRadius.all(
               Radius.circular(20),
             ),
           ),
@@ -482,25 +468,25 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Center(
               child: DropdownButton<String>(
                 hint: Text(
-                  _country != null ? _country : ("Ülke Seçin"),
+                  _country ?? ("Ülke Seçin"),
                   style: TextStyle(
                     fontFamily: "Zona",
                     fontSize: heightSize(2),
                     color: MyColors().whiteTextColor,
                   ),
                 ),
-                items: [
+                items: const [
                   DropdownMenuItem(
-                    child: Text("Türkiye"),
                     value: "TR",
+                    child: Text("Türkiye"),
                   ),
                   DropdownMenuItem(
-                    child: Text("United States"),
                     value: "US",
+                    child: Text("United States"),
                   ),
                   DropdownMenuItem(
-                    child: Text("United Kingdom"),
                     value: "UK",
+                    child: Text("United Kingdom"),
                   ),
                 ],
                 onChanged: (country) {
@@ -529,15 +515,15 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(43),
             height: heightSize(8),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: MyColors().yellowContainer,
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
             child: Center(
               child: Text(
-                _birthday != null ? _birthday : "Doğum Tarihiniz",
+                _birthday ?? "Doğum Tarihiniz",
                 style: TextStyle(
                   fontFamily: "Zona",
                   fontSize: heightSize(2),
@@ -558,9 +544,9 @@ class _SignUpPageState extends State<SignUpPage> {
         Container(
           width: widthSize(48),
           height: heightSize(8),
-          decoration: new BoxDecoration(
+          decoration: BoxDecoration(
             color: MyColors().yellowContainer,
-            borderRadius: new BorderRadius.all(
+            borderRadius: const BorderRadius.all(
               Radius.circular(20),
             ),
           ),
@@ -569,25 +555,25 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Center(
               child: DropdownButton<String>(
                 hint: Text(
-                  _country != null ? _country : ("Ülke Seçin"),
+                  _country ?? ("Ülke Seçin"),
                   style: TextStyle(
                     fontFamily: "Zona",
                     fontSize: heightSize(2),
                     color: MyColors().whiteTextColor,
                   ),
                 ),
-                items: [
+                items: const [
                   DropdownMenuItem(
-                    child: Text("Türkiye"),
                     value: "TR",
+                    child: Text("Türkiye"),
                   ),
                   DropdownMenuItem(
-                    child: Text("United States"),
                     value: "US",
+                    child: Text("United States"),
                   ),
                   DropdownMenuItem(
-                    child: Text("United Kingdom"),
                     value: "UK",
+                    child: Text("United Kingdom"),
                   ),
                 ],
                 onChanged: (country) {
@@ -619,15 +605,15 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(48),
             height: heightSize(8),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: MyColors().yellowContainer,
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
             child: Center(
               child: Text(
-                _birthday != null ? _birthday : "Doğum Tarihiniz",
+                _birthday ?? "Doğum Tarihiniz",
                 style: TextStyle(
                   fontFamily: "Zona",
                   fontSize: heightSize(2),
@@ -656,11 +642,11 @@ class _SignUpPageState extends State<SignUpPage> {
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender
+                  ? _gender!
                       ? menColor()
                       : Colors.grey
                   : Colors.grey,
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -687,11 +673,11 @@ class _SignUpPageState extends State<SignUpPage> {
             height: heightSize(5),
             decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender
+                  ? _gender!
                       ? Colors.grey
                       : womenColor()
                   : Colors.grey,
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -725,8 +711,8 @@ class _SignUpPageState extends State<SignUpPage> {
             width: widthSize(43),
             height: heightSize(5),
             decoration: BoxDecoration(
-              color: _isDietisian ? Colors.grey : Colors.green,
-              borderRadius: BorderRadius.all(
+              color: _isDietisian! ? Colors.grey : Colors.green,
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -751,9 +737,9 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(43),
             height: heightSize(5),
-            decoration: new BoxDecoration(
-              color: _isDietisian ? Colors.green : Colors.grey,
-              borderRadius: new BorderRadius.all(
+            decoration: BoxDecoration(
+              color: _isDietisian! ? Colors.green : Colors.grey,
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -785,13 +771,13 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(48),
             height: heightSize(5),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender
+                  ? _gender!
                       ? Colors.black
                       : menColor()
                   : menColor(),
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -819,13 +805,13 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(48),
             height: heightSize(5),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: _gender != null
-                  ? _gender
+                  ? _gender!
                       ? womenColor()
                       : Colors.black
                   : womenColor(),
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -850,26 +836,27 @@ class _SignUpPageState extends State<SignUpPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          child: FlatButton(
-            color: MyColors().purpleContainer,
-            highlightColor: MyColors().purpleContainerSplash,
-            splashColor: MyColors().purpleContainerSplash,
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          child: TextButton(
             onPressed: () {
               widget.pageController.previousPage(
-                  duration: Duration(seconds: 1), curve: Curves.easeInOutCubic);
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeInOutCubic,
+              );
             },
-            child: Container(
-              height: heightSize(8),
-              width: widthSize(35),
-              alignment: Alignment.center,
-              child: Text(
-                "Hesabım Var",
-                style: TextStyle(
-                  fontFamily: "Zona",
-                  fontSize: heightSize(2),
-                  color: MyColors().whiteTextColor,
-                ),
+            style: TextButton.styleFrom(
+              backgroundColor: MyColors().purpleContainer,
+              foregroundColor: MyColors().whiteTextColor, // Assuming white text
+              padding: EdgeInsets.zero, // Remove unnecessary padding
+
+              minimumSize:
+                  Size(widthSize(35), heightSize(8)), // Set minimum size
+            ),
+            child: Text(
+              "Hesabım Var",
+              style: TextStyle(
+                fontFamily: "Zona",
+                fontSize: heightSize(2),
               ),
             ),
           ),
@@ -877,13 +864,7 @@ class _SignUpPageState extends State<SignUpPage> {
         InkWell(
           onTap: () async {
             //ANCHOR veri kontrolleri burda
-            if (_image != null &&
-                _name != null &&
-                _surname != null &&
-                mailController.text != null &&
-                passwordController.text != null &&
-                passwordController.text == password2Controller.text &&
-                _gender != null) {
+            if (passwordController.text == password2Controller.text) {
               setState(() {
                 loading = true;
               });
@@ -902,9 +883,9 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(42),
             height: heightSize(8),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: MyColors().purpleContainer,
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),
@@ -929,26 +910,33 @@ class _SignUpPageState extends State<SignUpPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-          child: FlatButton(
-            color: MyColors().purpleContainer,
-            highlightColor: MyColors().purpleContainerSplash,
-            splashColor: MyColors().purpleContainerSplash,
+          borderRadius: const BorderRadius.all(Radius.circular(30)),
+          child: TextButton(
             onPressed: () {
               widget.pageController.previousPage(
-                  duration: Duration(seconds: 1), curve: Curves.easeInOutCubic);
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeInOutCubic,
+              );
             },
-            child: Container(
-              height: heightSize(8),
-              width: widthSize(40),
-              alignment: Alignment.center,
-              child: Text(
-                "Hesabım Var",
-                style: TextStyle(
-                  fontFamily: "Zona",
-                  fontSize: heightSize(2),
-                  color: MyColors().whiteTextColor,
-                ),
+            style: TextButton.styleFrom(
+              backgroundColor: MyColors().purpleContainer,
+              foregroundColor:
+                  MyColors().whiteTextColor, // Assuming white text color
+              padding: const EdgeInsets.all(
+                  8.0), // Add some padding for better touch area
+
+              minimumSize:
+                  Size(widthSize(40), heightSize(8)), // Set minimum size
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Add rounded corners
+              ), // Optional: Set a custom shape for the button
+            ),
+            child: Text(
+              "Hesabım Var",
+              style: TextStyle(
+                fontFamily: "Zona",
+                fontSize: heightSize(2),
+                color: MyColors().whiteTextColor,
               ),
             ),
           ),
@@ -956,15 +944,7 @@ class _SignUpPageState extends State<SignUpPage> {
         InkWell(
           onTap: () async {
             //ANCHOR veri kontrolleri burda
-            if (_image != null &&
-                _name != null &&
-                _surname != null &&
-                mailController.text != null &&
-                passwordController.text != null &&
-                passwordController.text == password2Controller.text &&
-                _gender != null &&
-                _birthday != null &&
-                _country != null) {
+            if (passwordController.text == password2Controller.text) {
               setState(() {
                 loading = true;
               });
@@ -983,9 +963,9 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             width: widthSize(48),
             height: heightSize(8),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: MyColors().purpleContainer,
-              borderRadius: new BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(20),
               ),
             ),

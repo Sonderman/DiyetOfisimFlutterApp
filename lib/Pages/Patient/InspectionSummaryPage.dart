@@ -1,8 +1,7 @@
-import 'dart:developer';
 import 'package:diyet_ofisim/Pages/Patient/DieticianListPage.dart';
-import 'package:diyet_ofisim/Pages/Patient/Inspection.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class InspectionSummaryPage extends StatefulWidget {
@@ -10,20 +9,25 @@ class InspectionSummaryPage extends StatefulWidget {
   final double bmi;
   final String kgRange;
 
-  const InspectionSummaryPage({Key key, this.results, this.bmi, this.kgRange})
-      : super(key: key);
+  const InspectionSummaryPage(
+      {super.key,
+      required this.results,
+      required this.bmi,
+      required this.kgRange});
 
   @override
-  _InspectionSummaryPageState createState() => _InspectionSummaryPageState();
+  State<InspectionSummaryPage> createState() => _InspectionSummaryPageState();
 }
 
 class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
   @override
   Widget build(BuildContext context) {
-    print(widget.results);
+    if (kDebugMode) {
+      print(widget.results);
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text("Danışan  Bilgilendirme  Sayfası"),
+        title: const Text("Danışan  Bilgilendirme  Sayfası"),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -33,29 +37,30 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
             child: Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                   border: Border.all(
-                      width: 2, color: Colors.deepPurpleAccent[100])),
+                      width: 2, color: Colors.deepPurpleAccent[100]!)),
               height: PageComponents(context).heightSize(20),
               width: PageComponents(context).widthSize(100),
               child: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                     child: Text(
-                      "Beden Kitle İndexsiniz : " + "${widget.bmi.toInt()}",
-                      style: TextStyle(fontSize: 20, color: Colors.green),
+                      "Beden Kitle İndexsiniz : " "${widget.bmi.toInt()}",
+                      style: const TextStyle(fontSize: 20, color: Colors.green),
                     ),
                   ),
-                  Divider(),
+                  const Divider(),
                   Container(
-                    margin: EdgeInsets.only(top: 5, bottom: 5),
+                    margin: const EdgeInsets.only(top: 5, bottom: 5),
                     child: Text(
-                      "Kilo Aralığınız  : " + widget.kgRange,
+                      "Kilo Aralığınız  : ${widget.kgRange}",
                       style: TextStyle(fontSize: 20, color: Colors.blue[400]),
                     ),
                   ),
@@ -63,25 +68,25 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
               ),
             ),
           ),
-          Container(
+          SizedBox(
             height: PageComponents(context).heightSize(20),
             width: PageComponents(context).widthSize(250),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 if (widget.results.contains(Diseases.anoreksiya))
-                  Text(
+                  const Text(
                     "Anoreksi (Yeme Bozukluğu) Risk\n             Grubundasınız !",
                     style: TextStyle(color: Colors.redAccent, fontSize: 23),
                   ),
                 if (widget.results.contains(Diseases.obezite))
-                  Text("Obezite Risk Grubundasınız !",
+                  const Text("Obezite Risk Grubundasınız !",
                       style: TextStyle(color: Colors.redAccent, fontSize: 23)),
                 if (widget.results.contains(Diseases.diyabet))
-                  Text("Diyabet Hastalığı Risk Grubundasınız !",
+                  const Text("Diyabet Hastalığı Risk Grubundasınız !",
                       style: TextStyle(color: Colors.redAccent, fontSize: 23)),
-                if (widget.results.contains(Diseases.kalp_Damar))
-                  Text("Kalp-Damar Hastalığı Risk Grubundasınız !",
+                if (widget.results.contains(Diseases.kalpDamar))
+                  const Text("Kalp-Damar Hastalığı Risk Grubundasınız !",
                       style: TextStyle(color: Colors.redAccent, fontSize: 23))
                 else
                   Row(
@@ -100,29 +105,32 @@ class _InspectionSummaryPageState extends State<InspectionSummaryPage> {
           ),
           Center(
             child: Container(
-              clipBehavior: Clip.none,
-              color: Colors.white,
-              margin: EdgeInsets.all(10),
-              height: 42,
-              width: MediaQuery.of(context).size.width - 100,
-              child: RaisedButton.icon(
-                elevation: 6,
-                textColor: Colors.white,
-                color: Colors.deepPurpleAccent[100],
-                padding: const EdgeInsets.all(6.0),
-                icon: Icon(Icons.arrow_right),
-                label: Text("Uygun Diyetisyene Yönlendirilmek İçin Tıklayınız"),
-                onPressed: () {
-                  Navigator.push(
+                clipBehavior: Clip.none,
+                color: Colors.white,
+                margin: const EdgeInsets.all(10),
+                height: 42,
+                width: MediaQuery.of(context).size.width - 100,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              DieticianListPage(results: widget.results)));
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0)),
-              ),
-            ),
+                        builder: (BuildContext context) =>
+                            DieticianListPage(results: widget.results),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.arrow_right),
+                  label: const Text(
+                    "Uygun Diyetisyene Yönlendirilmek İçin Tıklayınız",
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(6.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0)),
+                    elevation: 6.0, // Adjust as needed
+                  ),
+                )),
           )
         ],
       ),

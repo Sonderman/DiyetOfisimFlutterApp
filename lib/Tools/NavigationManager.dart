@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NavigationManager {
-  NavigationProvider nav;
+  late NavigationProvider nav;
 
   /*
   NOTE stackPage e sayfa eklemek için istediğin yerde bunu çağır :: NavigationManager(context).pushPage(Widget)
@@ -19,9 +19,9 @@ class NavigationManager {
       return false;
     } else {
       if (nav.getBottomNavIndex() == 0 &&
-          nav.getQuestionPageController().page.round() > 0) {
+          nav.getQuestionPageController().page!.round() > 0) {
         nav.getQuestionPageController().previousPage(
-            duration: Duration(seconds: 1), curve: Curves.bounceOut);
+            duration: const Duration(seconds: 1), curve: Curves.bounceOut);
         return true;
       } else {
         popPage();
@@ -36,11 +36,12 @@ class NavigationManager {
     return nav.getPageStack().isEmpty;
   }
 
-  Widget getLastPage() {
+  Widget? getLastPage() {
     if (isEmpty()) {
       return null;
-    } else
+    } else {
       return nav.getPageStack().last;
+    }
   }
 
   void popPage() {

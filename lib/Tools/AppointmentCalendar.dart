@@ -1,6 +1,7 @@
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef DateChangeListener = void Function(
@@ -9,18 +10,18 @@ typedef DateChangeListener = void Function(
 class AppointmentCalendar extends StatefulWidget {
   final DateChangeListener onDateSelected;
   final Map<String, dynamic> calendar;
-  const AppointmentCalendar(this.calendar,
-      {Key key, @required this.onDateSelected})
-      : super(key: key);
+
+  const AppointmentCalendar(
+      {super.key, required this.onDateSelected, required this.calendar});
 
   @override
-  _AppointmentCalendarState createState() => _AppointmentCalendarState();
+  State<AppointmentCalendar> createState() => _AppointmentCalendarState();
 }
 
 class _AppointmentCalendarState extends State<AppointmentCalendar> {
   List saatler = AppSettings().appointmentHours;
 
-  String selectedHour;
+  String? selectedHour;
   int year = DateTime.now().year;
   int month = DateTime.now().month;
   int day = DateTime.now().day;
@@ -34,7 +35,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
           DateTime.now(),
           locale: "tr",
           initialSelectedDate: DateTime.now(),
-          selectionColor: Colors.green[300],
+          selectionColor: Colors.green[300]!,
           selectedTextColor: Colors.white,
           daysCount: 60,
           onDateChange: (date) {
@@ -46,20 +47,16 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
             });
           },
         ),
-        Divider(),
+        const Divider(),
         SizedBox(
           height: PageComponents(context).heightSize(3),
         ),
-        Container(
-          child: Wrap(children: hoursCardsGenerator()),
-        )
+        Wrap(children: hoursCardsGenerator())
       ],
     );
   }
 
   bool calendarCheck(Map<String, dynamic> map, String xmonth, String xday) {
-    if (map == null) return false;
-
     if (map.containsKey(year.toString())) {
       if (map[year.toString()].containsKey(xmonth)) {
         if (map[year.toString()][xmonth].containsKey(xday)) {
@@ -71,27 +68,29 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
   }
 
   List<Widget> hoursCardsGenerator() {
-    Map calendar = widget.calendar;
+    Map<String, dynamic> calendar = widget.calendar;
     String xmonth, xday;
     try {
       xmonth = month.toString();
       xday = day.toString();
-      if (month < 10) xmonth = "0" + xmonth;
-      if (day < 10) xday = "0" + xday;
+      if (month < 10) xmonth = "0$xmonth";
+      if (day < 10) xday = "0$xday";
       if (calendarCheck(calendar, xmonth, xday)) {
         Map temp = (calendar[year.toString()][xmonth][xday] as Map);
 
         List sList = List.from(saatler);
-        temp.keys.forEach((e) {
+        for (var e in temp.keys) {
           sList.remove(e);
-        });
+        }
         return sList.map((saat) => hourCard(saat)).toList();
       } else {
         return List.generate(
             saatler.length, (index) => hourCard(saatler[index]));
       }
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return [];
     }
   }
@@ -105,13 +104,13 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
         });
       },
       child: Card(
-        margin: EdgeInsets.all(15),
+        margin: const EdgeInsets.all(15),
         color: selectedHour == hour ? Colors.green[300] : Colors.blue[400],
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
             hour,
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: const TextStyle(color: Colors.white, fontSize: 20),
           ),
         ),
       ),

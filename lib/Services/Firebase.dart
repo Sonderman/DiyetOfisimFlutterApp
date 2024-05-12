@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
-import 'package:dash_chat/dash_chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class AutoIdGenerator {
   static const int _AUTO_ID_LENGTH = 20;
@@ -20,7 +20,7 @@ class AutoIdGenerator {
 
   static String autoId() {
     final StringBuffer stringBuffer = StringBuffer();
-    final int maxRandom = _AUTO_ID_ALPHABET.length;
+    const int maxRandom = _AUTO_ID_ALPHABET.length;
 
     for (int i = 0; i < _AUTO_ID_LENGTH; ++i) {
       stringBuffer.write(_AUTO_ID_ALPHABET[_random.nextInt(maxRandom)]);
@@ -32,48 +32,47 @@ class AutoIdGenerator {
 
 class DatabaseWorks {
   AppSettings settings = locator<AppSettings>();
-  DatabaseReference ref;
+  late DocumentReference _ref;
 
   DatabaseWorks() {
-    print("DatabaseWorks locator is running");
-    FirebaseDatabase database = FirebaseDatabase();
-    database.setPersistenceEnabled(true);
-    database.setPersistenceCacheSizeBytes(10000000);
-    ref = database.reference();
+    if (kDebugMode) {
+      print("DatabaseWorks locator is running");
+    }
+    _ref = FirebaseFirestore.instance
+        .collection(settings.appName)
+        .doc(settings.getServer());
   }
 
   Future<bool> sendComment(
       String userID, String currentUserID, String comment) async {
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(userID)
-          .child("Comments")
-          .child(DateTime.now().millisecondsSinceEpoch.toString())
+      return await _ref
+          .collection("users")
+          .doc(userID)
+          .collection("Comments")
+          .doc(DateTime.now().millisecondsSinceEpoch.toString())
           .set({"Comment": comment, "CommentOwnerID": currentUserID}).then((_) {
         return true;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
-  Future<List<Map>> getComments(String userID) async {
-    List<Map> commmentList = [];
+  Future<List<Map<String, dynamic>>> getComments(String userID) async {
+    List<Map<String, dynamic>> commmentList = [];
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(userID)
-          .child("Comments")
-          .once()
+      return await _ref
+          .collection("users")
+          .doc(userID)
+          .collection("Comments")
+          .get()
           .then((data) {
-        if (data.value != null) {
-          (data.value as Map).forEach((key, value) {
+        if (data.size > 0) {
+          (data.docs as Map<String, dynamic>).forEach((key, value) {
             commmentList.add(value);
           });
         }
@@ -82,183 +81,130 @@ class DatabaseWorks {
         return commmentList;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return commmentList;
     }
   }
 
-  Future<String> sendMessage(ChatMessage message, String chatID,
-      String currentUser, String otherUser) async {
-    Map<String, dynamic> messageMap = message.toJson();
-    Map<String, dynamic> lastmessage = {
-      "lastMessage": {
-        "senderID": currentUser,
-        "message": messageMap['text'],
-        "createdAt": messageMap['createdAt']
-      }
-    };
-
+  Future<String> sendMessage(
+      {required ChatMessage message,
+      required String chatID,
+      required String currentUser,
+      required String otherUserID}) async {
+    String currentDate = DateTime.now().millisecondsSinceEpoch.toString();
     if (chatID == "temp") {
       chatID = AutoIdGenerator.autoId();
-      lastmessage["Status"] = true;
-      final TransactionResult transactionResult = await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child('users')
-          .child(currentUser)
-          .child('messages')
-          .child(chatID)
-          .runTransaction((MutableData mutableData) async {
-        mutableData.value = {"OtherUserID": otherUser};
-        return mutableData;
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.set(
+            _ref
+                .collection('users')
+                .doc(currentUser)
+                .collection('messages')
+                .doc(chatID),
+            {"OtherUserID": otherUserID});
+        transaction.set(
+            _ref
+                .collection('users')
+                .doc(otherUserID)
+                .collection('messages')
+                .doc(chatID),
+            {"OtherUserID": currentUser});
       });
-      if (transactionResult.committed) {
-        await ref
-            .child(settings.appName)
-            .child(settings.getServer())
-            .child('users')
-            .child(otherUser)
-            .child('messages')
-            .child(chatID)
-            .set({"OtherUserID": currentUser});
-      } else {
-        print('Transaction not committed.');
-        if (transactionResult.error != null) {
-          print(transactionResult.error.message);
-        }
-      }
     }
-
-    final TransactionResult transactionResult2 = await ref
-        .child(settings.appName)
-        .child(settings.getServer())
-        .child('messagePool')
-        .child(chatID)
-        .child('messages')
-        .child(DateTime.now().millisecondsSinceEpoch.toString())
-        .runTransaction((MutableData mutableData) async {
-      mutableData.value = messageMap;
-      return mutableData;
-    }, timeout: Duration(seconds: 2));
-
-    if (transactionResult2.committed) {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child('messagePool')
-          .child(chatID)
-          .update(lastmessage);
-    } else {
-      print('Transaction not committed.');
-      if (transactionResult2.error != null) {
-        print(transactionResult2.error.message);
-      }
-    }
-
+    var messageRef = _ref
+        .collection('messagePool')
+        .doc(chatID)
+        .collection('messages')
+        .doc(currentDate);
+    Map<String, dynamic> messageMap = message.toJson();
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      transaction.set(
+        messageRef,
+        messageMap,
+      );
+      transaction.set(
+        _ref.collection('messagePool').doc(chatID),
+        {
+          "LastMessage": {
+            "SenderID": currentUser,
+            "Message": messageMap['text'],
+            "createdAt": currentDate
+          }
+        },
+      );
+    }, timeout: const Duration(seconds: 1));
     return chatID;
   }
 
   Future<String> checkConversation(String currentUser, String otherUser) async {
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child('users')
-          .child(currentUser)
-          .child('messages')
-          .orderByChild("OtherUserID")
-          .equalTo(otherUser)
-          //.where("OtherUserID", isEqualTo: otherUser)
-          .once()
+      return await _ref
+          .collection('users')
+          .doc(currentUser)
+          .collection('messages')
+          .where("OtherUserID", isEqualTo: otherUser)
+          .limit(1)
+          .get()
           .then((data) {
-        if ((data.value as Map) == null) return "bos";
-        return (data.value as Map).keys.first;
+        return data.docs.first.id;
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return "bos";
     }
   }
 
-  //NOTE - Gereksiz Olabilir
-  Future<Map<String, dynamic>> getChatPoolMessages(String chatID) async {
-    try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("messagePool")
-          .child(chatID)
-          .child("messages")
-          //.orderByChild("createdAt")
-          .once()
-          .then((chats) {
-        return Map<String, dynamic>.from(chats.value);
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getChatPoolSnapshot(
+      String chatID) {
+    return _ref.collection('messagePool').doc(chatID).snapshots();
   }
 
-  Stream<Event> getChatPoolMessagesSnapshot(String chatID) {
-    return ref
-        .child(settings.appName)
-        .child(settings.getServer())
-        .child("messagePool")
-        .child(chatID)
-        .child("messages")
-        .onChildAdded;
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMessagesSnapshot(
+      String chatID) {
+    return _ref
+        .collection('messagePool')
+        .doc(chatID)
+        .collection('messages')
+        .snapshots();
   }
 
-  Stream<Event> getChatPoolSnapshot(String chatID) {
-    return ref
-        .child(settings.appName)
-        .child(settings.getServer())
-        .child("messagePool")
-        .child(chatID)
-        .child("lastMessage")
-        .onValue;
-  }
-
-  Stream<Event> getUserChatsSnapshots(String currentUserID) {
-    return ref
-        .child(settings.appName)
-        .child(settings.getServer())
-        .child("users")
-        .child(currentUserID)
-        .child("messages")
-        .limitToFirst(10)
-        .onValue;
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsSnapshots(
+      String currentUser) {
+    return _ref
+        .collection('users')
+        .doc(currentUser)
+        .collection('messages')
+        .snapshots();
   }
 
   Future<bool> newUser(Map<String, dynamic> data) async {
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(data['UserID'])
-          .set(data);
-      return true;
+      return await _ref
+          .collection('users')
+          .doc(data['UserID'])
+          .set(data)
+          .then((value) => true);
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
-  Future<Map<String, dynamic>> findUserbyID(String userID) async {
+  Future<Map<String, dynamic>?> findUserbyID(String userID) async {
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(userID)
-          .once()
-          .then((userData) {
-        return Map<String, dynamic>.from(userData.value);
+      return await _ref.collection("users").doc(userID).get().then((userData) {
+        return userData.data();
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
     }
   }
@@ -266,15 +212,12 @@ class DatabaseWorks {
   Future<bool> updateUserProfile(
       String id, Map<String, dynamic> userData) async {
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(id)
-          .update(userData);
+      await _ref.collection("users").doc(id).update(userData);
       return true;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
@@ -292,19 +235,18 @@ class DatabaseWorks {
     });
 */
     try {
-      var ref2 = ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("dieticians")
-          .child(id);
+      var ref2 = _ref.collection("dieticians").doc(id);
 
-      if (update)
+      if (update) {
         await ref2.update({"DieticianID": id, "Treatments": treatments});
-      else
+      } else {
         await ref2.set({"DieticianID": id, "Treatments": treatments});
+      }
       return true;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
@@ -342,310 +284,302 @@ class DatabaseWorks {
     }
 
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("dieticians")
+      return await _ref
+          .collection("dieticians")
           // .orderByChild('Treatments')
           // .equalTo(temp)
-          .once()
+          .get()
           .then((userData) async {
         List<String> idList = [];
         List<Dietician> dieticianList = [];
-        print(results.length);
-        Map<String, dynamic>.from(userData.value).values.forEach((e) {
-          if (compareLists(e["Treatments"], results)) {
-            print("girdi");
-            idList.add(e["DieticianID"]);
-          } else
-            print("girmedi");
-        });
+        if (kDebugMode) {
+          print(results.length);
+        }
+
+        for (var e in userData.docs) {
+          if (compareLists(e.data()["Treatments"], results)) {
+            if (kDebugMode) {
+              print("girdi");
+            }
+            idList.add(e.data()["DieticianID"]);
+          } else {
+            if (kDebugMode) {
+              print("girmedi");
+            }
+          }
+        }
 
         await Future.forEach(idList, (id) async {
-          Dietician t = await findUserbyID(id).then((data) {
-            var model = Dietician(id: data["UserID"]);
-            model.parseMap(data);
-            return model;
+          Dietician? t = await findUserbyID(id).then((data) {
+            if (data != null) {
+              var model = Dietician(id: data["UserID"]);
+              model.parseMap(data);
+              return model;
+            } else {
+              return null;
+            }
           });
+          if (t == null) return;
           dieticianList.add(t);
         });
 
         return dieticianList;
       });
     } catch (e) {
-      print("Catched:" + e);
-      return null;
+      if (kDebugMode) {
+        print(e);
+      }
+      return [];
     }
   }
 
-  Future<Map<String, dynamic>> getAppointmentCalendar(String dID) async {
+  Future<Map<String, dynamic>?> getAppointmentCalendar(String dID) async {
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("appointmentCalendar")
-          .child(dID)
-          .once()
+      return await _ref
+          .collection("appointmentCalendar")
+          .doc(dID)
+          .get()
           .then((data) {
-        if (data.value != null)
-          return Map<String, dynamic>.from(data.value);
-        else
+        if (data.data() != null) {
+          return data.data();
+        } else {
           return null;
+        }
       });
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
     }
   }
 
   Future<bool> createAppointment(Appointment a, String myID) async {
     String month, day;
-    if (a == null) {
-      a = Appointment();
-      a.dID = "oKukQkaAWPbk7itBmfWBmew5FR23";
-      a.year = 2021;
-      a.month = 1;
-      a.day = 1;
-      a.hour = "15:00";
-      a.pID = myID;
-      a.status = 0;
-    }
-    month = a.month.toString();
-    day = a.day.toString();
-    if (a.month < 10) month = "0" + month;
-    if (a.day < 10) day = "0" + day;
+    month = a.date.month.toString();
+    day = a.date.day.toString();
+    if (a.date.month < 10) month = "0$month";
+    if (a.date.day < 10) day = "0$day";
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("appointmentCalendar")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("appointmentCalendar")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update(a.toMap());
 
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(myID)
-          .child("myAppointments")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("users")
+          .doc(myID)
+          .collection("myAppointments")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update(a.toMap());
 
       return true;
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
+//yarım kaldı / Diyetisyen modeli ve Appointments 2d list döncek
   Future<List<List<dynamic>>> getMyAppointments(String myId) async {
     List<List<dynamic>> temp = [];
 
     try {
-      return await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(myId)
-          .child("myAppointments")
-          .once()
+      return await _ref
+          .collection("users")
+          .doc(myId)
+          .collection("myAppointments")
+          .get()
           .then((data) async {
-        Map tmap = Map<String, dynamic>.from(data.value);
-        if (tmap == null) return [];
+        for (var e in data.docs) {
+          Appointment ap = Appointment();
+          ap.parseMap(e.data());
 
-        for (int c = 0; c < tmap.length; c++) {
-          await findUserbyID(tmap.keys.toList()[c]).then((v) {
-            Dietician dModel;
-            dModel = Dietician(id: tmap.keys.toList()[c]);
-            dModel.parseMap(v);
+          await findUserbyID(ap.dID).then((v) {
+            if (v != null) {
+              Dietician dModel;
+              dModel = Dietician(id: ap.dID);
+              dModel.parseMap(v);
 
-            Map e = tmap.values.toList()[c];
+              /*Map e = tmap.values.toList()[c];
 
-            (e).forEach((year, i) {
-              (i as Map).forEach((month, j) {
-                (j as Map).forEach((day, k) {
-                  (k as Map).forEach((hours, h) {
-                    Appointment a = Appointment();
-                    a.parseMap(Map<String, dynamic>.from(h));
-                    a.year = int.tryParse(year);
-                    a.month = int.tryParse(month);
-                    a.day = int.tryParse(day);
-                    a.hour = hours;
-                    temp.add([dModel, a]);
+              (e).forEach((year, i) {
+                (i as Map).forEach((month, j) {
+                  (j as Map).forEach((day, k) {
+                    (k as Map).forEach((hours, h) {
+                      Appointment a = Appointment();
+                      a.parseMap(Map<String, dynamic>.from(h));
+                      a.year = int.tryParse(year);
+                      a.month = int.tryParse(month);
+                      a.day = int.tryParse(day);
+                      a.hour = hours;
+                      temp.add([dModel, a]);
+                    });
                   });
                 });
-              });
-            });
+              });*/
+            }
           });
         }
+
         return temp;
       });
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return [];
     }
   }
 
   Future<bool> updateAppointmentStatus(Appointment a) async {
     String month, day;
-    month = a.month.toString();
-    day = a.day.toString();
-    if (a.month < 10) month = "0" + month;
-    if (a.day < 10) day = "0" + day;
-
+    month = a.date.month.toString();
+    day = a.date.day.toString();
+    if (a.date.month < 10) month = "0$month";
+    if (a.date.day < 10) day = "0$day";
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(a.pID)
-          .child("myAppointments")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("users")
+          .doc(a.pID)
+          .collection("myAppointments")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update({"Status": a.status});
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("appointmentCalendar")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("appointmentCalendar")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update({"Status": a.status});
       return true;
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
-  Stream<Event> getMyCalendarSnapshot(String dID) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? getMyCalendarSnapshot(
+      String dID) {
     try {
-      return ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("appointmentCalendar")
-          .child(dID)
-          .onValue;
+      return _ref.collection("appointmentCalendar").doc(dID).snapshots();
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
     }
   }
 
-  Future<Stream<Event>> readyForAppointmentToggle(
-      Appointment a, bool readyToggle) async {
+  Future<Stream<DocumentSnapshot<Map<String, dynamic>>>?>
+      readyForAppointmentToggle(Appointment a, bool readyToggle) async {
     String month, day;
-    month = a.month.toString();
-    day = a.day.toString();
-    if (a.month < 10) month = "0" + month;
-    if (a.day < 10) day = "0" + day;
+    month = a.date.month.toString();
+    day = a.date.day.toString();
+    if (a.date.month < 10) month = "0$month";
+    if (a.date.day < 10) day = "0$day";
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("users")
-          .child(a.pID)
-          .child("myAppointments")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("users")
+          .doc(a.pID)
+          .collection("myAppointments")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update({"pReady": readyToggle});
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("appointmentCalendar")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("appointmentCalendar")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update({"pReady": readyToggle});
-      if (readyToggle)
-        return ref
-            .child(settings.appName)
-            .child(settings.getServer())
-            .child("appointmentCalendar")
-            .child(a.dID)
-            .child(a.year.toString())
-            .child(month)
-            .child(day)
-            .child(a.hour)
-            .onValue;
-      else
+      if (readyToggle) {
+        return _ref
+            .collection("appointmentCalendar")
+            .doc(a.dID)
+            .collection(a.date.year.toString())
+            .doc(month)
+            .collection(day)
+            .doc(a.date.hour.toString())
+            .snapshots();
+      } else {
         return null;
+      }
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
     }
   }
 
   Future<bool> startAppointment(Appointment a) async {
     String month, day;
-    month = a.month.toString();
-    day = a.day.toString();
-    if (a.month < 10) month = "0" + month;
-    if (a.day < 10) day = "0" + day;
+    month = a.date.month.toString();
+    day = a.date.day.toString();
+    if (a.date.month < 10) month = "0$month";
+    if (a.date.day < 10) day = "0$day";
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("appointmentCalendar")
-          .child(a.dID)
-          .child(a.year.toString())
-          .child(month)
-          .child(day)
-          .child(a.hour)
+      await _ref
+          .collection("appointmentCalendar")
+          .doc(a.dID)
+          .collection(a.date.year.toString())
+          .doc(month)
+          .collection(day)
+          .doc(a.date.hour.toString())
           .update({"dReady": true});
       return true;
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
   Future<bool> finishConversation(String chatID) async {
     try {
-      await ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("messagePool")
-          .child(chatID)
+      await _ref
+          .collection("messagePool")
+          .doc(chatID)
           .update({"Status": false});
       return true;
     } catch (e) {
-      print("Catched:" + e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     }
   }
 
-  Stream<Event> getChatStatusSnapshot(String chatID) {
-    try {
-      return ref
-          .child(settings.appName)
-          .child(settings.getServer())
-          .child("messagePool")
-          .child(chatID)
-          .child("Status")
-          .onValue;
-    } catch (e) {
-      print("Catched:" + e);
-      return null;
-    }
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatStatusSnapshot(
+      String chatID) {
+    return _ref
+        .collection("messagePool")
+        .doc(chatID)
+        .collection("Status")
+        .snapshots();
   }
 }
 
@@ -653,15 +587,13 @@ class StorageWorks {
   final Reference ref = FirebaseStorage.instance.ref();
   AppSettings settings = locator<AppSettings>();
   StorageWorks() {
-    print("StorageWorks locator running");
+    if (kDebugMode) {
+      print("StorageWorks locator running");
+    }
   }
 
   Future<String> updateProfilePhoto(String userId, Uint8List image) async {
     String url = "";
-    if (image == null) {
-      print("image null");
-      return url;
-    }
 
     try {
       Reference imgRef = ref
@@ -677,17 +609,17 @@ class StorageWorks {
         await imgRef.getDownloadURL().then((value) async {
           url = value;
           return await locator<DatabaseWorks>()
-              .ref
-              .child(settings.appName)
-              .child(settings.getServer())
-              .child("users")
-              .child(userId)
+              ._ref
+              .collection("users")
+              .doc(userId)
               .update({"ProfilePhotoUrl": value});
         });
       });
       return url;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return url;
     }
   }
@@ -712,660 +644,4 @@ class StorageWorks {
     });
     */
   }
-
-  Future<String> sendEventImage(Uint8List image) async {
-    String url;
-    UploadTask uploadTask = ref
-        .child('events')
-        .child('images')
-        .child(AutoIdGenerator.autoId() + '.jpeg')
-        .putData(image);
-/*
-    StreamSubscription<StorageTaskEvent> streamSubscription =
-        uploadTask.events.listen((event) {
-      print('UpdatingProfile Image :${event.type}');
-    });
-
-    return await uploadTask.onComplete.then((onValue) {
-      return onValue.ref.getDownloadURL().then((value) {
-        url = value.toString();
-        print("Gelen Url:" + url);
-        streamSubscription.cancel();
-        return value.toString();
-      });
-    }).catchError((e) {
-      print(e);
-    });
-    */
-  }
 }
-
-/*
-class DatabaseWorks {
-  final Firestore ref = Firestore.instance;
-  AppSettings settings = locator<AppSettings>();
-
-  DatabaseWorks() {
-    print("DatabaseWorks locator running");
-  }
-
-  Future<bool> newUser(Map<String, dynamic> data) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection('users')
-          .document(data['UserID'])
-          .setData(data)
-          .then((value) => true);
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> userModelUpdater(User model) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("users")
-          .document(model.getUserId())
-          .updateData(model.toMap())
-          .then((value) => true);
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> amIFollowing(String userID, String otherUserID) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("users")
-          .document(userID)
-          .collection("following")
-          .where("OtherUserID", isEqualTo: otherUserID)
-          .getDocuments()
-          .then((onValue) {
-        if (onValue.documents.isNotEmpty)
-          return true;
-        else
-          return false;
-      });
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> increaseNofEvents(String userID) async {
-    try {
-      await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection('users')
-          .document(userID)
-          .updateData({"Nof_events": FieldValue.increment(1)});
-      return true;
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> followToggle(String userID, String otherUserID) async {
-    bool issuccesfull = false;
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("users")
-          .document(userID)
-          .collection("following")
-          .where("OtherUserID", isEqualTo: otherUserID)
-          .getDocuments()
-          .then((onValue) async {
-        if (onValue.documents.isNotEmpty) {
-          await ref.runTransaction((transaction) async {
-            await transaction.delete(ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection('users')
-                .document(userID)
-                .collection('following')
-                .document(otherUserID));
-
-            await transaction.delete(ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection('users')
-                .document(otherUserID)
-                .collection('followers')
-                .document(userID));
-            await transaction.update(
-                ref
-                    .collection(settings.appName)
-                    .document(settings.getServer())
-                    .collection('users')
-                    .document(otherUserID),
-                {"Nof_follower": FieldValue.increment(-1)});
-            await transaction.update(
-                ref
-                    .collection(settings.appName)
-                    .document(settings.getServer())
-                    .collection('users')
-                    .document(userID),
-                {"Nof_following": FieldValue.increment(-1)});
-          }).whenComplete(() {
-            print("Takipten çıkıldı");
-            issuccesfull = true;
-          });
-        } else {
-          await ref.runTransaction((transaction) async {
-            await transaction.set(
-                ref
-                    .collection(settings.appName)
-                    .document(settings.getServer())
-                    .collection('users')
-                    .document(userID)
-                    .collection('following')
-                    .document(otherUserID),
-                {"OtherUserID": otherUserID});
-
-            await transaction.set(
-                ref
-                    .collection(settings.appName)
-                    .document(settings.getServer())
-                    .collection('users')
-                    .document(otherUserID)
-                    .collection('followers')
-                    .document(userID),
-                {"OtherUserID": userID});
-
-            await transaction.update(
-                ref
-                    .collection(settings.appName)
-                    .document(settings.getServer())
-                    .collection('users')
-                    .document(otherUserID),
-                {"Nof_follower": FieldValue.increment(1)});
-            await transaction.update(
-                ref
-                    .collection(settings.appName)
-                    .document(settings.getServer())
-                    .collection('users')
-                    .document(userID),
-                {"Nof_following": FieldValue.increment(1)});
-          }).whenComplete(() {
-            print("Takip Ediliyor");
-            issuccesfull = true;
-          });
-        }
-        return issuccesfull;
-      });
-    } catch (e) {
-      print("Error at followToggle : " + e);
-      return null;
-    }
-  }
-
-  Future<String> createEvent(
-      String userId, Map<String, dynamic> eventData) async {
-    String generatedID = AutoIdGenerator.autoId();
-    //print("2.url:" + eventData['EventImageUrl'].toString());
-    eventData['eventID'] = generatedID;
-    //TODO - Release alırken bunu kaldır!!
-    eventData['Status'] = "Accepted";
-    try {
-      await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("users")
-          .document(userId)
-          .collection("events")
-          .document(generatedID)
-          .setData(eventData);
-      await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(generatedID)
-          .setData(eventData);
-      return generatedID;
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchListOfUserEvents(
-      String userID) async {
-    try {
-      List<Map<String, dynamic>> eventList = [];
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .where("OrganizerID", isEqualTo: userID)
-          .where("Status", isEqualTo: "Accepted")
-          .getDocuments()
-          .then((docs) {
-        docs.documents.forEach((event) {
-          eventList.add(event.data);
-        });
-        return eventList;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchEventListsForUser(
-      String organizerID, bool isOld) async {
-    try {
-      List<Map<String, dynamic>> eventList = [];
-      if (isOld) {
-        return await ref
-            .collection(settings.appName)
-            .document(settings.getServer())
-            .collection("Events")
-            .where("OrganizerID", isEqualTo: organizerID)
-            .getDocuments()
-            .then((docs) {
-          docs.documents.forEach((event) {
-            if (event.data["Status"] != "Deleted" &&
-                event.data["Status"] == "Finished") eventList.add(event.data);
-          });
-          return eventList;
-        });
-      } else {
-        return await ref
-            .collection(settings.appName)
-            .document(settings.getServer())
-            .collection("Events")
-            .where("OrganizerID", isEqualTo: organizerID)
-            .getDocuments()
-            .then((docs) {
-          docs.documents.forEach((event) {
-            if (event.data["Status"] != "Deleted" &&
-                event.data["Status"] != "Finished") eventList.add(event.data);
-          });
-          return eventList;
-        });
-      }
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchActiveEventLists() async {
-    try {
-      List<Map<String, dynamic>> eventList = [];
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .where("Status", isEqualTo: "Accepted")
-          .getDocuments()
-          .then((docs) {
-        // print("gelen verinin uzunluğu:" + docs.documents.length.toString());
-        docs.documents.forEach((event) {
-          eventList.add(event.data);
-        });
-        return eventList;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchActiveEventListsByCategory(
-      String subCategory) async {
-    try {
-      List<Map<String, dynamic>> eventList = [];
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .where("SubCategory", isEqualTo: subCategory)
-          .where("Status", isEqualTo: "Accepted")
-          .getDocuments()
-          .then((docs) {
-        docs.documents.forEach((event) {
-          eventList.add(event.data);
-        });
-        return eventList;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<String> getUserProfilePhotoUrl(String userId) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("users")
-          .document(userId)
-          .get()
-          .then((value) {
-        return value.data["ProfilePhotoUrl"].toString();
-      });
-    } catch (e) {
-      print(e);
-      return "null";
-    }
-  }
-
-  //ANCHOR burada sadece 1 veride değişiklik yapar
-  Future<void> updateSingleInfo(
-      String userId, String maptext, String changedtext) async {
-    if (changedtext == "timeStamp") {
-      await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection('users')
-          .document(userId)
-          .updateData({maptext: FieldValue.serverTimestamp()});
-    } else {
-      await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection('users')
-          .document(userId)
-          .updateData({maptext: changedtext});
-    }
-  }
-
-  Future<Map<String, dynamic>> findUserbyID(String userID) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("users")
-          .document(userID)
-          .get()
-          .then((userData) {
-        return userData.data;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Stream<QuerySnapshot> getMessagesSnapshot(String chatID) {
-    return ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('messagePool')
-        .document(chatID)
-        .collection('messages')
-        .snapshots();
-  }
-
-  Stream<DocumentSnapshot> getChatPoolSnapshot(String chatID) {
-    return ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('messagePool')
-        .document(chatID)
-        .snapshots();
-  }
-
-  
-
-  Future<String> checkConversation(String currentUser, String otherUser) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection('users')
-          .document(currentUser)
-          .collection('messages')
-          .where("OtherUserID", isEqualTo: otherUser)
-          .limit(1)
-          .getDocuments()
-          .then((data) {
-        return data.documents.first.documentID;
-      });
-    } catch (e) {
-      print(e);
-      return "bos";
-    }
-  }
-
-  Future sendImageMessage(
-      ChatMessage message, String time, String chatID) async {
-    var messageRef = ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('messagePool')
-        .document(chatID)
-        .collection('messages')
-        .document(time);
-
-    await ref.runTransaction((transaction) async {
-      await transaction.set(
-        messageRef,
-        message.toJson(),
-      );
-    });
-  }
-
-  Stream<QuerySnapshot> getUserChatsSnapshots(String currentUser) {
-    return ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('users')
-        .document(currentUser)
-        .collection('messages')
-        .snapshots();
-  }
-
-//NOTE Burası EventSettings
-  Future<List<String>> getEventCategories() async {
-    List<String> categories = [];
-    return await ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('Settings')
-        .document('Event')
-        .get()
-        .then((eventSettings) {
-      Map<String, dynamic> temp;
-      temp = eventSettings.data['Category'];
-      temp.forEach((key, value) {
-        categories.add(key);
-      });
-      print(categories);
-      return categories;
-    });
-  }
-
-  //NOTE Burası EventSettings
-  Future<List<List<String>>> getEventSubCategories() async {
-    List<List<String>> subCategories = [];
-    return await ref
-        .collection(settings.appName)
-        .document(settings.getServer())
-        .collection('Settings')
-        .document('Event')
-        .get()
-        .then((eventSettings) {
-      Map<String, dynamic> temp;
-      temp = eventSettings.data['Category'];
-      temp.forEach((key, value) {
-        subCategories.add(List<String>.from(value));
-      });
-      return subCategories;
-    });
-  }
-
-  Future<bool> joinEvent(String userID, String eventID) async {
-    try {
-      return ref.runTransaction((transaction) async {
-        await transaction.set(
-            ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection('Events')
-                .document(eventID)
-                .collection('Participants')
-                .document(userID),
-            {"ParticipantID": userID});
-
-        await transaction.update(
-            ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection("Events")
-                .document(eventID),
-            {"CurrentParticipantNumber": FieldValue.increment(1)});
-      }).then((value) => true);
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> leaveEvent(String userID, String eventID) async {
-    try {
-      return ref.runTransaction((transaction) async {
-        await transaction.update(
-            ref
-                .collection(settings.appName)
-                .document(settings.getServer())
-                .collection("Events")
-                .document(eventID),
-            {"CurrentParticipantNumber": FieldValue.increment(-1)});
-        await transaction.delete(ref
-            .collection(settings.appName)
-            .document(settings.getServer())
-            .collection("Events")
-            .document(eventID)
-            .collection("Participants")
-            .document(userID));
-      }).then((value) => true);
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  //ANCHOR kullanıcı bu etkinliğe kayıtlımı kontrol eder
-  Future<bool> amIparticipant(String userId, String eventID) async {
-    try {
-      var doc = await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection('Events')
-          .document(eventID)
-          .collection('Participants')
-          .document(userId)
-          .get();
-      return doc.exists && doc.data != null ? true : false;
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  
-
-  Future<List<Map<String, dynamic>>> getParticipants(String eventID) async {
-    List<Map<String, dynamic>> participants = [];
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .collection("Participants")
-          .getDocuments()
-          .then((docs) {
-        docs.documents.forEach((participant) {
-          participants.add(participant.data);
-        });
-        //print("Comments:" + commmentList.toString());
-        return participants;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<bool> deleteEvent(String eventID) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .updateData({"Status": "Deleted"}).then((value) => true);
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> finishEvent(String eventID) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Events")
-          .document(eventID)
-          .updateData({"Status": "Finished"}).then((value) => true);
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<bool> sendFeedback(String text, String userID) async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .collection("Feedbacks")
-          .document(DateTime.now().millisecondsSinceEpoch.toString())
-          .setData({
-        "Feedback": text,
-        "FeedbackOwnerID": userID,
-        "Created At:": FieldValue.serverTimestamp()
-      }).then((_) {
-        return true;
-      });
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
-
-  Future<String> getServerVersion() async {
-    try {
-      return await ref
-          .collection(settings.appName)
-          .document(settings.getServer())
-          .get()
-          .then((value) {
-        return value.data["Version"];
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-}
-*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////

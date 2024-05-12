@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class RootPage extends StatefulWidget {
-  _RootPageState createState() => _RootPageState();
+  const RootPage({super.key});
+
+  @override
+  State<RootPage> createState() => _RootPageState();
 }
 
 class _RootPageState extends State<RootPage> {
@@ -32,13 +35,14 @@ class _RootPageState extends State<RootPage> {
     bool checkFirstTime() {
       if (user.runtimeType == Dietician) {
         return user.firstTimeProfileCreation;
-      } else
+      } else {
         return false;
+      }
     }
 
     //ANCHOR willpopscope geri tusunu kontrol eder
-    return WillPopScope(
-        onWillPop: onBackButtonPressed,
+    return PopScope(
+        onPopInvoked: (didPop) async => await askForQuit(context),
         child: checkFirstTime()
             ? FirstTimeProfileUpdatePage(rootPageState: this)
             : Scaffold(

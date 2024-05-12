@@ -1,30 +1,39 @@
-import 'package:flutter/material.dart';
-
 class Patient {
   final String id;
-  String name;
-  String surname;
-  String nickname;
-  String email;
-  int telNo;
-  String birthday;
-  String city;
-  String gender;
-  String profilePhotoUrl;
+  late String name;
+  late String surname;
+  late String nickname;
+  late String email;
+  late int telNo;
+  late String birthday;
+  late String city;
+  late String gender;
+  late String profilePhotoUrl;
 
-  Patient({@required this.id});
+  Patient({required this.id});
+  Patient.predefined(
+      {required this.id,
+      required this.name,
+      required this.surname,
+      required this.nickname,
+      required this.email,
+      required this.telNo,
+      required this.birthday,
+      required this.city,
+      required this.gender,
+      required this.profilePhotoUrl});
 
   Map<String, dynamic> toMap() {
     return {
-      'Name': name ?? 'null',
-      'Surname': surname ?? 'null',
-      'NickName': nickname ?? 'null',
-      'Email': email ?? 'null',
-      'BirthDay': birthday ?? 'null',
-      'Gender': gender ?? 'null',
-      'City': city ?? 'null',
-      'ProfilePhotoUrl': profilePhotoUrl ?? 'null',
-      'PhoneNumber': telNo ?? 0,
+      'Name': name,
+      'Surname': surname,
+      'NickName': nickname,
+      'Email': email,
+      'BirthDay': birthday,
+      'Gender': gender,
+      'City': city,
+      'ProfilePhotoUrl': profilePhotoUrl,
+      'PhoneNumber': telNo,
     };
   }
 
