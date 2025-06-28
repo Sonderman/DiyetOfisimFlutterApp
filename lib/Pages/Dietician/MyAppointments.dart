@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
-import 'package:diyet_ofisim/Tools/Message.dart';
-import 'package:diyet_ofisim/Tools/NavigationManager.dart';
+import 'package:diyet_ofisim/Tools/NewMessage.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MyAppointmentsPage extends StatefulWidget {
@@ -24,108 +23,100 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: StreamBuilder(
-            stream: userService.getMyCalendarSnapshot(),
-            builder: (context,
-                AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snap) {
-              if (!snap.hasData) {
-                return PageComponents(context)
-                    .loadingOverlay(backgroundColor: Colors.white);
-              } else {
-                late Map<String, dynamic> calendar;
-                if (snap.data!.data() != null) {
-                  calendar = snap.data!.data()!;
-                }
+      body: StreamBuilder(
+        stream: userService.getMyCalendarSnapshot(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snap) {
+          if (!snap.hasData) {
+            return PageComponents(context).loadingOverlay(backgroundColor: Colors.white);
+          } else {
+            late Map<String, dynamic> calendar;
+            if (snap.data!.data() != null) {
+              calendar = snap.data!.data()!;
+            }
 
-                return Container(
-                  padding: const EdgeInsets.only(top: 30),
-                  color: Colors.deepPurpleAccent[100],
-                  child: Column(
-                    children: [
-                      TableCalendar(
-                        focusedDay: DateTime.now(),
-                        firstDay: DateTime(DateTime.now().year - 1),
-                        lastDay: DateTime(DateTime.now().year + 1),
-                        locale: "tr",
-                        calendarFormat: CalendarFormat.week,
-                        startingDayOfWeek: StartingDayOfWeek.monday,
-                        onDaySelected: (
-                          selected,
-                          focused,
-                        ) {
-                          setState(() {
-                            selectedDate = selected;
-                          });
-                        },
-                        headerStyle: const HeaderStyle(
-                            titleCentered: true,
-                            formatButtonVisible: false,
-                            titleTextStyle: TextStyle(
-                              color: Colors.white,
-                              fontFamily: "Jom",
-                              fontSize: 50,
-                            ),
-                            leftChevronIcon: Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.white,
-                              size: 25,
-                            ),
-                            rightChevronIcon: Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white,
-                              size: 25,
-                            )),
-                        calendarStyle: CalendarStyle(
-                            weekendTextStyle: const TextStyle(
-                              color: Colors.white,
-                            ),
-                            todayTextStyle:
-                                TextStyle(color: Colors.purple[800])),
-                        daysOfWeekStyle: DaysOfWeekStyle(
-                          weekendStyle: TextStyle(
-                              color: Colors.purple[800],
-                              fontSize: 20,
-                              fontFamily: "Kavom",
-                              fontWeight: FontWeight.bold),
-                          weekdayStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: "Kavom",
-                              fontWeight: FontWeight.bold),
-                        ),
+            return Container(
+              padding: const EdgeInsets.only(top: 30),
+              color: Colors.deepPurpleAccent[100],
+              child: Column(
+                children: [
+                  TableCalendar(
+                    focusedDay: DateTime.now(),
+                    firstDay: DateTime(DateTime.now().year - 1),
+                    lastDay: DateTime(DateTime.now().year + 1),
+                    locale: "tr",
+                    calendarFormat: CalendarFormat.week,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    onDaySelected: (selected, focused) {
+                      setState(() {
+                        selectedDate = selected;
+                      });
+                    },
+                    headerStyle: const HeaderStyle(
+                      titleCentered: true,
+                      formatButtonVisible: false,
+                      titleTextStyle: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Jom",
+                        fontSize: 50,
                       ),
-                      SizedBox(
-                        height: PageComponents(context).widthSize(2),
+                      leftChevronIcon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25),
+                      rightChevronIcon: Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                        size: 25,
                       ),
-                      Expanded(
-                        child: Container(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 5, color: myColor),
-                            color: myColor,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListView(children: [
-                            Center(
-                              child: Text(
-                                  "${"${selectedDate.day} ${DateFormat("MMMM", "tr").format(selectedDate)}"} ${selectedDate.year}",
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 17)),
-                            ),
-                            SizedBox(
-                              height: PageComponents(context).widthSize(3),
-                            ),
-                            appointmentSection(calendar),
-                          ]),
-                        ),
+                    ),
+                    calendarStyle: CalendarStyle(
+                      weekendTextStyle: const TextStyle(color: Colors.white),
+                      todayTextStyle: TextStyle(color: Colors.purple[800]),
+                    ),
+                    daysOfWeekStyle: DaysOfWeekStyle(
+                      weekendStyle: TextStyle(
+                        color: Colors.purple[800],
+                        fontSize: 20,
+                        fontFamily: "Kavom",
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                      weekdayStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontFamily: "Kavom",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                );
-              }
-            }));
+                  SizedBox(height: PageComponents(context).widthSize(2)),
+                  Expanded(
+                    child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 5, color: myColor),
+                        color: myColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListView(
+                        children: [
+                          Center(
+                            child: Text(
+                              "${"${selectedDate.day} ${DateFormat("MMMM", "tr").format(selectedDate)}"} ${selectedDate.year}",
+                              style: const TextStyle(color: Colors.grey, fontSize: 17),
+                            ),
+                          ),
+                          SizedBox(height: PageComponents(context).widthSize(3)),
+                          appointmentSection(calendar),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 
   bool calendarCheck(Map<String, dynamic> map, String month, String day) {
@@ -152,16 +143,13 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
       return Center(
         child: Column(
           children: List.generate(
-              apMap.length,
-              (index) => saatler(
-                    Map<String, dynamic>.from(apList[index]),
-                    apKList[index],
-                  )),
+            apMap.length,
+            (index) => saatler(Map<String, dynamic>.from(apList[index]), apKList[index]),
+          ),
         ),
       );
     } else {
-      return const Center(
-          child: Text("Seçilen günle ilişkili randevu bulunmuyor"));
+      return const Center(child: Text("Seçilen günle ilişkili randevu bulunmuyor"));
     }
   }
 
@@ -198,9 +186,10 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
             child: Text(
               hour,
               style: TextStyle(
-                  color: Colors.purple[800],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
+                color: Colors.purple[800],
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
               textAlign: TextAlign.right,
             ),
           ),
@@ -212,79 +201,65 @@ class _MyAppointmentsState extends State<MyAppointmentsPage> {
             margin: const EdgeInsets.all(10),
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.grey[50]),
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.grey[50],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(children: [
-                  Text(
-                    "${ap.name}  ${ap.surname}",
-                    style: const TextStyle(fontSize: 17),
-                  ),
-                  SizedBox(
-                    height: PageComponents(context).widthSize(3),
-                  ),
-                  (ap.status == 0
-                      ? ap.pReady
-                          ? Text(
-                              "  Hazır".toUpperCase(),
-                              style: TextStyle(
-                                  color: Colors.yellow[600], fontSize: 15),
-                            )
-                          : Text(
-                              "  Hasta Bekleniyor".toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.green, fontSize: 15),
-                            )
-                      : ap.status == 1
-                          ? Text(
-                              "  Randevu Tamamlandı".toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.blue, fontSize: 15),
-                            )
-                          : Text(
-                              "  Randevu iptal edildi".toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 15),
-                            )),
-                ]),
-                Visibility(
-                  visible: checkAppointment(ap) && ap.status == 0,
-                  child: ElevatedButton(
-                    onPressed: ap.pReady && ap.status == 0
-                        ? () async {
-                            await userService
-                                .startAppointment(ap)
-                                .then((value) async {
-                              if (value) {
-                                NavigationManager(context)
-                                    .setBottomNavIndex(1, reFresh: false);
-                                final userData = await locator<UserService>()
-                                    .findUserByID(ap.pID);
-                                if (context.mounted) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Message(
-                                        otherUserID: ap.pID,
-                                        otherUserName: userData!['Name'],
-                                        aModel: ap,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            });
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                        // Add your preferred styles here (optional)
-                        ),
-                    child: Text(
-                      "Randevuyu başlat".toUpperCase(),
+                Column(
+                  children: [
+                    Text("${ap.name}  ${ap.surname}", style: const TextStyle(fontSize: 17)),
+                    SizedBox(height: PageComponents(context).widthSize(3)),
+                    (ap.status == 0
+                        ? ap.pReady
+                              ? Text(
+                                  "  Hazır".toUpperCase(),
+                                  style: TextStyle(color: Colors.yellow[600], fontSize: 15),
+                                )
+                              : Text(
+                                  "  Hasta Bekleniyor".toUpperCase(),
+                                  style: const TextStyle(color: Colors.green, fontSize: 15),
+                                )
+                        : ap.status == 1
+                        ? Text(
+                            "  Randevu Tamamlandı".toUpperCase(),
+                            style: const TextStyle(color: Colors.blue, fontSize: 15),
+                          )
+                        : Text(
+                            "  Randevu iptal edildi".toUpperCase(),
+                            style: const TextStyle(color: Colors.red, fontSize: 15),
+                          )),
+                  ],
+                ),
+                SizedBox(height: PageComponents(context).widthSize(3)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      visible: checkAppointment(ap) && ap.status == 0,
+                      child: TextButton(
+                        onPressed: () {
+                          userService
+                              .startAppointment(ap)
+                              .then(
+                                (value) => value
+                                    ? Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => NewMessage(
+                                            otherUserID: ap.pID,
+                                            otherUserName: ap.name,
+                                            aModel: ap,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              );
+                        },
+                        child: const Text("Görüşmeyi Başlat"),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),

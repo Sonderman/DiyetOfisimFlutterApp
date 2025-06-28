@@ -60,4 +60,5 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://diyet-ofisim.firebaseio.com',
     storageBucket: 'diyet-ofisim.appspot.com',
   );
+
 }

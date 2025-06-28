@@ -1,18 +1,16 @@
-import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-typedef DateChangeListener = void Function(
-    int year, int month, int day, String hour);
+typedef DateChangeListener = void Function(int year, int month, int day, String hour);
 
 class AppointmentCalendar extends StatefulWidget {
   final DateChangeListener onDateSelected;
   final Map<String, dynamic> calendar;
 
-  const AppointmentCalendar(
-      {super.key, required this.onDateSelected, required this.calendar});
+  const AppointmentCalendar({super.key, required this.onDateSelected, required this.calendar});
 
   @override
   State<AppointmentCalendar> createState() => _AppointmentCalendarState();
@@ -31,13 +29,9 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        DatePicker(
-          DateTime.now(),
-          locale: "tr",
-          initialSelectedDate: DateTime.now(),
-          selectionColor: Colors.green[300]!,
-          selectedTextColor: Colors.white,
-          daysCount: 60,
+        EasyDateTimeLine(
+          initialDate: DateTime.now(),
+          locale: "tr_TR",
           onDateChange: (date) {
             setState(() {
               selectedHour = null;
@@ -46,12 +40,15 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
               day = date.day;
             });
           },
+          activeColor: Colors.green[300],
+          dayProps: const EasyDayProps(
+            activeDayStyle: DayStyle(borderRadius: 32.0),
+            inactiveDayStyle: DayStyle(borderRadius: 32.0),
+          ),
         ),
         const Divider(),
-        SizedBox(
-          height: PageComponents(context).heightSize(3),
-        ),
-        Wrap(children: hoursCardsGenerator())
+        SizedBox(height: PageComponents(context).heightSize(3)),
+        Wrap(children: hoursCardsGenerator()),
       ],
     );
   }
@@ -84,8 +81,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
         }
         return sList.map((saat) => hourCard(saat)).toList();
       } else {
-        return List.generate(
-            saatler.length, (index) => hourCard(saatler[index]));
+        return List.generate(saatler.length, (index) => hourCard(saatler[index]));
       }
     } catch (e) {
       if (kDebugMode) {
@@ -108,10 +104,7 @@ class _AppointmentCalendarState extends State<AppointmentCalendar> {
         color: selectedHour == hour ? Colors.green[300] : Colors.blue[400],
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            hour,
-            style: const TextStyle(color: Colors.white, fontSize: 20),
-          ),
+          child: Text(hour, style: const TextStyle(color: Colors.white, fontSize: 20)),
         ),
       ),
     );

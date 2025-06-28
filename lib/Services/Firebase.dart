@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:diyet_ofisim/Models/Appointment.dart';
 import 'package:diyet_ofisim/Models/Dietician.dart';
 import 'package:diyet_ofisim/Settings/AppSettings.dart';
@@ -38,22 +36,20 @@ class DatabaseWorks {
     if (kDebugMode) {
       print("DatabaseWorks locator is running");
     }
-    _ref = FirebaseFirestore.instance
-        .collection(settings.appName)
-        .doc(settings.getServer());
+    _ref = FirebaseFirestore.instance.collection(settings.appName).doc(settings.getServer());
   }
 
-  Future<bool> sendComment(
-      String userID, String currentUserID, String comment) async {
+  Future<bool> sendComment(String userID, String currentUserID, String comment) async {
     try {
       return await _ref
           .collection("users")
           .doc(userID)
           .collection("Comments")
           .doc(DateTime.now().millisecondsSinceEpoch.toString())
-          .set({"Comment": comment, "CommentOwnerID": currentUserID}).then((_) {
-        return true;
-      });
+          .set({"Comment": comment, "CommentOwnerID": currentUserID})
+          .then((_) {
+            return true;
+          });
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -65,12 +61,7 @@ class DatabaseWorks {
   Future<List<Map<String, dynamic>>> getComments(String userID) async {
     List<Map<String, dynamic>> commmentList = [];
     try {
-      return await _ref
-          .collection("users")
-          .doc(userID)
-          .collection("Comments")
-          .get()
-          .then((data) {
+      return await _ref.collection("users").doc(userID).collection("Comments").get().then((data) {
         if (data.size > 0) {
           (data.docs as Map<String, dynamic>).forEach((key, value) {
             commmentList.add(value);
@@ -88,29 +79,24 @@ class DatabaseWorks {
     }
   }
 
-  Future<String> sendMessage(
-      {required ChatMessage message,
-      required String chatID,
-      required String currentUser,
-      required String otherUserID}) async {
+  Future<String> sendMessage({
+    required Map<String, dynamic> message,
+    required String chatID,
+    required String currentUser,
+    required String otherUserID,
+  }) async {
     String currentDate = DateTime.now().millisecondsSinceEpoch.toString();
     if (chatID == "temp") {
       chatID = AutoIdGenerator.autoId();
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(
-            _ref
-                .collection('users')
-                .doc(currentUser)
-                .collection('messages')
-                .doc(chatID),
-            {"OtherUserID": otherUserID});
+          _ref.collection('users').doc(currentUser).collection('messages').doc(chatID),
+          {"OtherUserID": otherUserID},
+        );
         transaction.set(
-            _ref
-                .collection('users')
-                .doc(otherUserID)
-                .collection('messages')
-                .doc(chatID),
-            {"OtherUserID": currentUser});
+          _ref.collection('users').doc(otherUserID).collection('messages').doc(chatID),
+          {"OtherUserID": currentUser},
+        );
       });
     }
     var messageRef = _ref
@@ -118,22 +104,15 @@ class DatabaseWorks {
         .doc(chatID)
         .collection('messages')
         .doc(currentDate);
-    Map<String, dynamic> messageMap = message.toJson();
     FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(
-        messageRef,
-        messageMap,
-      );
-      transaction.set(
-        _ref.collection('messagePool').doc(chatID),
-        {
-          "LastMessage": {
-            "SenderID": currentUser,
-            "Message": messageMap['text'],
-            "createdAt": currentDate
-          }
+      transaction.set(messageRef, message);
+      transaction.set(_ref.collection('messagePool').doc(chatID), {
+        "LastMessage": {
+          "SenderID": currentUser,
+          "Message": message['text'],
+          "createdAt": currentDate,
         },
-      );
+      });
     }, timeout: const Duration(seconds: 1));
     return chatID;
   }
@@ -148,8 +127,8 @@ class DatabaseWorks {
           .limit(1)
           .get()
           .then((data) {
-        return data.docs.first.id;
-      });
+            return data.docs.first.id;
+          });
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -158,36 +137,21 @@ class DatabaseWorks {
     }
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> getChatPoolSnapshot(
-      String chatID) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getChatPoolSnapshot(String chatID) {
     return _ref.collection('messagePool').doc(chatID).snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getMessagesSnapshot(
-      String chatID) {
-    return _ref
-        .collection('messagePool')
-        .doc(chatID)
-        .collection('messages')
-        .snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMessagesSnapshot(String chatID) {
+    return _ref.collection('messagePool').doc(chatID).collection('messages').snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsSnapshots(
-      String currentUser) {
-    return _ref
-        .collection('users')
-        .doc(currentUser)
-        .collection('messages')
-        .snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserChatsSnapshots(String currentUser) {
+    return _ref.collection('users').doc(currentUser).collection('messages').snapshots();
   }
 
   Future<bool> newUser(Map<String, dynamic> data) async {
     try {
-      return await _ref
-          .collection('users')
-          .doc(data['UserID'])
-          .set(data)
-          .then((value) => true);
+      return await _ref.collection('users').doc(data['UserID']).set(data).then((value) => true);
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -209,8 +173,7 @@ class DatabaseWorks {
     }
   }
 
-  Future<bool> updateUserProfile(
-      String id, Map<String, dynamic> userData) async {
+  Future<bool> updateUserProfile(String id, Map<String, dynamic> userData) async {
     try {
       await _ref.collection("users").doc(id).update(userData);
       return true;
@@ -222,9 +185,8 @@ class DatabaseWorks {
     }
   }
 
-//NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
-  Future<bool> insertNewDietician(
-      String id, List treatments, bool update) async {
+  //NOTE - Diyetisyen tedavi edebileceği hastalıkları güncellerken diyetisyen listesinde de güncelle
+  Future<bool> insertNewDietician(String id, List treatments, bool update) async {
     /* String temp = "";
     int i = 0;
     treatments.sort();
@@ -290,41 +252,41 @@ class DatabaseWorks {
           // .equalTo(temp)
           .get()
           .then((userData) async {
-        List<String> idList = [];
-        List<Dietician> dieticianList = [];
-        if (kDebugMode) {
-          print(results.length);
-        }
-
-        for (var e in userData.docs) {
-          if (compareLists(e.data()["Treatments"], results)) {
+            List<String> idList = [];
+            List<Dietician> dieticianList = [];
             if (kDebugMode) {
-              print("girdi");
+              print(results.length);
             }
-            idList.add(e.data()["DieticianID"]);
-          } else {
-            if (kDebugMode) {
-              print("girmedi");
-            }
-          }
-        }
 
-        await Future.forEach(idList, (id) async {
-          Dietician? t = await findUserbyID(id).then((data) {
-            if (data != null) {
-              var model = Dietician(id: data["UserID"]);
-              model.parseMap(data);
-              return model;
-            } else {
-              return null;
+            for (var e in userData.docs) {
+              if (compareLists(e.data()["Treatments"], results)) {
+                if (kDebugMode) {
+                  print("girdi");
+                }
+                idList.add(e.data()["DieticianID"]);
+              } else {
+                if (kDebugMode) {
+                  print("girmedi");
+                }
+              }
             }
+
+            await Future.forEach(idList, (id) async {
+              Dietician? t = await findUserbyID(id).then((data) {
+                if (data != null) {
+                  var model = Dietician(id: data["UserID"]);
+                  model.parseMap(data);
+                  return model;
+                } else {
+                  return null;
+                }
+              });
+              if (t == null) return;
+              dieticianList.add(t);
+            });
+
+            return dieticianList;
           });
-          if (t == null) return;
-          dieticianList.add(t);
-        });
-
-        return dieticianList;
-      });
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -335,11 +297,7 @@ class DatabaseWorks {
 
   Future<Map<String, dynamic>?> getAppointmentCalendar(String dID) async {
     try {
-      return await _ref
-          .collection("appointmentCalendar")
-          .doc(dID)
-          .get()
-          .then((data) {
+      return await _ref.collection("appointmentCalendar").doc(dID).get().then((data) {
         if (data.data() != null) {
           return data.data();
         } else {
@@ -354,32 +312,33 @@ class DatabaseWorks {
     }
   }
 
-  Future<bool> createAppointment(Appointment a, String myID) async {
+  Future<bool> createAppointment(Appointment appointment, String patientID) async {
+    appointment.dID = AutoIdGenerator.autoId();
     String month, day;
-    month = a.date.month.toString();
-    day = a.date.day.toString();
-    if (a.date.month < 10) month = "0$month";
-    if (a.date.day < 10) day = "0$day";
+    month = appointment.date.month.toString();
+    day = appointment.date.day.toString();
+    if (appointment.date.month < 10) month = "0$month";
+    if (appointment.date.day < 10) day = "0$day";
     try {
       await _ref
           .collection("appointmentCalendar")
-          .doc(a.dID)
-          .collection(a.date.year.toString())
+          .doc(appointment.dID)
+          .collection(appointment.date.year.toString())
           .doc(month)
           .collection(day)
-          .doc(a.date.hour.toString())
-          .update(a.toMap());
+          .doc(appointment.date.hour.toString())
+          .update(appointment.toMap());
 
       await _ref
           .collection("users")
-          .doc(myID)
+          .doc(patientID)
           .collection("myAppointments")
-          .doc(a.dID)
-          .collection(a.date.year.toString())
+          .doc(appointment.dID)
+          .collection(appointment.date.year.toString())
           .doc(month)
           .collection(day)
-          .doc(a.date.hour.toString())
-          .update(a.toMap());
+          .doc(appointment.date.hour.toString())
+          .update(appointment.toMap());
 
       return true;
     } catch (e) {
@@ -390,17 +349,14 @@ class DatabaseWorks {
     }
   }
 
-//yarım kaldı / Diyetisyen modeli ve Appointments 2d list döncek
+  //yarım kaldı / Diyetisyen modeli ve Appointments 2d list döncek
   Future<List<List<dynamic>>> getMyAppointments(String myId) async {
     List<List<dynamic>> temp = [];
 
     try {
-      return await _ref
-          .collection("users")
-          .doc(myId)
-          .collection("myAppointments")
-          .get()
-          .then((data) async {
+      return await _ref.collection("users").doc(myId).collection("myAppointments").get().then((
+        data,
+      ) async {
         for (var e in data.docs) {
           Appointment ap = Appointment();
           ap.parseMap(e.data());
@@ -476,8 +432,7 @@ class DatabaseWorks {
     }
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>>? getMyCalendarSnapshot(
-      String dID) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? getMyCalendarSnapshot(String dID) {
     try {
       return _ref.collection("appointmentCalendar").doc(dID).snapshots();
     } catch (e) {
@@ -488,8 +443,10 @@ class DatabaseWorks {
     }
   }
 
-  Future<Stream<DocumentSnapshot<Map<String, dynamic>>>?>
-      readyForAppointmentToggle(Appointment a, bool readyToggle) async {
+  Future<Stream<DocumentSnapshot<Map<String, dynamic>>>?> readyForAppointmentToggle(
+    Appointment a,
+    bool readyToggle,
+  ) async {
     String month, day;
     month = a.date.month.toString();
     day = a.date.day.toString();
@@ -560,10 +517,7 @@ class DatabaseWorks {
 
   Future<bool> finishConversation(String chatID) async {
     try {
-      await _ref
-          .collection("messagePool")
-          .doc(chatID)
-          .update({"Status": false});
+      await _ref.collection("messagePool").doc(chatID).update({"Status": false});
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -573,13 +527,8 @@ class DatabaseWorks {
     }
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getChatStatusSnapshot(
-      String chatID) {
-    return _ref
-        .collection("messagePool")
-        .doc(chatID)
-        .collection("Status")
-        .snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatStatusSnapshot(String chatID) {
+    return _ref.collection("messagePool").doc(chatID).collection("Status").snapshots();
   }
 }
 
@@ -608,11 +557,9 @@ class StorageWorks {
       await uploadTask.whenComplete(() async {
         await imgRef.getDownloadURL().then((value) async {
           url = value;
-          return await locator<DatabaseWorks>()
-              ._ref
-              .collection("users")
-              .doc(userId)
-              .update({"ProfilePhotoUrl": value});
+          return await locator<DatabaseWorks>()._ref.collection("users").doc(userId).update({
+            "ProfilePhotoUrl": value,
+          });
         });
       });
       return url;
@@ -624,24 +571,38 @@ class StorageWorks {
     }
   }
 
-  Future sendImageMessage(File image, ChatUser user, String currentUser,
-      String chatID, String time) async {
-    final Reference storageRef =
-        ref.child("users").child(currentUser).child("images").child(time);
-/*
-    UploadTask  uploadTask = storageRef.putFile(
-      image,
-      StorageMetadata(
-        contentType: 'image/jpg',
-      ),
-    );
-    
-    TaskSnapshot download = await uploadTask.onComplete;
-
-    return await download.ref.getDownloadURL().then((url) {
-      ChatMessage message = ChatMessage(text: "", user: user, image: url);
-      return message;
-    });
-    */
+  /*
+  Future<String?> sendImageMessage(
+      File image,
+      ChatUser user,
+      String currentUser,
+      String chatID,
+      String time) async {
+    try {
+      var ref = _ref
+          .collection('messagePool')
+          .doc(chatID)
+          .collection('messages')
+          .doc("image" + time);
+      var storageRef = FirebaseStorage.instance
+          .ref()
+          .child("chatImages")
+          .child(chatID)
+          .child("image" + time);
+      var uploadTask = storageRef.putFile(image);
+      var url = await (await uploadTask).ref.getDownloadURL();
+      ref.set({
+        'user': user.toJson(),
+        'createdAt': FieldValue.serverTimestamp(),
+        'image': url,
+      });
+      return url;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return null;
+    }
   }
+*/
 }

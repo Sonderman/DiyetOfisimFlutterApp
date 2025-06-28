@@ -4,18 +4,17 @@ import 'package:diyet_ofisim/Models/Patient.dart';
 import 'package:diyet_ofisim/Services/Repository.dart';
 import 'package:diyet_ofisim/Tools/PageComponents.dart';
 import 'package:diyet_ofisim/locator.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class ConfirmAppointmentPage extends StatefulWidget {
   final Dietician dModel;
   final DateTime date;
 
-  const ConfirmAppointmentPage(
-      {super.key, required this.date, required this.dModel});
+  const ConfirmAppointmentPage({super.key, required this.date, required this.dModel});
 
   @override
   State<ConfirmAppointmentPage> createState() => _ConfirmAppointmentPageState();
@@ -65,9 +64,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
           child: ListView(
             children: [
               randevuDetayi(),
-              SizedBox(
-                height: PageComponents(context).heightSize(6),
-              ),
+              SizedBox(height: PageComponents(context).heightSize(6)),
               TextFormField(
                 controller: nameC,
                 decoration: InputDecoration(
@@ -76,17 +73,13 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
-                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   prefixIcon: const Icon(Icons.supervised_user_circle_sharp),
                   labelText: "Adınız*",
                 ),
               ),
-              SizedBox(
-                height: PageComponents(context).heightSize(3),
-              ),
+              SizedBox(height: PageComponents(context).heightSize(3)),
               TextFormField(
                 controller: surnameC,
                 decoration: InputDecoration(
@@ -95,17 +88,13 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
-                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   prefixIcon: const Icon(Icons.supervised_user_circle_sharp),
                   labelText: "Soyadınız*",
                 ),
               ),
-              SizedBox(
-                height: PageComponents(context).heightSize(3),
-              ),
+              SizedBox(height: PageComponents(context).heightSize(3)),
               TextFormField(
                 controller: emailC,
                 keyboardType: TextInputType.emailAddress,
@@ -115,92 +104,82 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
-                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   prefixIcon: const Icon(Icons.email),
                   labelText: "Email Adresiniz*",
                 ),
               ),
-              SizedBox(
-                height: PageComponents(context).heightSize(3),
-              ),
+              SizedBox(height: PageComponents(context).heightSize(3)),
               TextFormField(
                 controller: extraC,
                 focusNode: _focusNode,
                 maxLines: maxLine,
                 decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    prefixIcon: const Icon(Icons.edit),
-                    hintText:
-                        "Diyetisyeninizin randevunuzla alakalı bilmesi gereken bir bilgi varsa yazınız",
-                    labelText: "Diyetisyeniniz için ek bilgi (zorunlu değil)"),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  prefixIcon: const Icon(Icons.edit),
+                  hintText:
+                      "Diyetisyeninizin randevunuzla alakalı bilmesi gereken bir bilgi varsa yazınız",
+                  labelText: "Diyetisyeniniz için ek bilgi (zorunlu değil)",
+                ),
               ),
-              SizedBox(
-                height: PageComponents(context).heightSize(5),
-              ),
+              SizedBox(height: PageComponents(context).heightSize(5)),
               Center(
                 child: Container(
-                    clipBehavior: Clip.none,
-                    color: Colors.white,
-                    margin: const EdgeInsets.all(6.0),
-                    height: 42,
-                    width: MediaQuery.of(context).size.width - 250,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Appointment appointment = Appointment();
-                        appointment.name = nameC.text;
-                        appointment.surname = surnameC.text;
-                        appointment.email = emailC.text;
-                        appointment.dID = widget.dModel.id;
-                        appointment.pID = usermodel.id;
-                        appointment.extra = extraC.text;
-                        appointment.date = widget.date;
-                        appointment.status = 0;
+                  clipBehavior: Clip.none,
+                  color: Colors.white,
+                  margin: const EdgeInsets.all(6.0),
+                  height: 42,
+                  width: MediaQuery.of(context).size.width - 250,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Appointment appointment = Appointment();
+                      appointment.name = nameC.text;
+                      appointment.surname = surnameC.text;
+                      appointment.email = emailC.text;
+                      appointment.dID = widget.dModel.id;
+                      appointment.pID = usermodel.id;
+                      appointment.extra = extraC.text;
+                      appointment.date = widget.date;
+                      appointment.status = 0;
 
-                        userService
-                            .createAppointment(appointment)
-                            .then((value) {
-                          if (value) {
-                            if (kDebugMode) {
-                              print("Randevu Oluşturuldu");
-                            }
-                            Navigator.popUntil(
-                                context, (route) => route.isFirst);
-                            Fluttertoast.showToast(
-                              msg: "Randevunuz Başarıyla Oluşturuldu.",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 3,
-                              backgroundColor: Colors.green,
-                              textColor: Colors.white,
-                              fontSize: 18.0,
-                            );
-                          } else {
-                            if (kDebugMode) {
-                              print("Hata!!");
-                            }
+                      userService.createAppointment(appointment).then((value) {
+                        if (value) {
+                          if (kDebugMode) {
+                            print("Randevu Oluşturuldu");
                           }
-                        });
-                      },
-                      icon: const Icon(Icons.save_alt_outlined),
-                      label: const Text("ONAYLA"),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(6.0),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0)),
-                        elevation: 6.0, // Adjust as needed
-                      ),
-                    )),
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Fluttertoast.showToast(
+                            msg: "Randevunuz Başarıyla Oluşturuldu.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 3,
+                            backgroundColor: Colors.green,
+                            textColor: Colors.white,
+                            fontSize: 18.0,
+                          );
+                        } else {
+                          if (kDebugMode) {
+                            print("Hata!!");
+                          }
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.save_alt_outlined),
+                    label: const Text("ONAYLA"),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(6.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      elevation: 6.0, // Adjust as needed
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -214,8 +193,9 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          border: Border.all(width: 2, color: Colors.deepPurpleAccent[100]!)),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(width: 2, color: Colors.deepPurpleAccent[100]!),
+      ),
       width: PageComponents(context).widthSize(17),
       height: PageComponents(context).heightSize(22),
       child: Column(
@@ -234,15 +214,14 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: ExtendedNetworkImageProvider(
-                          widget.dModel.profilePhotoUrl,
-                          cache: true),
+                        widget.dModel.profilePhotoUrl,
+                        cache: true,
+                      ),
                     ),
                   ),
                 ),
               ),
-              SizedBox(
-                width: PageComponents(context).widthSize(5),
-              ),
+              SizedBox(width: PageComponents(context).widthSize(5)),
               Container(
                 margin: const EdgeInsets.only(top: 5, bottom: 5),
                 child: Text(
@@ -262,9 +241,7 @@ class _ConfirmAppointmentPageState extends State<ConfirmAppointmentPage> {
                 width: PageComponents(context).widthSize(5),
                 child: const Icon(Icons.date_range),
               ),
-              SizedBox(
-                width: PageComponents(context).widthSize(3),
-              ),
+              SizedBox(width: PageComponents(context).widthSize(3)),
               Container(
                 margin: const EdgeInsets.only(top: 5, bottom: 2),
                 child: Text(

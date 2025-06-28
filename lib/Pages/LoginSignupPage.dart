@@ -49,9 +49,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   @override
   void initState() {
-    _pageController = PageController(
-      initialPage: 0,
-    );
+    _pageController = PageController(initialPage: 0);
     super.initState();
   }
 
@@ -81,8 +79,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         ),
         child: _loginSignUpToggle
             ? _forgotPasswordToggle
-                ? forgotPasswordPage()
-                : loginDesign(context)
+                  ? forgotPasswordPage()
+                  : loginDesign(context)
             : signUpDesign(),
       ),
 
@@ -138,16 +136,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: InkWell(
-            onTap: () {
-              setState(() {
-                _forgotPasswordToggle = !_forgotPasswordToggle;
-              });
-            },
-            child: const Icon(
-              Icons.arrow_back_ios,
-              size: 30,
-              color: Colors.white,
-            )),
+          onTap: () {
+            setState(() {
+              _forgotPasswordToggle = !_forgotPasswordToggle;
+            });
+          },
+          child: const Icon(Icons.arrow_back_ios, size: 30, color: Colors.white),
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 150, horizontal: 30),
@@ -155,20 +150,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           children: [
             const Text(
               "Forgot Password",
-              style: TextStyle(
-                  color: Colors.white70, fontSize: 48, fontFamily: "Kalam"),
+              style: TextStyle(color: Colors.white70, fontSize: 48, fontFamily: "Kalam"),
             ),
-            SizedBox(
-              height: PageComponents(context).heightSize(5),
-            ),
+            SizedBox(height: PageComponents(context).heightSize(5)),
             Container(
               margin: const EdgeInsets.all(18),
               child: const Text(
                 "Lütfen Şifre Sıfırlama Talebiniz İçin E-Mail Adresinizi Giriniz ..",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
             TextField(
@@ -179,29 +168,25 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(16.0),
                 prefixIcon: Container(
-                    padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    margin: const EdgeInsets.only(right: 8.0),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30.0)),
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.deepPurpleAccent[100],
-                    )),
-                hintText: "enter your email",
-                hintStyle: const TextStyle(
-                  color: Colors.white,
-                ),
-                border: OutlineInputBorder(
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                  margin: const EdgeInsets.only(right: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(30.0),
-                    borderSide: BorderSide.none),
+                  ),
+                  child: Icon(Icons.person, color: Colors.deepPurpleAccent[100]),
+                ),
+                hintText: "enter your email",
+                hintStyle: const TextStyle(color: Colors.white),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide.none,
+                ),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.18),
               ),
             ),
-            SizedBox(
-              height: PageComponents(context).heightSize(4),
-            ),
+            SizedBox(height: PageComponents(context).heightSize(4)),
             SizedBox(
               height: PageComponents(context).widthSize(10),
               width: PageComponents(context).widthSize(35),
@@ -517,24 +502,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         Container(
           margin: const EdgeInsets.only(top: 20, bottom: 20.0),
           height: PageComponents(context).heightSize(15),
-          child: Image.asset(
-            "assets/icons/logo1.png",
-            color: Colors.white70,
-          ),
+          child: Image.asset("assets/icons/logo1.png", color: Colors.white70),
         ),
         const Center(
           child: Text(
             "Diyet Ofisim",
             style: TextStyle(
-                color: Colors.white70,
-                fontSize: 35.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: "Kalam"),
+              color: Colors.white70,
+              fontSize: 35.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Kalam",
+            ),
           ),
         ),
-        SizedBox(
-          height: PageComponents(context).heightSize(3),
-        ),
+        SizedBox(height: PageComponents(context).heightSize(3)),
         TextField(
           style: const TextStyle(color: Colors.white),
           cursorWidth: 3,
@@ -543,22 +524,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(16.0),
             prefixIcon: Container(
-                padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                margin: const EdgeInsets.only(right: 8.0),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Icon(
-                  Icons.person,
-                  color: Colors.deepPurpleAccent[100],
-                )),
-            hintText: "Enter your email",
-            hintStyle: const TextStyle(
-              color: Colors.white,
-            ),
-            border: OutlineInputBorder(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+              margin: const EdgeInsets.only(right: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(30.0),
-                borderSide: BorderSide.none),
+              ),
+              child: Icon(Icons.person, color: Colors.deepPurpleAccent[100]),
+            ),
+            hintText: "Enter your email",
+            hintStyle: const TextStyle(color: Colors.white),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30.0),
+              borderSide: BorderSide.none,
+            ),
             filled: true,
             fillColor: Colors.white.withOpacity(0.18),
           ),
@@ -572,30 +551,26 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(16.0),
             prefixIcon: Container(
-                padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                margin: const EdgeInsets.only(right: 8.0),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Icon(
-                  Icons.lock,
-                  color: Colors.deepPurpleAccent[100],
-                )),
-            hintText: "Enter your password",
-            hintStyle: const TextStyle(
-              color: Colors.white,
-            ),
-            border: OutlineInputBorder(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+              margin: const EdgeInsets.only(right: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(30.0),
-                borderSide: BorderSide.none),
+              ),
+              child: Icon(Icons.lock, color: Colors.deepPurpleAccent[100]),
+            ),
+            hintText: "Enter your password",
+            hintStyle: const TextStyle(color: Colors.white),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30.0),
+              borderSide: BorderSide.none,
+            ),
             filled: true,
             fillColor: Colors.white.withOpacity(0.18),
           ),
           obscureText: true,
         ),
-        SizedBox(
-          height: PageComponents(context).heightSize(3),
-        ),
+        SizedBox(height: PageComponents(context).heightSize(3)),
         SizedBox(
           height: PageComponents(context).widthSize(10),
           width: PageComponents(context).widthSize(4),
@@ -606,17 +581,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             onPressed: () {
               loginButton(context);
             },
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
             child: Text(
               "Login".toUpperCase(),
               style: const TextStyle(fontFamily: "Genel", fontSize: 15),
             ),
           ),
         ),
-        SizedBox(
-          height: PageComponents(context).heightSize(20),
-        ),
+        SizedBox(height: PageComponents(context).heightSize(20)),
         Row(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -630,10 +602,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                   });
                 },
                 child: Center(
-                  child: Text(
-                    "Create Account".toUpperCase(),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text("Create Account".toUpperCase(), textAlign: TextAlign.center),
                 ),
               ),
             ),
@@ -643,10 +612,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               height: PageComponents(context).widthSize(15),
               child: ElevatedButton(
                 child: Center(
-                  child: Text(
-                    "Forgot Password".toUpperCase(),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text("Forgot Password".toUpperCase(), textAlign: TextAlign.center),
                 ),
                 onPressed: () {
                   setState(() {
@@ -668,41 +634,39 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       height: PageComponents(context).heightSize(4),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.deepPurpleAccent[200]!,
-              Colors.deepPurpleAccent[100]!,
-              Colors.deepPurple[50]!,
-            ]),
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepPurpleAccent[200]!,
+            Colors.deepPurpleAccent[100]!,
+            Colors.deepPurple[50]!,
+          ],
+        ),
       ),
       child: Column(
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-              padding: const EdgeInsets.only(right: 5),
-              height: 50,
-              child: Image.asset(
-                "assets/icons/logo1.png",
-                color: Colors.white70,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(right: 5),
+                height: 50,
+                child: Image.asset("assets/icons/logo1.png", color: Colors.white70),
               ),
-            ),
-            const Text(
-              "Diyet Ofisim",
-              style: TextStyle(
+              const Text(
+                "Diyet Ofisim",
+                style: TextStyle(
                   color: Colors.white70,
                   fontSize: 25.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: "Kalam"),
-            ),
-          ]),
-          SizedBox(
-            height: PageComponents(context).heightSize(3),
+                  fontFamily: "Kalam",
+                ),
+              ),
+            ],
           ),
+          SizedBox(height: PageComponents(context).heightSize(3)),
           addPhoto(),
-          SizedBox(
-            height: PageComponents(context).heightSize(1.1),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(1.1)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -719,8 +683,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     hintText: "Name *",
                     hintStyle: const TextStyle(color: Colors.white),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide.none),
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.18),
                   ),
@@ -740,8 +705,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     hintText: "Surname *",
                     hintStyle: const TextStyle(color: Colors.white),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide.none),
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.18),
                   ),
@@ -749,9 +715,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               ),
             ],
           ),
-          SizedBox(
-            height: PageComponents(context).heightSize(3),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(3)),
           TextField(
             style: const TextStyle(color: Colors.white),
             cursorWidth: 3,
@@ -762,15 +726,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               hintText: "Email *",
               hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none),
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: BorderSide.none,
+              ),
               filled: true,
               fillColor: Colors.white.withOpacity(0.18),
             ),
           ),
-          SizedBox(
-            height: PageComponents(context).heightSize(3),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(3)),
           TextField(
             obscureText: true,
             style: const TextStyle(color: Colors.white),
@@ -782,15 +745,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               hintText: "Password *",
               hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none),
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: BorderSide.none,
+              ),
               filled: true,
               fillColor: Colors.white.withOpacity(0.18),
             ),
           ),
-          SizedBox(
-            height: PageComponents(context).heightSize(3),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(3)),
           TextField(
             obscureText: true,
             style: const TextStyle(color: Colors.white),
@@ -802,21 +764,18 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               hintText: "Password Again *",
               hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none),
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: BorderSide.none,
+              ),
               filled: true,
               fillColor: Colors.white.withOpacity(0.18),
             ),
           ),
-          SizedBox(
-            height: PageComponents(context).heightSize(3),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(3)),
           selectGender(),
-          SizedBox(
-            height: PageComponents(context).heightSize(3),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(3)),
           selectUserType(),
-/*
+          /*
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -907,17 +866,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             ],
           ),
           */
-          SizedBox(
-            height: PageComponents(context).heightSize(5),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(5)),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(15.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
               ),
               onPressed: () {
                 //ANCHOR veri kontrolleri burda
@@ -941,9 +896,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               child: Text("CREATE ACCOUNT".toUpperCase()),
             ),
           ),
-          SizedBox(
-            height: PageComponents(context).heightSize(3.29),
-          ),
+          SizedBox(height: PageComponents(context).heightSize(3.29)),
           TextButton(
             onPressed: () {
               setState(() {
@@ -969,38 +922,37 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       mailController.text,
       _gender! ? "Man" : "Woman",
       _isDietisian! ? "Y" : "N",
-      generateNickName(_name!)
+      generateNickName(_name!),
     ];
     if (kDebugMode) {
       print(datalist);
     }
     try {
       await locator<UserService>()
-          .registerUser(
-              mailController.text, passwordController.text, datalist, _image!)
+          .registerUser(mailController.text, passwordController.text, datalist, _image)
           .then((userID) {
-        if (userID != null) {
-          Fluttertoast.showToast(
-              msg:
-                  "Hesabınız başarıyla oluşturuldu. Lütfen mailinizi doğrulayınız.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 2,
-              backgroundColor: Colors.deepPurpleAccent,
-              textColor: Colors.white,
-              fontSize: 18.0);
-          setState(() {
-            _loginSignUpToggle = !_loginSignUpToggle;
-          });
-        } else {
-          setState(() {
-            loading = false;
-            if (kDebugMode) {
-              print("Sign Up Failed!");
+            if (userID != null) {
+              Fluttertoast.showToast(
+                msg: "Hesabınız başarıyla oluşturuldu. Lütfen mailinizi doğrulayınız.",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 2,
+                backgroundColor: Colors.deepPurpleAccent,
+                textColor: Colors.white,
+                fontSize: 18.0,
+              );
+              setState(() {
+                _loginSignUpToggle = !_loginSignUpToggle;
+              });
+            } else {
+              setState(() {
+                loading = false;
+                if (kDebugMode) {
+                  print("Sign Up Failed!");
+                }
+              });
             }
           });
-        }
-      });
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -1020,12 +972,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     final XFile? image = await picker.pickImage(source: source);
     if (image != null) {
       return Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => ImageEditorPage(
-                    image: File(image.path),
-                    forCreateEvent: false,
-                  ))).then((value) => value);
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) =>
+              ImageEditorPage(image: File(image.path), forCreateEvent: false),
+        ),
+      ).then((value) => value);
     } else {
       return null;
     }
@@ -1033,52 +985,49 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   Future<void> _showChoiceDialog(BuildContext context) {
     return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(
-              'Bir Seçim Yapınız',
-              style: TextStyle(
-                fontSize: heightSize(2.5),
-                fontFamily: "Genel",
-                color: MyColors().loginGreyColor,
-              ),
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Bir Seçim Yapınız',
+            style: TextStyle(
+              fontSize: heightSize(2.5),
+              fontFamily: "Genel",
+              color: MyColors().loginGreyColor,
             ),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  GestureDetector(
-                      child: const Text(
-                        'Galeri',
-                      ),
-                      onTap: () {
-                        _getImage(source: ImageSource.gallery).then((value) {
-                          setState(() {
-                            _image = value;
-                            Navigator.pop(context);
-                          });
-                        });
-                      }),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  GestureDetector(
-                      child: const Text(
-                        'Kamera',
-                      ),
-                      onTap: () {
-                        _getImage(source: ImageSource.camera).then((value) {
-                          setState(() {
-                            _image = value;
-                            Navigator.pop(context);
-                          });
-                        });
-                      }),
-                ],
-              ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Galeri'),
+                  onTap: () {
+                    _getImage(source: ImageSource.gallery).then((value) {
+                      setState(() {
+                        _image = value;
+                        Navigator.pop(context);
+                      });
+                    });
+                  },
+                ),
+                const Padding(padding: EdgeInsets.all(8.0)),
+                GestureDetector(
+                  child: const Text('Kamera'),
+                  onTap: () {
+                    _getImage(source: ImageSource.camera).then((value) {
+                      setState(() {
+                        _image = value;
+                        Navigator.pop(context);
+                      });
+                    });
+                  },
+                ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   menColor() {
@@ -1106,8 +1055,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             decoration: BoxDecoration(
               color: _gender != null
                   ? _gender!
-                      ? menColor()
-                      : Colors.deepPurpleAccent[300]
+                        ? menColor()
+                        : Colors.deepPurpleAccent[300]
                   : Colors.deepPurpleAccent[300],
               borderRadius: BorderRadius.circular(15),
             ),
@@ -1135,12 +1084,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             decoration: BoxDecoration(
               color: _gender != null
                   ? _gender!
-                      ? Colors.deepPurpleAccent[300]
-                      : womenColor()
+                        ? Colors.deepPurpleAccent[300]
+                        : womenColor()
                   : Colors.deepPurpleAccent[300],
-              borderRadius: const BorderRadius.all(
-                Radius.circular(15),
-              ),
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
             ),
             child: Center(
               child: Text(
@@ -1172,12 +1119,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             width: widthSize(42),
             height: heightSize(5),
             decoration: BoxDecoration(
-              color: _isDietisian!
-                  ? Colors.deepPurpleAccent[300]
-                  : Colors.green[200],
-              borderRadius: const BorderRadius.all(
-                Radius.circular(15),
-              ),
+              color: _isDietisian! ? Colors.deepPurpleAccent[300] : Colors.green[200],
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
             ),
             child: Center(
               child: Text(
@@ -1201,12 +1144,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             width: widthSize(42),
             height: heightSize(5),
             decoration: BoxDecoration(
-              color: _isDietisian!
-                  ? Colors.green[200]
-                  : Colors.deepPurpleAccent[300],
-              borderRadius: const BorderRadius.all(
-                Radius.circular(15),
-              ),
+              color: _isDietisian! ? Colors.green[200] : Colors.deepPurpleAccent[300],
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
             ),
             child: Center(
               child: Text(
@@ -1263,8 +1202,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         // await userService
         //     .updateSingleInfo("LastLoggedIn", "timeStamp")
         //    .whenComplete(() {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) => const RootPage()));
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => const RootPage()));
         // });
       });
     }
